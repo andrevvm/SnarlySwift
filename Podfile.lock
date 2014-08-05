@@ -1,0 +1,13 @@
+PODS:
+  - Canvas (0.1.2)
+  - TPKeyboardAvoiding (1.2.3)
+
+DEPENDENCIES:
+  - Canvas
+  - TPKeyboardAvoiding
+
+SPEC CHECKSUMS:
+  Canvas: ae2faca05a15c4d6659fb3ae5e2a14817df4449a
+  TPKeyboardAvoiding: ca26afa683d829cb96fe69b887fc8be4178f0b9a
+
+COCOAPODS: 0.33.1
