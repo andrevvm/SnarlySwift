@@ -9,5 +9,15 @@
 import UIKit
 
 class SpotDetailController: UIViewController {
-    //var spot:NSManagedObject = nil
+    var spot: Spots? = nil
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //self.navigationController.navigationBar.topItem.title = ""
+        if spot != nil {
+            self.title = spot?.title
+        }
+    }
+    
+    
 }

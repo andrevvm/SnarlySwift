@@ -24,8 +24,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
 
         locationManager.startUpdatingLocation()
+        
+        setupAppearance()
     
         return true
+    }
+    
+    func setupAppearance() {
+        var navigationBarAppearance = UINavigationBar.appearance()
+        navigationBarAppearance.barTintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
+        let titleDict: NSDictionary = [NSForegroundColorAttributeName: UIColor.whiteColor(), NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 16)]
+        navigationBarAppearance.titleTextAttributes = titleDict
+        navigationBarAppearance.tintColor = UIColor.whiteColor()
     }
 
     func applicationWillResignActive(application: UIApplication!) {

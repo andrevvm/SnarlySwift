@@ -17,7 +17,23 @@ extension Double {
     var mi: Double { return self / 1_609.34 }
 }
 
-class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate  {
+class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
+    
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext
+    
+    var fetchedResultController: NSFetchedResultsController = NSFetchedResultsController()
+    
+    func getFetchedResultController() -> NSFetchedResultsController {
+        fetchedResultController = NSFetchedResultsController(fetchRequest: spotFetchRequest(), managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        return fetchedResultController
+    }
+    
+    func spotFetchRequest() -> NSFetchRequest {
+        let fetchRequest = NSFetchRequest(entityName: "Spots")
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        return fetchRequest
+    }
     
     @IBOutlet var EmptyBg: UIImageView!
     @IBOutlet var tableView: UITableView!
@@ -39,27 +55,31 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
-        self.fetchSpots()
         self.checkSpots()
+        self.refreshSpots()
+        self.title = "Spots"
     }
+
     
     func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
         curLoc = locations[locations.endIndex - 1] as CLLocation
         curLat = NSNumber(double: curLoc.coordinate.latitude)
         curLon = NSNumber(double: curLoc.coordinate.latitude)
         
-        self.fetchSpots()
-        self.checkSpots()
+        self.parseDistance()
+        tableView.reloadData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        self.navigationController.navigationBar.barTintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
-        let titleDict: NSDictionary = [NSForegroundColorAttributeName: UIColor.whiteColor(), NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 16)]
-        self.navigationController.navigationBar.titleTextAttributes = titleDict
-        self.navigationController.navigationBar.tintColor = UIColor.whiteColor()
+        fetchedResultController = getFetchedResultController()
+        fetchedResultController.delegate = self
+        fetchedResultController.performFetch(nil)
+        
+        self.parseImages()
+        
+        self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -79,71 +99,108 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // Dispose of any resources that can be recreated.
     }
     
+    func refreshSpots() {
+        self.parseDistance()
+        self.parseImages()
+    }
+    
     func checkSpots() {
-        if(spots.count > 0) {
+        if(fetchedResultController.sections[0].numberOfObjects > 0) {
             self.hasSpots()
-            self.tableView.reloadData()
         } else {
             println("0 results returned")
             self.emptySpots()
         }
     }
     
-    func fetchSpots() {
-        var appDel:AppDelegate = (UIApplication.sharedApplication().delegate as AppDelegate)
-        var context:NSManagedObjectContext = appDel.managedObjectContext!
-        
-        var request = NSFetchRequest(entityName: "Spots")
-        request.returnsObjectsAsFaults = false
-        
-        self.spots = context.executeFetchRequest(request, error: nil)
-        
-        spotImages = []
+    func parseDistance() {
         spotDistance = []
-        
-        for spot in self.spots {
-            spotImages.append(UIImage(data: spot.valueForKey("photo") as NSData))
+        for spot in fetchedResultController.fetchedObjects {
+            let spot = spot as Spots
             spotDistance.append(self.getDistanceString(spot))
         }
     }
-
+    
+    func parseImages() {
+        spotImages = []
+        for spot in fetchedResultController.fetchedObjects {
+            let spot = spot as Spots
+            spotImages.append(UIImage(data: spot.photo as NSData))
+        }
+    }
         
     func tableView(tableView: UITableView!, numberOfRowsInSection section: Int) -> Int {
-        return self.spots.count
+        return fetchedResultController.sections[section].numberOfObjects
     }
     
-    func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
+//    func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
+//        var cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath: indexPath) as SpotCell
+//
+//        let spot = fetchedResultController.objectAtIndexPath(indexPath) as Spots
+//        
+//        cell.spotLabel.text = spot.title
+//        
+//        cell.spotLabel.text = self.spots[indexPath.row].valueForKey("title") as String
+//        cell.distanceLabel.text = self.spotDistance[indexPath.row]
+//        
+//        if (self.spots[indexPath.row].valueForKey("photo")) {
+//            cell.spotPhoto.image = self.spotImages[indexPath.row]
+//        }
+//        
+//        cell.spotPhoto.layer.cornerRadius = 4
+//        cell.spotPhoto.clipsToBounds = true
+//
+//        return cell
+//    }
+    
+    func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell? {
         var cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath: indexPath) as SpotCell
+        let spot = fetchedResultController.objectAtIndexPath(indexPath) as Spots
         
-        cell.spotLabel.text = self.spots[indexPath.row].valueForKey("title") as String
-        cell.distanceLabel.text = self.spotDistance[indexPath.row]
+        cell.spotLabel.text = spot.title
         
-        if (self.spots[indexPath.row].valueForKey("photo")) {
-            cell.spotPhoto.image = self.spotImages[indexPath.row]
+        cell.spotPhoto.image = self.spotImages[indexPath.row]
+        
+        if self.spotDistance.count - 1 >= indexPath.row {
+            cell.distanceLabel.text = self.spotDistance[indexPath.row]
         }
         
         cell.spotPhoto.layer.cornerRadius = 4
         cell.spotPhoto.clipsToBounds = true
-
+        
         return cell
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController!) {
+        self.checkSpots()
+        self.parseImages()
+        tableView.reloadData()
     }
     
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         println("You selected cell #\(indexPath.row)!")
-        var objectId = self.spots[indexPath.row].objectID as NSManagedObjectID
-        println(objectId)
-        performSegueWithIdentifier("spotDetail", sender: self)
+        var selectedSpot = fetchedResultController.objectAtIndexPath(indexPath) as Spots
+        
+        println(selectedSpot.title)
+        
+        performSegueWithIdentifier("spotDetail", sender: selectedSpot)
     }
     
-    func getDistanceString(spot:AnyObject) -> NSString {
+    func tableView(tableView: UITableView!, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath!) {
+        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as NSManagedObject
+        managedObjectContext?.deleteObject(managedObject)
+        managedObjectContext?.save(nil)
+    }
+    
+    func getDistanceString(spot:Spots) -> NSString {
         
         if curLat == 0 && curLon == 0 {
             return ""
         }
         
         var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
-        var loc_lat = spot.valueForKey("loc_lat") as Double
-        var loc_lon = spot.valueForKey("loc_lon") as Double
+        var loc_lat = spot.loc_lat as Double
+        var loc_lon = spot.loc_lon as Double
         var location = CLLocation(latitude: loc_lat, longitude: loc_lon)
         
         var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
@@ -198,5 +255,12 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // Pass the selected object to the new view controller.
     }
     */
+    
+    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+        if segue.identifier == "spotDetail" {
+            let spotController:SpotDetailController = segue.destinationViewController as SpotDetailController
+            spotController.spot = sender as Spots
+        }
+    }
 
 }
