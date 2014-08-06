@@ -72,7 +72,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var locationManager: CLLocationManager = CLLocationManager()
     
     var sortedKeys:NSArray = []
+    var orderDict = Dictionary<NSManagedObjectID, NSNumber>()
     var distanceDict = Dictionary<NSManagedObjectID, Double>()
+    var distanceStringDict = Dictionary<NSManagedObjectID, NSString>()
     var imagesDict = Dictionary<NSManagedObjectID, UIImage>()
     var spotsDict = Dictionary<NSManagedObjectID, NSManagedObject>()
     var spotImages = [UIImage]()
@@ -87,8 +89,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
-        self.checkSpots()
-        self.refreshSpots()
         self.title = "Spots"
     }
 
@@ -98,16 +98,15 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         curLat = NSNumber(double: curLoc.coordinate.latitude)
         curLon = NSNumber(double: curLoc.coordinate.latitude)
         
-        self.parseDistance()
-        tableView.reloadData()
+        self.arrangeSpots()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         fetchSpots()
-        
-        self.parseImages()
+        checkSpots()
+        arrangeSpots()
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
@@ -133,9 +132,15 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         fetchedResultController = getFetchedResultController()
         fetchedResultController.delegate = self
         fetchedResultController.performFetch(nil)
-        
+    }
+    
+    func arrangeSpots() {
+        var index = 0
         for spot in fetchedResultController.fetchedObjects {
+            
             var spot = spot as Spots
+            
+            println(spot.title)
             
             var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
             var loc_lat = spot.loc_lat as Double
@@ -146,18 +151,14 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             var distanceNum = distance.mi as Double
             
             distanceDict[spot.objectID] = distanceNum
+            distanceStringDict[spot.objectID] = getDistanceString(spot)
             imagesDict[spot.objectID] = UIImage(data: spot.photo as NSData)
             spotsDict[spot.objectID] = spot
+            orderDict[spot.objectID] = index
+            index++
         }
-
-        sortedKeys = distanceDict.sortedKeysByValue(>)
         
-        println(sortedKeys)
-    }
-    
-    func refreshSpots() {
-        self.parseDistance()
-        self.parseImages()
+        sortedKeys = distanceDict.sortedKeysByValue(<)
         tableView.reloadData()
     }
     
@@ -167,22 +168,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             println("0 results returned")
             self.emptySpots()
-        }
-    }
-    
-    func parseDistance() {
-        spotDistance = []
-        for spot in fetchedResultController.fetchedObjects {
-            let spot = spot as Spots
-            spotDistance.append(self.getDistanceString(spot))
-        }
-    }
-    
-    func parseImages() {
-        spotImages = []
-        for spot in fetchedResultController.fetchedObjects {
-            let spot = spot as Spots
-            spotImages.append(UIImage(data: spot.photo as NSData))
         }
     }
         
@@ -199,9 +184,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         cell.spotPhoto.image = self.imagesDict[lookup]
         
-        if self.spotDistance.count - 1 >= indexPath.row {
-            //cell.distanceLabel.text = self.distanceDict[lookup] as NSString
-        }
+        cell.distanceLabel.text = self.distanceStringDict[lookup] as NSString
         
         cell.spotPhoto.layer.cornerRadius = 4
         cell.spotPhoto.clipsToBounds = true
@@ -210,10 +193,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController!) {
-        self.fetchSpots()
         self.checkSpots()
-        self.parseImages()
-        tableView.reloadData()
+        self.arrangeSpots()
     }
     
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
@@ -223,7 +204,19 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(tableView: UITableView!, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath!) {
-        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as NSManagedObject
+        
+        var lookup = sortedKeys[indexPath.row] as NSManagedObjectID
+        var deletedSpot = spotsDict[lookup] as Spots
+        spotsDict[lookup] = nil
+        distanceDict[lookup] = nil
+        distanceStringDict[lookup] = nil
+        imagesDict[lookup] = nil
+        orderDict[lookup] = nil
+        sortedKeys = distanceDict.sortedKeysByValue(<)
+        
+        var deletedIndexPath = fetchedResultController.indexPathForObject(deletedSpot)
+        
+        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(deletedIndexPath) as NSManagedObject
         managedObjectContext?.deleteObject(managedObject)
         managedObjectContext?.save(nil)
     }

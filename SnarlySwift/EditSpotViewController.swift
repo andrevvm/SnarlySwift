@@ -49,8 +49,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         context.save(nil)
         
-        println(newSpot)
-        
         performSegueWithIdentifier("toSpots", sender: self)
     }
     
@@ -58,8 +56,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         var currentLocation = locations[locations.endIndex - 1] as CLLocation
         curLat = Double(currentLocation.coordinate.latitude)
         curLon = Double(currentLocation.coordinate.longitude)
-        
-        println(curLat)
     }
     
     func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: NSDictionary!) {
@@ -70,7 +66,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     @IBAction func capture(sender : AnyObject) {
         if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
-            println("Button capture")
             
             var imag = UIImagePickerController()
             imag.delegate = self
