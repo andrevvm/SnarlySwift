@@ -72,7 +72,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var locationManager: CLLocationManager = CLLocationManager()
     
     var sortedKeys:NSArray = []
-    var spotsDict = Dictionary<Double, NSManagedObject>()
+    var distanceDict = Dictionary<NSManagedObjectID, Double>()
+    var imagesDict = Dictionary<NSManagedObjectID, UIImage>()
+    var spotsDict = Dictionary<NSManagedObjectID, NSManagedObject>()
     var spotImages = [UIImage]()
     var spotDistance = [NSString]()
     var curLat:NSNumber = 0
@@ -143,10 +145,12 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
             var distanceNum = distance.mi as Double
             
-            spotsDict[distanceNum] = spot
+            distanceDict[spot.objectID] = distanceNum
+            imagesDict[spot.objectID] = UIImage(data: spot.photo as NSData)
+            spotsDict[spot.objectID] = spot
         }
-        
-        sortedKeys = spotsDict.sortedKeys(>)
+
+        sortedKeys = distanceDict.sortedKeysByValue(>)
         
         println(sortedKeys)
     }
@@ -188,15 +192,15 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell? {
         var cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath: indexPath) as SpotCell
-        var lookup = sortedKeys[indexPath.row] as Double
+        var lookup = sortedKeys[indexPath.row] as NSManagedObjectID
         let spot = spotsDict[lookup] as Spots
         
         cell.spotLabel.text = spot.title
         
-        cell.spotPhoto.image = self.spotImages[indexPath.row]
+        cell.spotPhoto.image = self.imagesDict[lookup]
         
         if self.spotDistance.count - 1 >= indexPath.row {
-            cell.distanceLabel.text = self.spotDistance[indexPath.row]
+            //cell.distanceLabel.text = self.distanceDict[lookup] as NSString
         }
         
         cell.spotPhoto.layer.cornerRadius = 4
@@ -295,7 +299,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
         if segue.identifier? == "spotDetail" {
             let spotController:SpotDetailController = segue.destinationViewController as SpotDetailController
-            spotController.spot = sender as Spots
+            spotController.spot = sender as? Spots
         }
     }
 
