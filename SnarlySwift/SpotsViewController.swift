@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import CoreLocation
 
+
 extension Double {
     var m: Double { return self }
     var km: Double { return self / 1_000.0 }
@@ -58,10 +59,15 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.navigationController.navigationBar.barTintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
         let titleDict: NSDictionary = [NSForegroundColorAttributeName: UIColor.whiteColor(), NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 16)]
         self.navigationController.navigationBar.titleTextAttributes = titleDict
+        self.navigationController.navigationBar.tintColor = UIColor.whiteColor()
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
+        
+        let edgeInsets = UIEdgeInsetsMake(0, 0, 100, 0)
+        self.tableView.contentInset = edgeInsets
+        
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -124,6 +130,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         println("You selected cell #\(indexPath.row)!")
+        var objectId = self.spots[indexPath.row].objectID as NSManagedObjectID
+        println(objectId)
+        performSegueWithIdentifier("spotDetail", sender: self)
     }
     
     func getDistanceString(spot:AnyObject) -> NSString {

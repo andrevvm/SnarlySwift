@@ -16,6 +16,7 @@
 		E6121B96198FC5E500E72142 /* SnarlySwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B95198FC5E500E72142 /* SnarlySwiftTests.swift */; };
 		E6121BA1198FCC0000E72142 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6121BA0198FCC0000E72142 /* MapKit.framework */; };
 		E6121BA4198FD34400E72142 /* SpotsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121BA3198FD34400E72142 /* SpotsViewController.swift */; };
+		E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AF519923C4A00118206 /* SpotDetailController.swift */; };
 		E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */; };
 		E6C6061B1991182000338777 /* SpotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C6061A1991182000338777 /* SpotCell.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +47,7 @@
 		E6121B9F198FCBF600E72142 /* SnarlySwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SnarlySwift.entitlements; sourceTree = "<group>"; };
 		E6121BA0198FCC0000E72142 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		E6121BA3198FD34400E72142 /* SpotsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotsViewController.swift; sourceTree = "<group>"; };
+		E62A6AF519923C4A00118206 /* SpotDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotDetailController.swift; sourceTree = "<group>"; };
 		E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SnarlySwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditSpotViewController.swift; sourceTree = "<group>"; };
 		E6C6061A1991182000338777 /* SpotCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotCell.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				E6121B7D198FC5E400E72142 /* Supporting Files */,
 				E6121BA3198FD34400E72142 /* SpotsViewController.swift */,
 				E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */,
+				E62A6AF519923C4A00118206 /* SpotDetailController.swift */,
 				E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */,
 				E6C6061A1991182000338777 /* SpotCell.swift */,
 			);
@@ -290,6 +293,7 @@
 				E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */,
 				E6121B85198FC5E500E72142 /* ViewController.swift in Sources */,
 				E6C6061B1991182000338777 /* SpotCell.swift in Sources */,
+				E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */,
 				E6121B83198FC5E500E72142 /* SnarlySwift.xcdatamodeld in Sources */,
 				E6121B80198FC5E400E72142 /* AppDelegate.swift in Sources */,
 			);

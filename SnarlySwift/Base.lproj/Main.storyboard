@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6185.11" systemVersion="14A283o" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Fbz-iM-z2X">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6190.4"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
@@ -346,6 +345,7 @@
                         <outlet property="NewSpot" destination="QFK-XN-cEt" id="O72-v1-DMz"/>
                         <outlet property="NewSpotGradient" destination="paH-1i-arH" id="0hV-k7-qTr"/>
                         <outlet property="tableView" destination="vdk-nq-IIU" id="4St-sK-HyH"/>
+                        <segue destination="Bg3-tF-T77" kind="show" identifier="spotDetail" id="FxR-pi-UZ1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z1S-i8-7cV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -378,6 +378,9 @@
                                     <navigationItem title="New Spot" id="qhP-xr-h8d">
                                         <barButtonItem key="leftBarButtonItem" image="btn-cancel" width="50" id="pzK-fj-CD8">
                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <connections>
+                                                <segue destination="vkW-CO-tCh" kind="unwind" unwindAction="unwindToSpots:" id="rpz-jR-vO3"/>
+                                            </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" image="btn-save" id="EqD-wq-CgM">
                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -553,12 +556,6 @@
                                             </mask>
                                         </variation>
                                     </view>
-                                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RGr-gr-rnh">
-                                        <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                        <variation key="widthClass=compact" fixedFrame="YES">
-                                            <rect key="frame" x="0.0" y="399" width="400" height="141"/>
-                                        </variation>
-                                    </mapView>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="qaB-a1-ohu" secondAttribute="trailing" id="0Bo-ot-HnM"/>
@@ -584,7 +581,6 @@
                                         <exclude reference="qaB-a1-ohu"/>
                                         <exclude reference="rds-Dm-3xz"/>
                                         <exclude reference="gev-tE-Q90"/>
-                                        <exclude reference="RGr-gr-rnh"/>
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="0Bo-ot-HnM"/>
@@ -609,7 +605,6 @@
                                         <include reference="qaB-a1-ohu"/>
                                         <include reference="rds-Dm-3xz"/>
                                         <include reference="gev-tE-Q90"/>
-                                        <include reference="RGr-gr-rnh"/>
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="0Bo-ot-HnM"/>
@@ -686,6 +681,23 @@
                 <exit id="vkW-CO-tCh" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-54" y="290"/>
+        </scene>
+        <!--Spot Detail-->
+        <scene sceneID="Fat-UH-LcC">
+            <objects>
+                <viewController title="Spot Detail" id="Bg3-tF-T77" customClass="SpotDetailController" customModule="SnarlySwift" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="mXu-c4-msZ"/>
+                        <viewControllerLayoutGuide type="bottom" id="RC4-gK-C4Q"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Br4-Do-69m">
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DhY-Pp-WcC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-54" y="1034"/>
         </scene>
     </scenes>
     <resources>
