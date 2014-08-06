@@ -9,12 +9,29 @@
 import UIKit
 import MobileCoreServices
 import CoreData
+import CoreLocation
 
-class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, CLLocationManagerDelegate {
+
     
     @IBOutlet var txtSpotName: UITextField!
     @IBOutlet var txtSpotNotes: UITextField!
     @IBOutlet var imagePreview : UIImageView!
+    
+    var locationManager: CLLocationManager = CLLocationManager()
+    
+    var curLat:Double = 0
+    var curLon:Double = 0
+    
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.startUpdatingLocation()
+        
+    }
     
     @IBAction func saveSpot(sender: UIBarButtonItem) {
         
@@ -27,12 +44,22 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         newSpot.setValue(txtSpotName.text, forKey: "title")
         newSpot.setValue(txtSpotNotes.text, forKey: "notes")
         newSpot.setValue(imageData, forKey: "photo")
+        newSpot.setValue(curLat, forKey: "loc_lat")
+        newSpot.setValue(curLon, forKey: "loc_lon")
         
         context.save(nil)
         
         println(newSpot)
         
         performSegueWithIdentifier("toSpots", sender: self)
+    }
+    
+    func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
+        var currentLocation = locations[locations.endIndex - 1] as CLLocation
+        curLat = Double(currentLocation.coordinate.latitude)
+        curLon = Double(currentLocation.coordinate.longitude)
+        
+        println(curLat)
     }
     
     func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: NSDictionary!) {
@@ -53,12 +80,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             self.presentViewController(imag, animated: true, completion: nil)
         }
-    }
-
-    override func viewDidLoad() {
-        
-        super.viewDidLoad()
-
     }
     
     override func didReceiveMemoryWarning() {

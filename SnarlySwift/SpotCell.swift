@@ -11,6 +11,7 @@ import UIKit
 class SpotCell: UITableViewCell {
     @IBOutlet var spotLabel: UILabel!
     @IBOutlet var spotPhoto: UIImageView!
+    @IBOutlet var distanceLabel: UILabel!
     
     init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
