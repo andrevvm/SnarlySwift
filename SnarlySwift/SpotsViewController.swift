@@ -158,7 +158,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             index++
         }
         
-        sortedKeys = distanceDict.sortedKeysByValue(<)
+        //sortedKeys = distanceDict.sortedKeysByValue(<)
         tableView.reloadData()
     }
     
