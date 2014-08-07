@@ -170,8 +170,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             self.emptySpots()
         }
     }
+    
+    func numberOfSectionsInTableView(tableView: UITableView!) -> Int {
+        return fetchedResultController.sections.count
+    }
         
     func tableView(tableView: UITableView!, numberOfRowsInSection section: Int) -> Int {
+        println(fetchedResultController.sections[section].numberOfObjects)
         return fetchedResultController.sections[section].numberOfObjects
     }
     
