@@ -18,21 +18,21 @@ extension Double {
 }
 
 extension Dictionary {
-    func sortedKeys(isOrderedBefore:(KeyType,KeyType) -> Bool) -> [KeyType] {
+    func sortedKeys(isOrderedBefore:(Key,Key) -> Bool) -> [Key] {
         var array = Array(self.keys)
         sort(&array, isOrderedBefore)
         return array
     }
     
     // Slower because of a lot of lookups, but probably takes less memory (this is equivalent to Pascals answer in an generic extension)
-    func sortedKeysByValue(isOrderedBefore:(ValueType, ValueType) -> Bool) -> [KeyType] {
+    func sortedKeysByValue(isOrderedBefore:(Value, Value) -> Bool) -> [Key] {
         return sortedKeys {
             isOrderedBefore(self[$0]!, self[$1]!)
         }
     }
     
     // Faster because of no lookups, may take more memory because of duplicating contents
-    func keysSortedByValue(isOrderedBefore:(ValueType, ValueType) -> Bool) -> [KeyType] {
+    func keysSortedByValue(isOrderedBefore:(Value, Value) -> Bool) -> [Key] {
         var array = Array(self)
         sort(&array) {
             let (lk, lv) = $0
@@ -140,8 +140,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
             var spot = spot as Spots
             
-            println(spot.title)
-            
             var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
             var loc_lat = spot.loc_lat as Double
             var loc_lon = spot.loc_lon as Double
@@ -158,7 +156,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             index++
         }
         
-        //sortedKeys = distanceDict.sortedKeysByValue(<)
+        sortedKeys = distanceDict.sortedKeysByValue(<)
         tableView.reloadData()
     }
     
@@ -166,7 +164,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if(fetchedResultController.sections[0].numberOfObjects > 0) {
             self.hasSpots()
         } else {
-            println("0 results returned")
             self.emptySpots()
         }
     }
@@ -176,7 +173,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
         
     func tableView(tableView: UITableView!, numberOfRowsInSection section: Int) -> Int {
-        println(fetchedResultController.sections[section].numberOfObjects)
         return fetchedResultController.sections[section].numberOfObjects
     }
     
@@ -203,7 +199,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
-        var selectedSpot = fetchedResultController.objectAtIndexPath(indexPath) as Spots
+        
+        var lookup = sortedKeys[indexPath.row] as NSManagedObjectID
+        var selectedSpot = spotsDict[lookup] as Spots
         
         performSegueWithIdentifier("spotDetail", sender: selectedSpot)
     }
