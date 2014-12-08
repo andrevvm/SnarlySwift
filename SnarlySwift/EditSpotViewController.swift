@@ -12,6 +12,8 @@ import CoreData
 import CoreLocation
 
 class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, CLLocationManagerDelegate {
+    
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext
 
     
     @IBOutlet var txtSpotName: UITextField!
@@ -35,21 +37,17 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     @IBAction func saveSpot(sender: UIBarButtonItem) {
         
-        var appDel:AppDelegate = (UIApplication.sharedApplication().delegate as AppDelegate)
-        var context:NSManagedObjectContext = appDel.managedObjectContext!
-        
-        var newSpot = NSEntityDescription.insertNewObjectForEntityForName("Spots", inManagedObjectContext: context) as NSManagedObject
+        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext)
+        let spot = Spots(entity: entityDescripition, insertIntoManagedObjectContext: managedObjectContext)
         
         var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 1.0))
-        newSpot.setValue(txtSpotName.text, forKey: "title")
-        newSpot.setValue(txtSpotNotes.text, forKey: "notes")
-        newSpot.setValue(imageData, forKey: "photo")
-        newSpot.setValue(curLat, forKey: "loc_lat")
-        newSpot.setValue(curLon, forKey: "loc_lon")
+        spot.title = txtSpotName.text
+        spot.notes = txtSpotNotes.text
+        spot.photo = imageData
+        spot.loc_lat = curLat
+        spot.loc_lon = curLon
         
-        context.save(nil)
-        
-        println(newSpot)
+        managedObjectContext?.save(nil)
         
         performSegueWithIdentifier("toSpots", sender: self)
     }
@@ -58,8 +56,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         var currentLocation = locations[locations.endIndex - 1] as CLLocation
         curLat = Double(currentLocation.coordinate.latitude)
         curLon = Double(currentLocation.coordinate.longitude)
-        
-        println(curLat)
     }
     
     func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: NSDictionary!) {
@@ -70,7 +66,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     @IBAction func capture(sender : AnyObject) {
         if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
-            println("Button capture")
             
             var imag = UIImagePickerController()
             imag.delegate = self
