@@ -46,14 +46,14 @@ extension Dictionary {
     }
 }
 
-class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
+class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
     
     let managedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext
     
     var fetchedResultController: NSFetchedResultsController = NSFetchedResultsController()
     
     func getFetchedResultController() -> NSFetchedResultsController {
-        fetchedResultController = NSFetchedResultsController(fetchRequest: spotFetchRequest(), managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultController = NSFetchedResultsController(fetchRequest: spotFetchRequest(), managedObjectContext: managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
         return fetchedResultController
     }
     
@@ -69,7 +69,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet var NewSpot: UIButton!
     @IBOutlet var NewSpotGradient: UIImageView!
     
-    var locationManager: CLLocationManager = CLLocationManager()
+    var locationManager = CLLocationManager()
     
     var sortedKeys:NSArray = []
     var orderDict = Dictionary<NSManagedObjectID, NSNumber>()
@@ -79,8 +79,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var spotsDict = Dictionary<NSManagedObjectID, NSManagedObject>()
     var spotImages = [UIImage]()
     var spotDistance = [NSString]()
-    var curLat:NSNumber = 0
-    var curLon:NSNumber = 0
+    var curLat:Double = 0
+    var curLon:Double = 0
     var curLoc:CLLocation = CLLocation()
     
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
@@ -93,10 +93,18 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     
-    func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
-        curLoc = locations[locations.endIndex - 1] as CLLocation
-        curLat = NSNumber(double: curLoc.coordinate.latitude)
-        curLon = NSNumber(double: curLoc.coordinate.latitude)
+    func locationManager(manager:CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus, didUpdateLocations locations:[AnyObject]!) {
+        
+        println("LOCATION")
+        
+        if status == .AuthorizedWhenInUse {
+            manager.startUpdatingLocation()
+            curLoc = locations[locations.endIndex - 1] as CLLocation
+            curLat = Double(curLoc.coordinate.latitude)
+            curLon = Double(curLoc.coordinate.latitude)
+            
+            println(curLoc)
+        }
         
         self.arrangeSpots()
     }
@@ -104,15 +112,19 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if CLLocationManager.authorizationStatus() == .NotDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
+        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.startUpdatingLocation()
+        
         fetchSpots()
         checkSpots()
         arrangeSpots()
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startUpdatingLocation()
         
         let edgeInsets = UIEdgeInsetsMake(0, 0, 80, 0)
         self.tableView.contentInset = edgeInsets
@@ -136,7 +148,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func arrangeSpots() {
         var index = 0
-        for spot in fetchedResultController.fetchedObjects {
+        for spot in fetchedResultController.fetchedObjects! {
             
             var spot = spot as Spots
             
@@ -161,22 +173,33 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func checkSpots() {
-        if(fetchedResultController.sections[0].numberOfObjects > 0) {
-            self.hasSpots()
+        if let fetchedSections: AnyObject = fetchedResultController.sections as AnyObject? {
+            if(fetchedSections[0].numberOfObjects > 0) {
+                self.hasSpots()
+            } else {
+                self.emptySpots()
+            }
+        }
+        
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        if let fetchedSections: AnyObject = fetchedResultController.sections as AnyObject? {
+            return fetchedSections.count
         } else {
-            self.emptySpots()
+            return 0
+        }
+    }
+        
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let fetchedSections: AnyObject = fetchedResultController.sections as AnyObject? {
+            return fetchedSections[section].numberOfObjects
+        } else {
+            return 0
         }
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView!) -> Int {
-        return fetchedResultController.sections.count
-    }
-        
-    func tableView(tableView: UITableView!, numberOfRowsInSection section: Int) -> Int {
-        return fetchedResultController.sections[section].numberOfObjects
-    }
-    
-    func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell? {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell? {
         var cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath: indexPath) as SpotCell
         var lookup = sortedKeys[indexPath.row] as NSManagedObjectID
         let spot = spotsDict[lookup] as Spots
@@ -185,7 +208,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         cell.spotPhoto.image = self.imagesDict[lookup]
         
-        cell.distanceLabel.text = self.distanceStringDict[lookup] as NSString
+        cell.distanceLabel.text = self.distanceStringDict[lookup] as NSString!
         
         cell.spotPhoto.layer.cornerRadius = 4
         cell.spotPhoto.clipsToBounds = true
@@ -198,7 +221,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.arrangeSpots()
     }
     
-    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
+    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         var lookup = sortedKeys[indexPath.row] as NSManagedObjectID
         var selectedSpot = spotsDict[lookup] as Spots
@@ -206,7 +229,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         performSegueWithIdentifier("spotDetail", sender: selectedSpot)
     }
     
-    func tableView(tableView: UITableView!, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath!) {
+    func tableView(tableView: UITableView!, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
         var lookup = sortedKeys[indexPath.row] as NSManagedObjectID
         var deletedSpot = spotsDict[lookup] as Spots
@@ -219,7 +242,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         var deletedIndexPath = fetchedResultController.indexPathForObject(deletedSpot)
         
-        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(deletedIndexPath) as NSManagedObject
+        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(deletedIndexPath!) as NSManagedObject
         managedObjectContext?.deleteObject(managedObject)
         managedObjectContext?.save(nil)
     }
@@ -292,7 +315,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     */
     
-    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         if segue.identifier? == "spotDetail" {
             let spotController:SpotDetailController = segue.destinationViewController as SpotDetailController
             spotController.spot = sender as? Spots

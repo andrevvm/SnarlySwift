@@ -37,8 +37,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     @IBAction func saveSpot(sender: UIBarButtonItem) {
         
-        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext)
-        let spot = Spots(entity: entityDescripition, insertIntoManagedObjectContext: managedObjectContext)
+        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
         
         var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 1.0))
         spot.title = txtSpotName.text

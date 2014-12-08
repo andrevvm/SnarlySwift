@@ -3,11 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-
 	<false/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
-
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -42,7 +40,7 @@
 	<string>Your message</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Your message</string>
-	<key>NSLocationWhenInUsageDescription</key>
-	<string>Your message</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Snarly can only save your spots if you allow your location to be used!</string>
 </dict>
 </plist>
