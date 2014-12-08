@@ -91,20 +91,11 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         super.viewDidAppear(Bool())
         self.title = "Spots"
     }
-
     
-    func locationManager(manager:CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus, didUpdateLocations locations:[AnyObject]!) {
-        
-        println("LOCATION")
-        
-        if status == .AuthorizedWhenInUse {
-            manager.startUpdatingLocation()
-            curLoc = locations[locations.endIndex - 1] as CLLocation
-            curLat = Double(curLoc.coordinate.latitude)
-            curLon = Double(curLoc.coordinate.latitude)
-            
-            println(curLoc)
-        }
+    func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
+        curLoc = locations[locations.endIndex - 1] as CLLocation
+        curLat = Double(curLoc.coordinate.latitude)
+        curLon = Double(curLoc.coordinate.longitude)
         
         self.arrangeSpots()
     }
