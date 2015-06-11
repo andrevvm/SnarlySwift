@@ -31,8 +31,8 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             spotPhoto.image = UIImage(data: spot?.photo as NSData!)
             
             if spot?.loc_lat != 0 && spot?.loc_lon != 0 {
-                var loc_lat = spot?.loc_lat as CLLocationDegrees
-                var loc_lon = spot?.loc_lon as CLLocationDegrees
+                var loc_lat = spot?.loc_lat as! CLLocationDegrees
+                var loc_lon = spot?.loc_lon as! CLLocationDegrees
                 
                 var latitude:CLLocationDegrees = locationManager.location.coordinate.latitude
                 var longitude:CLLocationDegrees = locationManager.location.coordinate.longitude
@@ -54,13 +54,16 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        tableView.estimatedRowHeight = 50.0
+        tableView.rowHeight = UITableViewAutomaticDimension
         return 1
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCellWithIdentifier("NotesCell", forIndexPath: indexPath) as UITableViewCell
+        var cell = tableView.dequeueReusableCellWithIdentifier("NotesCell", forIndexPath: indexPath) as! UITableViewCell
         cell.textLabel!.text = spot?.notes
-        
+        cell.textLabel!.lineBreakMode = .ByWordWrapping
+        cell.textLabel!.numberOfLines = 0;
         cell.textLabel!.font = UIFont(name: "Avenir-Roman", size: 14)
         
         return cell

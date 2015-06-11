@@ -13,7 +13,7 @@ import CoreLocation
 
 class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, CLLocationManagerDelegate {
     
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
     
     @IBOutlet var txtSpotName: UITextField!
@@ -53,13 +53,13 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     }
     
     func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
-        var currentLocation = locations[locations.endIndex - 1] as CLLocation
+        var currentLocation = locations[locations.endIndex - 1] as! CLLocation
         curLat = Double(currentLocation.coordinate.latitude)
         curLon = Double(currentLocation.coordinate.longitude)
     }
     
-    func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: NSDictionary!) {
-        let tempImage = info[UIImagePickerControllerOriginalImage] as UIImage
+    func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+        let tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         imagePreview.image=tempImage
         self.dismissViewControllerAnimated(true, completion: nil)
     }

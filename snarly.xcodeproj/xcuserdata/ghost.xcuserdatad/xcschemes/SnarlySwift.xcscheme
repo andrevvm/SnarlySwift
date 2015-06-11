@@ -17,7 +17,7 @@
                BlueprintIdentifier = "E6121B79198FC5E400E72142"
                BuildableName = "SnarlySwift.app"
                BlueprintName = "SnarlySwift"
-               ReferencedContainer = "container:SnarlySwift.xcodeproj">
+               ReferencedContainer = "container:snarly.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "E6121B8E198FC5E500E72142"
                BuildableName = "SnarlySwiftTests.xctest"
                BlueprintName = "SnarlySwiftTests"
-               ReferencedContainer = "container:SnarlySwift.xcodeproj">
+               ReferencedContainer = "container:snarly.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -45,7 +45,7 @@
             BlueprintIdentifier = "E6121B79198FC5E400E72142"
             BuildableName = "SnarlySwift.app"
             BlueprintName = "SnarlySwift"
-            ReferencedContainer = "container:SnarlySwift.xcodeproj">
+            ReferencedContainer = "container:snarly.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "E6121B79198FC5E400E72142"
             BuildableName = "SnarlySwift.app"
             BlueprintName = "SnarlySwift"
-            ReferencedContainer = "container:SnarlySwift.xcodeproj">
+            ReferencedContainer = "container:snarly.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -82,7 +82,7 @@
             BlueprintIdentifier = "E6121B79198FC5E400E72142"
             BuildableName = "SnarlySwift.app"
             BlueprintName = "SnarlySwift"
-            ReferencedContainer = "container:SnarlySwift.xcodeproj">
+            ReferencedContainer = "container:snarly.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
