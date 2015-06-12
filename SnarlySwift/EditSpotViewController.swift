@@ -15,19 +15,20 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
 
-    
     @IBOutlet var txtSpotName: UITextField!
     @IBOutlet var txtSpotNotes: UITextField!
     @IBOutlet var imagePreview : UIImageView!
     
-    var locationManager: CLLocationManager = CLLocationManager()
     
-    var curLat:Double = 0
-    var curLon:Double = 0
+    var curLat: Double!
+    var curLon: Double!
+    var locationManager: CLLocationManager = CLLocationManager()
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        println("view loaded")
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -44,6 +45,15 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         spot.title = txtSpotName.text
         spot.notes = txtSpotNotes.text
         spot.photo = imageData
+        
+        if curLat == nil {
+            curLat = 0
+        }
+        
+        if curLon == nil {
+            curLon = 0
+        }
+        
         spot.loc_lat = curLat
         spot.loc_lon = curLon
         
@@ -53,9 +63,11 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     }
     
     func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
+        println("Location manager")
         var currentLocation = locations[locations.endIndex - 1] as! CLLocation
         curLat = Double(currentLocation.coordinate.latitude)
         curLon = Double(currentLocation.coordinate.longitude)
+        println(curLat)
     }
     
     func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {

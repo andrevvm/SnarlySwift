@@ -89,15 +89,9 @@
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="66d-UZ-cyJ">
                                                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                                    <variation key="widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="5" y="5" width="390" height="210"/>
-                                                    </variation>
                                                 </imageView>
                                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="spot-label-bg" translatesAutoresizingMaskIntoConstraints="NO" id="9L6-Ea-jqJ">
                                                     <rect key="frame" x="0.0" y="-35" width="300" height="35"/>
-                                                    <variation key="widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="5" y="175" width="300" height="35"/>
-                                                    </variation>
                                                 </imageView>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Of-l5-Tnk">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
@@ -114,8 +108,7 @@
                                                             <exclude reference="mdB-9F-xUs"/>
                                                         </mask>
                                                     </variation>
-                                                    <variation key="widthClass=compact" misplaced="YES">
-                                                        <rect key="frame" x="20" y="175" width="290" height="35"/>
+                                                    <variation key="widthClass=compact">
                                                         <mask key="constraints">
                                                             <include reference="mdB-9F-xUs"/>
                                                         </mask>
@@ -149,12 +142,12 @@
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="7Of-l5-Tnk" secondAttribute="trailing" constant="100" id="02K-bp-xlS"/>
                                                 <constraint firstAttribute="bottom" secondItem="66d-UZ-cyJ" secondAttribute="bottom" constant="10" id="2na-kF-Kz0">
-                                                    <variation key="widthClass=compact" constant="0.0"/>
+                                                    <variation key="widthClass=compact" constant="5"/>
                                                 </constraint>
                                                 <constraint firstItem="66d-UZ-cyJ" firstAttribute="leading" secondItem="Tdm-Lb-wO5" secondAttribute="leading" constant="5" id="8Pf-zg-hEo"/>
-                                                <constraint firstAttribute="bottom" secondItem="7Of-l5-Tnk" secondAttribute="bottom" id="DXl-u1-wZZ"/>
-                                                <constraint firstAttribute="bottom" secondItem="xOQ-Pe-y62" secondAttribute="bottom" id="UFk-YU-TPB"/>
-                                                <constraint firstAttribute="bottom" secondItem="9L6-Ea-jqJ" secondAttribute="bottom" id="X1I-3H-Orh"/>
+                                                <constraint firstAttribute="bottom" secondItem="7Of-l5-Tnk" secondAttribute="bottom" constant="5" id="DXl-u1-wZZ"/>
+                                                <constraint firstAttribute="bottom" secondItem="xOQ-Pe-y62" secondAttribute="bottom" constant="5" id="UFk-YU-TPB"/>
+                                                <constraint firstAttribute="bottom" secondItem="9L6-Ea-jqJ" secondAttribute="bottom" constant="5" id="X1I-3H-Orh"/>
                                                 <constraint firstItem="9L6-Ea-jqJ" firstAttribute="leading" secondItem="Tdm-Lb-wO5" secondAttribute="leading" constant="5" id="dtE-ob-WXF"/>
                                                 <constraint firstAttribute="trailing" secondItem="9L6-Ea-jqJ" secondAttribute="trailing" constant="5" id="f4Z-5x-POg"/>
                                                 <constraint firstItem="66d-UZ-cyJ" firstAttribute="top" secondItem="Tdm-Lb-wO5" secondAttribute="top" constant="5" id="hzq-lX-u0p"/>

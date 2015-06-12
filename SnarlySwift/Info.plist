@@ -39,7 +39,7 @@
 	<key>NSLocationUsageDescription</key>
 	<string>Your message</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Your message</string>
+	<string>We&apos;re watching you!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Snarly can only save your spots if you allow your location to be used!</string>
 </dict>

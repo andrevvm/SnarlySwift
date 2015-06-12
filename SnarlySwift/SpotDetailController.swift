@@ -34,8 +34,6 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
                 var loc_lat = spot?.loc_lat as! CLLocationDegrees
                 var loc_lon = spot?.loc_lon as! CLLocationDegrees
                 
-                var latitude:CLLocationDegrees = locationManager.location.coordinate.latitude
-                var longitude:CLLocationDegrees = locationManager.location.coordinate.longitude
                 var spotLati: CLLocationDegrees = loc_lat
                 var spotLong: CLLocationDegrees = loc_lon
                 var spotLoc:CLLocationCoordinate2D = CLLocationCoordinate2DMake(spotLati, spotLong)

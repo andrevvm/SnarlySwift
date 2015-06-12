@@ -71,7 +71,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     var locationManager = CLLocationManager()
     
-    var sortedKeys:NSArray = []
+    var sortedArray:NSArray = []
     var orderDict = Dictionary<NSManagedObjectID, NSNumber>()
     var distanceDict = Dictionary<NSManagedObjectID, Double>()
     var distanceStringDict = Dictionary<NSManagedObjectID, NSString>()
@@ -97,6 +97,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         curLat = Double(curLoc.coordinate.latitude)
         curLon = Double(curLoc.coordinate.longitude)
         
+        self.fetchSpots()
+        self.checkSpots()
         self.arrangeSpots()
     }
     
@@ -110,10 +112,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
-        
-        fetchSpots()
-        checkSpots()
-        arrangeSpots()
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
@@ -136,9 +134,11 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         fetchedResultController.delegate = self
         fetchedResultController.performFetch(nil)
     }
+
     
     func arrangeSpots() {
         var index = 0
+        sortedArray = []
         for spot in fetchedResultController.fetchedObjects! {
             
             var spot = spot as! Spots
@@ -159,7 +159,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             index++
         }
         
-        sortedKeys = distanceDict.sortedKeysByValue(<)
+        sortedArray = distanceDict.keysSortedByValue(<)
+        
         tableView.reloadData()
     }
     
@@ -190,21 +191,30 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell? {
-        var cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath: indexPath) as! SpotCell
-        var lookup = sortedKeys[indexPath.row] as! NSManagedObjectID
-        let spot = spotsDict[lookup] as! Spots
+    func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
         
-        cell.spotLabel.text = spot.title
+        let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
         
-        cell.spotPhoto.image = self.imagesDict[lookup]
-        
-        cell.distanceLabel.text = self.distanceStringDict[lookup] as! NSString! as String
-        
-        cell.spotPhoto.layer.cornerRadius = 4
-        cell.spotPhoto.clipsToBounds = true
+        self.configureCell(cell, atIndexPath: indexPath)
         
         return cell
+    }
+    
+    func configureCell(cell: SpotCell,
+        atIndexPath indexPath: NSIndexPath) {
+            
+            let lookup = sortedArray[indexPath.row] as! NSManagedObjectID
+            let spot = spotsDict[lookup] as! Spots
+
+            cell.spotLabel.text = spot.title
+            cell.spotPhoto.image = UIImage(data: spot.photo as NSData)
+            
+            cell.spotPhoto.image = self.imagesDict[lookup]
+            
+            cell.distanceLabel.text = self.distanceStringDict[lookup] as NSString! as String
+            
+            cell.spotPhoto.layer.cornerRadius = 4
+            cell.spotPhoto.clipsToBounds = true
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController!) {
@@ -214,28 +224,31 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        var lookup = sortedKeys[indexPath.row] as! NSManagedObjectID
+        var lookup = sortedArray[indexPath.row] as! NSManagedObjectID
         var selectedSpot = spotsDict[lookup] as! Spots
+        
+        println("table view select")
         
         performSegueWithIdentifier("spotDetail", sender: selectedSpot)
     }
     
     func tableView(tableView: UITableView!, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
-        var lookup = sortedKeys[indexPath.row] as! NSManagedObjectID
+        var lookup = sortedArray[indexPath.row] as! NSManagedObjectID
         var deletedSpot = spotsDict[lookup] as! Spots
         spotsDict[lookup] = nil
         distanceDict[lookup] = nil
         distanceStringDict[lookup] = nil
         imagesDict[lookup] = nil
         orderDict[lookup] = nil
-        sortedKeys = distanceDict.sortedKeysByValue(<)
+        sortedArray = distanceDict.keysSortedByValue(<)
         
         var deletedIndexPath = fetchedResultController.indexPathForObject(deletedSpot)
         
         let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(deletedIndexPath!) as! NSManagedObject
         managedObjectContext?.deleteObject(managedObject)
         managedObjectContext?.save(nil)
+        
     }
     
     func getDistanceString(spot:Spots) -> NSString {
