@@ -18,6 +18,7 @@
 		E6121BA4198FD34400E72142 /* SpotsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121BA3198FD34400E72142 /* SpotsViewController.swift */; };
 		E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AF519923C4A00118206 /* SpotDetailController.swift */; };
 		E62A6AFF1992463E00118206 /* Spots.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AFE1992463E00118206 /* Spots.swift */; };
+		E62FC24A1B2F393600754252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E62FC2491B2F393600754252 /* CloudKit.framework */; };
 		E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */; };
 		E6C6061B1991182000338777 /* SpotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C6061A1991182000338777 /* SpotCell.swift */; };
 /* End PBXBuildFile section */
@@ -50,9 +51,11 @@
 		E6121BA3198FD34400E72142 /* SpotsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotsViewController.swift; sourceTree = "<group>"; };
 		E62A6AF519923C4A00118206 /* SpotDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotDetailController.swift; sourceTree = "<group>"; };
 		E62A6AFE1992463E00118206 /* Spots.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spots.swift; sourceTree = "<group>"; };
+		E62FC2491B2F393600754252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SnarlySwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditSpotViewController.swift; sourceTree = "<group>"; };
 		E6C6061A1991182000338777 /* SpotCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotCell.swift; sourceTree = "<group>"; };
+		E6FF51EA1B2B1B9300486421 /* SnarlySwift 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 2.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E62FC24A1B2F393600754252 /* CloudKit.framework in Frameworks */,
 				E6121BA1198FCC0000E72142 /* MapKit.framework in Frameworks */,
 				A28562C0E3B6499F9DC8AEFB /* libPods.a in Frameworks */,
 			);
@@ -143,6 +147,7 @@
 		E6121BA2198FCC1000E72142 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E62FC2491B2F393600754252 /* CloudKit.framework */,
 				E6121BA0198FCC0000E72142 /* MapKit.framework */,
 				62FF6E7DDE1A4B0BB0BF3973 /* libPods.a */,
 			);
@@ -206,7 +211,7 @@
 								enabled = 1;
 							};
 							com.apple.iCloud = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
@@ -416,6 +421,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = SnarlySwift/SnarlySwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = SnarlySwift/Info.plist;
@@ -433,6 +439,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = SnarlySwift/SnarlySwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = SnarlySwift/Info.plist;
@@ -514,9 +521,10 @@
 		E6121B81198FC5E500E72142 /* SnarlySwift.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				E6FF51EA1B2B1B9300486421 /* SnarlySwift 2.xcdatamodel */,
 				E6121B82198FC5E500E72142 /* SnarlySwift.xcdatamodel */,
 			);
-			currentVersion = E6121B82198FC5E500E72142 /* SnarlySwift.xcdatamodel */;
+			currentVersion = E6FF51EA1B2B1B9300486421 /* SnarlySwift 2.xcdatamodel */;
 			path = SnarlySwift.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

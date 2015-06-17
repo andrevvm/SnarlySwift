@@ -15,8 +15,13 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     @IBOutlet var spotPhoto: UIImageView!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var mapView: MKMapView!
+    @IBOutlet var mapButton: UIButton!
     
     var locationManager: CLLocationManager = CLLocationManager()
+    
+    var spotLoc: CLLocationCoordinate2D!
+    var spotRegion: MKCoordinateRegion!
+    var spotName: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,20 +41,70 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
                 
                 var spotLati: CLLocationDegrees = loc_lat
                 var spotLong: CLLocationDegrees = loc_lon
-                var spotLoc:CLLocationCoordinate2D = CLLocationCoordinate2DMake(spotLati, spotLong)
-                var theRegion:MKCoordinateRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 200, 200)
-                self.mapView.setRegion(theRegion, animated: true)
+                spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
+                spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 200, 200)
+                spotName = spot?.title
+                
+                self.mapView.setRegion(spotRegion, animated: true)
                 ///Red Pin
                 var spotPin = MKPointAnnotation()
                 spotPin.coordinate = spotLoc
-                spotPin.title = "Home"
-                spotPin.subtitle = "Bogdan's home"
+                spotPin.title = spot?.title
                 self.mapView.addAnnotation(spotPin)
+                
+                mapButton.addTarget(self, action: "openMap:", forControlEvents: UIControlEvents.TouchUpInside)
             }
             
             
         }
+        
+        let shareSelector: Selector = "shareSpot"
+        
+        let shareButton = UIBarButtonItem(image: UIImage(named: "btn-share"), style: .Plain, target: self, action: shareSelector)
+        
+        let backSelector: Selector = "backToSpots"
+        
+        let backButton = UIBarButtonItem(image: UIImage(named: "btn-back"), style: .Plain, target: self, action: backSelector)
+
+        self.navigationItem.rightBarButtonItem = shareButton
+        self.navigationItem.leftBarButtonItem = backButton
     }
+    
+    func backToSpots() {
+        self.performSegueWithIdentifier("toSpots", sender: self)
+    }
+    
+    func openMap(sender:UIButton) {
+        var options = [
+            MKLaunchOptionsMapCenterKey: NSValue(MKCoordinate: spotRegion.center),
+            MKLaunchOptionsMapSpanKey: NSValue(MKCoordinateSpan: spotRegion.span)
+        ]
+        var placemark = MKPlacemark(coordinate: spotLoc, addressDictionary: nil)
+        var mapItem = MKMapItem(placemark: placemark)
+        mapItem.name = spotName
+        mapItem.openInMapsWithLaunchOptions(options)
+    }
+    
+    func shareSpot() {
+        
+        let img: UIImage = spotPhoto.image!
+        let loc = spotLoc
+        
+        var placemark = MKPlacemark(coordinate: spotLoc, addressDictionary: nil)
+        var mapItem = MKMapItem(placemark: placemark)
+        mapItem.name = spotName
+
+        
+        if let spotMap = NSURL(string: "http://maps.apple.com/?ll=\(spotLoc.latitude),\(spotLoc.longitude)"){
+            let objectsToShare = [mapView]
+            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            
+            self.presentViewController(activityVC, animated: true, completion: nil)
+
+        }
+        
+    }
+
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         tableView.estimatedRowHeight = 50.0
@@ -62,6 +117,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.textLabel!.text = spot?.notes
         cell.textLabel!.lineBreakMode = .ByWordWrapping
         cell.textLabel!.numberOfLines = 0;
+        cell.textLabel!.textAlignment = .Center;
         cell.textLabel!.font = UIFont(name: "Avenir-Roman", size: 14)
         
         return cell

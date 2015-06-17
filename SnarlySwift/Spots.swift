@@ -10,7 +10,8 @@ import Foundation
 import CoreData
 
 class Spots: NSManagedObject {
-
+    
+    @NSManaged var distance: NSNumber
     @NSManaged var loc_lat: NSNumber
     @NSManaged var loc_lon: NSNumber
     @NSManaged var notes: String

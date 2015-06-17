@@ -10,6 +10,23 @@ import UIKit
 import MobileCoreServices
 import CoreData
 import CoreLocation
+import AssetsLibrary
+
+class CompressedImage: UIImageView {
+    var compressedImageData: NSData?
+    func CompressedJpeg(image: UIImage?, compressionTimes: Int){
+        if var imageCompressed = image {
+            for (var i = 0 ; i<compressionTimes; i++) {
+                compressedImageData = UIImageJPEGRepresentation(imageCompressed, 0.0)
+                imageCompressed = UIImage(data: compressedImageData!)!
+            }
+            self.image = imageCompressed
+        }else{
+            compressedImageData = nil
+            self.image = nil
+        }
+    }
+}
 
 class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, CLLocationManagerDelegate {
     
@@ -17,61 +34,68 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
 
     @IBOutlet var txtSpotName: UITextField!
     @IBOutlet var txtSpotNotes: UITextField!
-    @IBOutlet var imagePreview : UIImageView!
+    @IBOutlet var imagePreview : CompressedImage!
+    @IBOutlet var captureButton: UIButton!
+    @IBOutlet var saveButton: UIBarButtonItem!
     
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
-    var curLat: Double!
-    var curLon: Double!
-    var locationManager: CLLocationManager = CLLocationManager()
+    var tempImage: UIImage!
+    var alreadyLoaded: Bool!
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
-        println("view loaded")
-        
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startUpdatingLocation()
+        alreadyLoaded = false
         
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(Bool())
+        
+        if let tempConst = tempImage {
+            saveButton.enabled = true
+        } else {
+            saveButton.enabled = false
+            if !alreadyLoaded {
+                alreadyLoaded = true
+                capture(captureButton)
+            }
+        }
+    }
+    
+    
     
     @IBAction func saveSpot(sender: UIBarButtonItem) {
         
         let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
         let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
         
-        var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 1.0))
+        var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.2))
+        
         spot.title = txtSpotName.text
         spot.notes = txtSpotNotes.text
         spot.photo = imageData
+        spot.distance = 0
         
-        if curLat == nil {
-            curLat = 0
+        var locationManager = appDelegate.locationManager
+        var location = locationManager.location
+        
+        if location != nil {
+            spot.loc_lat = Double(location.coordinate.latitude)
+            spot.loc_lon = Double(location.coordinate.longitude)
+        } else {
+            spot.loc_lat = 0
+            spot.loc_lon = 0
         }
-        
-        if curLon == nil {
-            curLon = 0
-        }
-        
-        spot.loc_lat = curLat
-        spot.loc_lon = curLon
         
         managedObjectContext?.save(nil)
         
         performSegueWithIdentifier("toSpots", sender: self)
     }
     
-    func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
-        println("Location manager")
-        var currentLocation = locations[locations.endIndex - 1] as! CLLocation
-        curLat = Double(currentLocation.coordinate.latitude)
-        curLon = Double(currentLocation.coordinate.longitude)
-        println(curLat)
-    }
-    
     func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-        let tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+        tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         imagePreview.image=tempImage
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -88,6 +112,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             self.presentViewController(imag, animated: true, completion: nil)
         }
     }
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

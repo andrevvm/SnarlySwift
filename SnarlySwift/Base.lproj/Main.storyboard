@@ -663,7 +663,9 @@
                     </view>
                     <navigationItem key="navigationItem" title="New Spot" id="4fv-UN-J9h"/>
                     <connections>
+                        <outlet property="captureButton" destination="qaB-a1-ohu" id="1xe-ip-S0s"/>
                         <outlet property="imagePreview" destination="rds-Dm-3xz" id="za7-Gh-fEb"/>
+                        <outlet property="saveButton" destination="EqD-wq-CgM" id="hMy-Ik-tww"/>
                         <outlet property="txtSpotName" destination="fMJ-Q0-RDj" id="Ten-Bw-Cjl"/>
                         <outlet property="txtSpotNotes" destination="1Vs-wr-XFY" id="zhN-bF-WEY"/>
                         <segue destination="vkW-CO-tCh" kind="unwind" identifier="toSpots" unwindAction="unwindToSpots:" id="KEh-51-eJb"/>
@@ -740,6 +742,15 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" pitchEnabled="NO" showsPointsOfInterest="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2pU-2p-Lb1">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JpW-x1-hTC">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="0.0" y="321" width="400" height="215"/>
+                                </variation>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -761,6 +772,7 @@
                                 <exclude reference="XTg-XE-pKt"/>
                                 <exclude reference="0tR-zC-RL4"/>
                                 <exclude reference="2pU-2p-Lb1"/>
+                                <exclude reference="JpW-x1-hTC"/>
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="G0f-DY-zGL"/>
@@ -780,6 +792,7 @@
                                 <include reference="XTg-XE-pKt"/>
                                 <include reference="0tR-zC-RL4"/>
                                 <include reference="2pU-2p-Lb1"/>
+                                <include reference="JpW-x1-hTC"/>
                             </mask>
                             <mask key="constraints">
                                 <include reference="G0f-DY-zGL"/>
@@ -796,12 +809,15 @@
                         </variation>
                     </view>
                     <connections>
+                        <outlet property="mapButton" destination="JpW-x1-hTC" id="0Mu-3V-GUD"/>
                         <outlet property="mapView" destination="2pU-2p-Lb1" id="VLQ-es-Maw"/>
                         <outlet property="spotPhoto" destination="XTg-XE-pKt" id="2EK-8N-Hc4"/>
                         <outlet property="tableView" destination="0tR-zC-RL4" id="dso-In-POm"/>
+                        <segue destination="1YG-NT-8o4" kind="unwind" identifier="toSpots" unwindAction="unwindToSpots:" id="Bkl-8E-HYI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DhY-Pp-WcC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="1YG-NT-8o4" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-54" y="1034"/>
         </scene>
@@ -819,6 +835,6 @@
         <image name="spot-label-bg" width="310" height="35"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ath-pv-JXT"/>
+        <segue reference="o2h-Vj-8yd"/>
     </inferredMetricsTieBreakers>
 </document>
