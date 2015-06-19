@@ -377,7 +377,7 @@
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </textAttributes>
                                 <items>
-                                    <navigationItem title="New Spot" id="qhP-xr-h8d">
+                                    <navigationItem id="qhP-xr-h8d">
                                         <barButtonItem key="leftBarButtonItem" image="btn-cancel" width="50" id="pzK-fj-CD8">
                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
@@ -673,6 +673,7 @@
                     <connections>
                         <outlet property="captureButton" destination="qaB-a1-ohu" id="1xe-ip-S0s"/>
                         <outlet property="imagePreview" destination="rds-Dm-3xz" id="za7-Gh-fEb"/>
+                        <outlet property="navigationBar" destination="fH6-0K-EDy" id="ha5-Ed-l1u"/>
                         <outlet property="saveButton" destination="EqD-wq-CgM" id="hMy-Ik-tww"/>
                         <outlet property="txtSpotName" destination="fMJ-Q0-RDj" id="Ten-Bw-Cjl"/>
                         <outlet property="txtSpotNotes" destination="1Vs-wr-XFY" id="zhN-bF-WEY"/>

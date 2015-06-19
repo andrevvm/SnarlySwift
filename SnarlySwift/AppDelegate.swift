@@ -78,6 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return NSManagedObjectModel(contentsOfURL: modelURL!)!
     }()
 
+
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
         // The persistent store coordinator for the application. This implementation creates and return a coordinator, having added the store for the application to it. This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
         // Create the coordinator and store
@@ -85,8 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("SnarlySwift.sqlite")
         var storeOptions = [
             NSPersistentStoreUbiquitousContentNameKey : "SnarlySwiftStore",
-            NSMigratePersistentStoresAutomaticallyOption: true,
-            NSInferMappingModelAutomaticallyOption: true
+            //NSMigratePersistentStoresAutomaticallyOption: true,
+            //NSInferMappingModelAutomaticallyOption: true
             //NSPersistentStoreRebuildFromUbiquitousContentOption: true
         ]
         

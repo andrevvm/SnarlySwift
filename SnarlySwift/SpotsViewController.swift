@@ -183,7 +183,21 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     func tableView(tableView: UITableView!, editActionsForRowAtIndexPath indexPath: NSIndexPath!) -> [AnyObject]! {
         var shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
-        println("shareAction")
+            
+        let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+            
+        let img:UIImage = UIImage(data: spot.photo as NSData!)!
+        
+        var messageStr: String = "— Sent with http://getsnarly.com"
+        
+        if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spot.loc_lat),\(spot.loc_lon)"){
+            let objectsToShare = [img, spotMap, messageStr]
+            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            
+            self.presentViewController(activityVC, animated: true, completion: nil)
+            
+        }
+            
     }
     
     shareAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-share")!)
@@ -192,24 +206,35 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         tableView.editing = false
         let spot:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         self.performSegueWithIdentifier("editSpot", sender: spot)
-        println("editAction")
     }
     
     editAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-edit")!)
     
     var deleteAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
-        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        self.managedObjectContext?.deleteObject(managedObject)
-        self.managedObjectContext?.save(nil)
         
-        // remove the deleted item from the `UITableView`
-        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        var deleteAlert = UIAlertController(title: "Delete spot?", message: "You won't be able to recover this spot until the next time you go there!", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
+            return false
+        }))
+        
+        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction!) in
+            let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+            self.managedObjectContext?.deleteObject(managedObject)
+            self.managedObjectContext?.save(nil)
+            
+            // remove the deleted item from the `UITableView`
+            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }))
+        
+        self.presentViewController(deleteAlert, animated: true, completion: nil)
+        
     }
         
     deleteAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-delete")!)
     
-    return [deleteAction, editAction, shareAction]
+    return [editAction, deleteAction, shareAction]
     }
     
     
