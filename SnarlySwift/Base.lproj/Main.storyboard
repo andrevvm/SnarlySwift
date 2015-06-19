@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E33b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Fbz-iM-z2X">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E36b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Fbz-iM-z2X">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
@@ -74,7 +74,7 @@
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <segue destination="DiA-zv-VOp" kind="presentation" modalTransitionStyle="flipHorizontal" id="o2h-Vj-8yd"/>
+                                    <segue destination="DiA-zv-VOp" kind="presentation" identifier="editSpot" modalTransitionStyle="coverVertical" id="o2h-Vj-8yd"/>
                                 </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="210" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="vdk-nq-IIU">
@@ -89,9 +89,15 @@
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="66d-UZ-cyJ">
                                                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                    <variation key="widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="5" y="5" width="310" height="200"/>
+                                                    </variation>
                                                 </imageView>
                                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="spot-label-bg" translatesAutoresizingMaskIntoConstraints="NO" id="9L6-Ea-jqJ">
                                                     <rect key="frame" x="0.0" y="-35" width="300" height="35"/>
+                                                    <variation key="widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="5" y="170" width="310" height="35"/>
+                                                    </variation>
                                                 </imageView>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Of-l5-Tnk">
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
@@ -108,7 +114,8 @@
                                                             <exclude reference="mdB-9F-xUs"/>
                                                         </mask>
                                                     </variation>
-                                                    <variation key="widthClass=compact">
+                                                    <variation key="widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="20" y="170" width="200" height="35"/>
                                                         <mask key="constraints">
                                                             <include reference="mdB-9F-xUs"/>
                                                         </mask>
@@ -131,7 +138,8 @@
                                                             <exclude reference="LDl-I2-Y6T"/>
                                                         </mask>
                                                     </variation>
-                                                    <variation key="widthClass=compact">
+                                                    <variation key="widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="300" y="170" width="0.0" height="35"/>
                                                         <mask key="constraints">
                                                             <include reference="4mC-bl-CIy"/>
                                                             <include reference="LDl-I2-Y6T"/>
@@ -266,7 +274,7 @@
                             <constraint firstItem="H2A-5H-5Ac" firstAttribute="top" secondItem="paH-1i-arH" secondAttribute="bottom" id="mBx-BH-NPP"/>
                             <constraint firstAttribute="bottom" secondItem="vdk-nq-IIU" secondAttribute="bottom" id="p8h-MC-lOZ"/>
                             <constraint firstAttribute="bottom" secondItem="QFK-XN-cEt" secondAttribute="bottom" constant="20" id="rcY-oV-grJ">
-                                <variation key="widthClass=compact" constant="10"/>
+                                <variation key="widthClass=compact" constant="13"/>
                             </constraint>
                             <constraint firstItem="vdk-nq-IIU" firstAttribute="leading" secondItem="FhW-RB-VLJ" secondAttribute="leading" constant="20" symbolic="YES" id="wzT-P9-YkH">
                                 <variation key="widthClass=compact" constant="0.0"/>
@@ -492,7 +500,7 @@
                                                 <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                 <color key="backgroundColor" red="0.94138252735137939" green="0.93734019994735718" blue="0.93704283237457275" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                                 <variation key="widthClass=compact" fixedFrame="YES">
                                                     <rect key="frame" x="0.0" y="50" width="400" height="1"/>
@@ -826,8 +834,8 @@
         <image name="EmptyBg" width="320" height="568"/>
         <image name="EmptyNew" width="69" height="69"/>
         <image name="Gradient" width="319" height="78"/>
-        <image name="btn-cancel" width="19" height="19"/>
-        <image name="btn-save" width="22" height="18"/>
+        <image name="btn-cancel" width="16" height="16"/>
+        <image name="btn-save" width="20" height="16"/>
         <image name="icon-location" width="11" height="15"/>
         <image name="icon-new-photo" width="94" height="94"/>
         <image name="icon-new-spot" width="60" height="60"/>

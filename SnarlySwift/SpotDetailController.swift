@@ -90,13 +90,10 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         let img: UIImage = spotPhoto.image!
         let loc = spotLoc
         
-        var placemark = MKPlacemark(coordinate: spotLoc, addressDictionary: nil)
-        var mapItem = MKMapItem(placemark: placemark)
-        mapItem.name = spotName
-
+        var messageStr = "— Sent with http://getsnarly.com"
         
-        if let spotMap = NSURL(string: "http://maps.apple.com/?ll=\(spotLoc.latitude),\(spotLoc.longitude)"){
-            let objectsToShare = [mapView]
+        if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spotLoc.latitude),\(spotLoc.longitude)"){
+            let objectsToShare = [img,spotMap,messageStr]
             let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             
             self.presentViewController(activityVC, animated: true, completion: nil)

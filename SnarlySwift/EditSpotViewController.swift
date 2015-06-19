@@ -31,6 +31,7 @@ class CompressedImage: UIImageView {
 class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, CLLocationManagerDelegate {
     
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    var spot: Spots? = nil
 
     @IBOutlet var txtSpotName: UITextField!
     @IBOutlet var txtSpotNotes: UITextField!
@@ -48,6 +49,14 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         super.viewDidLoad()
         alreadyLoaded = false
         
+        if(spot != nil) {
+            alreadyLoaded = true
+            txtSpotName.text = spot!.title
+            txtSpotNotes.text = spot!.notes
+            imagePreview.image = UIImage(data: spot?.photo as NSData!)
+            self.title = "Edit Spot"
+        }
+        
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -62,31 +71,46 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 capture(captureButton)
             }
         }
+        
+        if spot != nil {
+            saveButton.enabled = true
+        }
     }
     
     
     
     @IBAction func saveSpot(sender: UIBarButtonItem) {
-        
         let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
-        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
         
-        var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.2))
-        
-        spot.title = txtSpotName.text
-        spot.notes = txtSpotNotes.text
-        spot.photo = imageData
-        spot.distance = 0
-        
-        var locationManager = appDelegate.locationManager
-        var location = locationManager.location
-        
-        if location != nil {
-            spot.loc_lat = Double(location.coordinate.latitude)
-            spot.loc_lon = Double(location.coordinate.longitude)
+        if(spot == nil) {
+            
+            let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
+            
+            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.0))
+            
+            spot.title = txtSpotName.text
+            spot.notes = txtSpotNotes.text
+            spot.photo = imageData
+            spot.distance = 0
+            
+            var locationManager = appDelegate.locationManager
+            var location = locationManager.location
+            
+            if location != nil {
+                spot.loc_lat = Double(location.coordinate.latitude)
+                spot.loc_lon = Double(location.coordinate.longitude)
+            } else {
+                spot.loc_lat = 0
+                spot.loc_lon = 0
+            }
+            
         } else {
-            spot.loc_lat = 0
-            spot.loc_lon = 0
+            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.0))
+            
+            spot!.title = txtSpotName.text
+            spot!.notes = txtSpotNotes.text
+            spot!.photo = imageData
+            
         }
         
         managedObjectContext?.save(nil)

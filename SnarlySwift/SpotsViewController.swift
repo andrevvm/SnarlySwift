@@ -171,7 +171,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             cell.distanceLabel.text = getDistanceString(spot) as String
             
-            cell.spotPhoto.layer.cornerRadius = 4
+            cell.spotPhoto.layer.cornerRadius = 3
             cell.spotPhoto.clipsToBounds = true
     }
     
@@ -179,6 +179,39 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.checkSpots()
         self.setSpots()
     }
+    
+    func tableView(tableView: UITableView!, editActionsForRowAtIndexPath indexPath: NSIndexPath!) -> [AnyObject]! {
+        var shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
+        tableView.editing = false
+        println("shareAction")
+    }
+    
+    shareAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-share")!)
+    
+    var editAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
+        tableView.editing = false
+        let spot:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+        self.performSegueWithIdentifier("editSpot", sender: spot)
+        println("editAction")
+    }
+    
+    editAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-edit")!)
+    
+    var deleteAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
+        tableView.editing = false
+        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+        self.managedObjectContext?.deleteObject(managedObject)
+        self.managedObjectContext?.save(nil)
+        
+        // remove the deleted item from the `UITableView`
+        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+    }
+        
+    deleteAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-delete")!)
+    
+    return [deleteAction, editAction, shareAction]
+    }
+    
     
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
@@ -313,6 +346,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             let spotController:SpotDetailController = segue.destinationViewController as! SpotDetailController
             spotController.spot = sender as? Spots
         }
+        
+        if segue.identifier == "editSpot" {
+            let editController = segue.destinationViewController as! EditSpotViewController
+            let spot = sender as? Spots
+            editController.spot = spot
+        }
+        
     }
 
 }
