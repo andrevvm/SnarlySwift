@@ -250,6 +250,18 @@
                                     <segue destination="DiA-zv-VOp" kind="presentation" identifier="" modalTransitionStyle="flipHorizontal" id="ath-pv-JXT"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kmw-EJ-fkN">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <state key="normal" title="Populate">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="widthClass=compact" fixedFrame="YES">
+                                    <rect key="frame" x="339" y="512" width="61" height="30"/>
+                                </variation>
+                                <connections>
+                                    <action selector="populateData" destination="Z1S-i8-7cV" eventType="touchUpInside" id="X5n-Il-Bcb"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -288,6 +300,7 @@
                                 <exclude reference="vdk-nq-IIU"/>
                                 <exclude reference="paH-1i-arH"/>
                                 <exclude reference="QFK-XN-cEt"/>
+                                <exclude reference="kmw-EJ-fkN"/>
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="02s-93-id5"/>
@@ -318,6 +331,7 @@
                                 <include reference="vdk-nq-IIU"/>
                                 <include reference="paH-1i-arH"/>
                                 <include reference="QFK-XN-cEt"/>
+                                <include reference="kmw-EJ-fkN"/>
                             </mask>
                             <mask key="constraints">
                                 <include reference="02s-93-id5"/>
@@ -377,7 +391,7 @@
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </textAttributes>
                                 <items>
-                                    <navigationItem title="New Spot" id="qhP-xr-h8d">
+                                    <navigationItem id="qhP-xr-h8d">
                                         <barButtonItem key="leftBarButtonItem" image="btn-cancel" width="50" id="pzK-fj-CD8">
                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
@@ -409,6 +423,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qaB-a1-ohu">
                                         <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                                         <color key="backgroundColor" red="0.1764705882352941" green="0.16078431372549018" blue="0.16078431372549018" alpha="1" colorSpace="calibratedRGB"/>
+                                        <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="300" id="XSA-J5-Bsa"/>
                                         </constraints>
@@ -431,6 +446,7 @@
                                     </button>
                                     <imageView clipsSubviews="YES" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" restorationIdentifier="imagePreview" translatesAutoresizingMaskIntoConstraints="NO" id="rds-Dm-3xz">
                                         <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                        <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="300" id="OAt-qp-V4B"/>
                                         </constraints>
@@ -673,6 +689,7 @@
                     <connections>
                         <outlet property="captureButton" destination="qaB-a1-ohu" id="1xe-ip-S0s"/>
                         <outlet property="imagePreview" destination="rds-Dm-3xz" id="za7-Gh-fEb"/>
+                        <outlet property="navigationBar" destination="fH6-0K-EDy" id="ha5-Ed-l1u"/>
                         <outlet property="saveButton" destination="EqD-wq-CgM" id="hMy-Ik-tww"/>
                         <outlet property="txtSpotName" destination="fMJ-Q0-RDj" id="Ten-Bw-Cjl"/>
                         <outlet property="txtSpotNotes" destination="1Vs-wr-XFY" id="zhN-bF-WEY"/>

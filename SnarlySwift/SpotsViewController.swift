@@ -59,6 +59,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.updateData()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+    }
+    
     func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
         curLoc = locations[locations.endIndex - 1] as! CLLocation
         curLat = Double(curLoc.coordinate.latitude)
@@ -183,7 +187,21 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     func tableView(tableView: UITableView!, editActionsForRowAtIndexPath indexPath: NSIndexPath!) -> [AnyObject]! {
         var shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
-        println("shareAction")
+            
+        let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+            
+        let img:UIImage = UIImage(data: spot.photo as NSData!)!
+        
+        var messageStr: String = "— Sent with http://getsnarly.com"
+        
+        if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spot.loc_lat),\(spot.loc_lon)"){
+            let objectsToShare = [img, spotMap, messageStr]
+            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            
+            self.presentViewController(activityVC, animated: true, completion: nil)
+            
+        }
+            
     }
     
     shareAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-share")!)
@@ -192,24 +210,35 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         tableView.editing = false
         let spot:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         self.performSegueWithIdentifier("editSpot", sender: spot)
-        println("editAction")
     }
     
     editAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-edit")!)
     
     var deleteAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
-        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        self.managedObjectContext?.deleteObject(managedObject)
-        self.managedObjectContext?.save(nil)
         
-        // remove the deleted item from the `UITableView`
-        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        var deleteAlert = UIAlertController(title: "Delete spot?", message: "You won't be able to recover this spot until the next time you go there!", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
+            return false
+        }))
+        
+        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction!) in
+            let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+            self.managedObjectContext?.deleteObject(managedObject)
+            self.managedObjectContext?.save(nil)
+            
+            // remove the deleted item from the `UITableView`
+            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }))
+        
+        self.presentViewController(deleteAlert, animated: true, completion: nil)
+        
     }
         
     deleteAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-delete")!)
     
-    return [deleteAction, editAction, shareAction]
+    return [editAction, deleteAction, shareAction]
     }
     
     
@@ -268,8 +297,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             distanceString = "1 mile"
         } else if distanceDisplay == "0.0" {
             distanceString = "Here now"
-        } else if distance.mi > 100 {
-            distanceString = "100+ miles"
+        } else if distance.mi > 1000 {
+            distanceString = "1000+ miles"
         } else {
             distanceString = "\(distanceDisplay) miles"
         }
@@ -291,6 +320,27 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         NewSpot.hidden = false
         NewSpotGradient.hidden = false
         EmptyBg.hidden = true
+    }
+    
+    @IBAction func populateData() {
+        
+        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
+        
+        let url = NSURL(string: "http://www.skateboardingmagazine.com/wp-content/uploads/2012/02/31.jpeg")
+        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+        //var image = UIImage(data: data!)
+        
+        spot.title = "Hubba hideout"
+        spot.notes = ""
+        spot.photo = data!
+        spot.distance = 0
+        
+        spot.loc_lat = 52.49965
+        spot.loc_lon = 13.45053
+            
+        managedObjectContext?.save(nil)
+        
     }
     
     func updateData() {

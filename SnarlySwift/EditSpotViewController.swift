@@ -33,6 +33,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     var spot: Spots? = nil
 
+    @IBOutlet var navigationBar: UINavigationBar!
     @IBOutlet var txtSpotName: UITextField!
     @IBOutlet var txtSpotNotes: UITextField!
     @IBOutlet var imagePreview : CompressedImage!
@@ -54,7 +55,9 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             txtSpotName.text = spot!.title
             txtSpotNotes.text = spot!.notes
             imagePreview.image = UIImage(data: spot?.photo as NSData!)
-            self.title = "Edit Spot"
+            navigationBar.topItem!.title = "Edit Spot"
+        } else {
+            navigationBar.topItem!.title = "New Spot"
         }
         
     }
@@ -86,7 +89,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
             
-            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.0))
+            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.2))
             
             spot.title = txtSpotName.text
             spot.notes = txtSpotNotes.text
@@ -99,23 +102,44 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             if location != nil {
                 spot.loc_lat = Double(location.coordinate.latitude)
                 spot.loc_lon = Double(location.coordinate.longitude)
+                
+                managedObjectContext?.save(nil)
+                performSegueWithIdentifier("toSpots", sender: self)
+                
             } else {
-                spot.loc_lat = 0
-                spot.loc_lon = 0
+                
+                var locationAlert = UIAlertController(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", preferredStyle: UIAlertControllerStyle.Alert)
+                
+                locationAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
+                    self.managedObjectContext?.deleteObject(spot)
+                }))
+                
+                locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction!) in
+                    spot.loc_lat = 0
+                    spot.loc_lon = 0
+                    self.managedObjectContext?.save(nil)
+                    self.performSegueWithIdentifier("toSpots", sender: self)
+                }))
+                
+                presentViewController(locationAlert, animated: true, completion: nil)
+                
+                
             }
             
         } else {
+            
             var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.0))
             
             spot!.title = txtSpotName.text
             spot!.notes = txtSpotNotes.text
             spot!.photo = imageData
             
+            performSegueWithIdentifier("toSpots", sender: self)
+            
         }
         
-        managedObjectContext?.save(nil)
         
-        performSegueWithIdentifier("toSpots", sender: self)
+        
     }
     
     func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
