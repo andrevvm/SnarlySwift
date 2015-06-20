@@ -36,8 +36,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont(name: "Avenir-Heavy", size: 16)!, NSForegroundColorAttributeName : UIColor.whiteColor()]
 
-
         UINavigationBar.appearance().tintColor = UIColor.whiteColor()
+        
     }
 
     func applicationWillResignActive(application: UIApplication!) {

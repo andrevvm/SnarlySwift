@@ -59,6 +59,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.updateData()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+    }
+    
     func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
         curLoc = locations[locations.endIndex - 1] as! CLLocation
         curLat = Double(curLoc.coordinate.latitude)
@@ -293,8 +297,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             distanceString = "1 mile"
         } else if distanceDisplay == "0.0" {
             distanceString = "Here now"
-        } else if distance.mi > 100 {
-            distanceString = "100+ miles"
+        } else if distance.mi > 1000 {
+            distanceString = "1000+ miles"
         } else {
             distanceString = "\(distanceDisplay) miles"
         }
@@ -316,6 +320,27 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         NewSpot.hidden = false
         NewSpotGradient.hidden = false
         EmptyBg.hidden = true
+    }
+    
+    @IBAction func populateData() {
+        
+        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
+        
+        let url = NSURL(string: "http://www.skateboardingmagazine.com/wp-content/uploads/2012/02/31.jpeg")
+        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+        //var image = UIImage(data: data!)
+        
+        spot.title = "Hubba hideout"
+        spot.notes = ""
+        spot.photo = data!
+        spot.distance = 0
+        
+        spot.loc_lat = 52.49965
+        spot.loc_lon = 13.45053
+            
+        managedObjectContext?.save(nil)
+        
     }
     
     func updateData() {

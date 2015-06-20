@@ -89,7 +89,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
             
-            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.0))
+            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.2))
             
             spot.title = txtSpotName.text
             spot.notes = txtSpotNotes.text
@@ -98,8 +98,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             var locationManager = appDelegate.locationManager
             var location = locationManager.location
-            
-            println(location)
             
             if location != nil {
                 spot.loc_lat = Double(location.coordinate.latitude)
@@ -113,7 +111,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 var locationAlert = UIAlertController(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", preferredStyle: UIAlertControllerStyle.Alert)
                 
                 locationAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
-                    return false
+                    self.managedObjectContext?.deleteObject(spot)
                 }))
                 
                 locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction!) in
