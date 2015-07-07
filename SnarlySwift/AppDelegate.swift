@@ -86,8 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("SnarlySwift.sqlite")
         var storeOptions = [
             NSPersistentStoreUbiquitousContentNameKey : "SnarlySwiftStore",
-            //NSMigratePersistentStoresAutomaticallyOption: true,
-            //NSInferMappingModelAutomaticallyOption: true
+            NSMigratePersistentStoresAutomaticallyOption: true,
+            NSInferMappingModelAutomaticallyOption: true
             //NSPersistentStoreRebuildFromUbiquitousContentOption: true
         ]
         

@@ -36,6 +36,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     @IBOutlet var navigationBar: UINavigationBar!
     @IBOutlet var txtSpotName: UITextField!
     @IBOutlet var txtSpotNotes: UITextField!
+    @IBOutlet var switchBust: UISwitch!
     @IBOutlet var imagePreview : CompressedImage!
     @IBOutlet var captureButton: UIButton!
     @IBOutlet var saveButton: UIBarButtonItem!
@@ -55,6 +56,11 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             txtSpotName.text = spot!.title
             txtSpotNotes.text = spot!.notes
             imagePreview.image = UIImage(data: spot?.photo as NSData!)
+            if spot!.bust {
+                switchBust.on = true
+            } else {
+                switchBust.on = false
+            }
             navigationBar.topItem!.title = "Edit Spot"
         } else {
             navigationBar.topItem!.title = "New Spot"
@@ -96,6 +102,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             spot.photo = imageData
             spot.distance = 0
             
+            if switchBust.on {
+                spot.bust = true
+            } else {
+                spot.bust = false
+            }
+            
             var locationManager = appDelegate.locationManager
             var location = locationManager.location
             
@@ -133,6 +145,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             spot!.title = txtSpotName.text
             spot!.notes = txtSpotNotes.text
             spot!.photo = imageData
+            
+            if switchBust.on {
+                spot!.bust = true
+            } else {
+                spot!.bust = false
+            }
             
             performSegueWithIdentifier("toSpots", sender: self)
             

@@ -31,8 +31,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func spotFetchRequest() -> NSFetchRequest {
         let fetchRequest = NSFetchRequest(entityName: "Spots")
-        let sortDescriptor = NSSortDescriptor(key: "distance", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
+        let sortDescriptor1 = NSSortDescriptor(key: "date", ascending: false)
+        let sortDescriptor2 = NSSortDescriptor(key: "distance", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
         return fetchRequest
     }
     
@@ -90,6 +91,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         let edgeInsets = UIEdgeInsetsMake(0, 0, 80, 0)
         self.tableView.contentInset = edgeInsets
+        
+        //self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
     }
     
@@ -168,15 +171,24 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
             
-
+            
+            var bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
+            
+            if spot.bust {
+                bustIcon.hidden = false
+            } else {
+                bustIcon.hidden = true
+            }
+            
+            
             cell.spotLabel.text = spot.title
             cell.spotPhoto.image = UIImage(data: spot.photo as NSData)
-
             
             cell.distanceLabel.text = getDistanceString(spot) as String
             
             cell.spotPhoto.layer.cornerRadius = 3
             cell.spotPhoto.clipsToBounds = true
+            
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController!) {
