@@ -16,6 +16,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     @IBOutlet var tableView: UITableView!
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var mapButton: UIButton!
+    @IBOutlet var iconBust: UIImageView!
     
     var locationManager: CLLocationManager = CLLocationManager()
     
@@ -44,6 +45,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
                 spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
                 spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 200, 200)
                 spotName = spot?.title
+                
+                if spot?.bust == true {
+                    iconBust.hidden = false
+                } else {
+                    iconBust.hidden = true
+                }
                 
                 self.mapView.setRegion(spotRegion, animated: true)
                 ///Red Pin
