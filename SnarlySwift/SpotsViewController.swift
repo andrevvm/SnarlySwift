@@ -33,7 +33,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         let fetchRequest = NSFetchRequest(entityName: "Spots")
         let sortDescriptor1 = NSSortDescriptor(key: "date", ascending: false)
         let sortDescriptor2 = NSSortDescriptor(key: "distance", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
+        fetchRequest.sortDescriptors = [sortDescriptor2, sortDescriptor1]
         return fetchRequest
     }
     
@@ -75,6 +75,14 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
+            //Put any code here and it will be executed only once.
+            self.populateData()
+            println("Is a first launch")
+            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
+            NSUserDefaults.standardUserDefaults().synchronize();
+        }
+        
         self.fetchSpots()
         self.checkSpots()
         self.setSpots()
@@ -93,6 +101,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.tableView.contentInset = edgeInsets
         
         //self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        
         
     }
     
