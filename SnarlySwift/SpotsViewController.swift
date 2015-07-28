@@ -33,7 +33,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         let fetchRequest = NSFetchRequest(entityName: "Spots")
         let sortDescriptor1 = NSSortDescriptor(key: "date", ascending: false)
         let sortDescriptor2 = NSSortDescriptor(key: "distance", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor2, sortDescriptor1]
+        let sortDescriptor3 = NSSortDescriptor(key: "bust", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor3, sortDescriptor2, sortDescriptor1]
         return fetchRequest
     }
     
@@ -47,6 +48,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     var curLat:Double = 0
     var curLon:Double = 0
     var curLoc:CLLocation = CLLocation()
+    
+    var firstLaunch = false
     
     
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
@@ -76,9 +79,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         super.viewDidLoad()
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
+            firstLaunch = true
             //Put any code here and it will be executed only once.
             self.populateData()
-            println("Is a first launch")
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
             NSUserDefaults.standardUserDefaults().synchronize();
         }
@@ -180,6 +183,15 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
             
+            var sampleOverlay = cell.contentView.viewWithTag(15) as! UIImageView
+            
+            if(firstLaunch == true && spot.title == "The Wedge hubba") {
+                cell.sampleOverlay.layer.cornerRadius = 3
+                cell.sampleOverlay.clipsToBounds = true
+                cell.sampleOverlay.hidden = false
+            } else {
+                cell.sampleOverlay.hidden = true
+            }
             
             var bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
             
@@ -218,6 +230,19 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spot.loc_lat),\(spot.loc_lon)"){
             let objectsToShare = [img, spotMap, messageStr]
             let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            
+            activityVC.excludedActivityTypes = [
+                UIActivityTypeAirDrop,
+                UIActivityTypePostToTwitter,
+                UIActivityTypePostToWeibo,
+                UIActivityTypePrint,
+                UIActivityTypeCopyToPasteboard,
+                UIActivityTypeAssignToContact,
+                UIActivityTypeAddToReadingList,
+                UIActivityTypePostToFlickr,
+                UIActivityTypePostToVimeo,
+                UIActivityTypePostToTencentWeibo
+            ]
             
             self.presentViewController(activityVC, animated: true, completion: nil)
             
@@ -346,19 +371,20 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     @IBAction func populateData() {
         
         let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+        
         let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
         
-        let url = NSURL(string: "http://www.skateboardingmagazine.com/wp-content/uploads/2012/02/31.jpeg")
-        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-        //var image = UIImage(data: data!)
+        let image = UIImage(named: "sample-spot")
+        var imageData = NSData(data: UIImageJPEGRepresentation(image, 0.8))
         
-        spot.title = "Hubba hideout"
+        spot.title = "The Wedge hubba"
         spot.notes = ""
-        spot.photo = data!
+        spot.photo = imageData
         spot.distance = 0
+        spot.bust = false
         
-        spot.loc_lat = 52.49965
-        spot.loc_lon = 13.45053
+        spot.loc_lat = 33.466661
+        spot.loc_lon = -111.915254
             
         managedObjectContext?.save(nil)
         

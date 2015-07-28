@@ -36,6 +36,14 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             spotPhoto.image = UIImage(data: spot?.photo as NSData!)
             
+            
+            if spot?.bust == true {
+                iconBust.hidden = false
+            } else {
+                iconBust.hidden = true
+            }
+
+            
             if spot?.loc_lat != 0 && spot?.loc_lon != 0 {
                 var loc_lat = spot?.loc_lat as! CLLocationDegrees
                 var loc_lon = spot?.loc_lon as! CLLocationDegrees
@@ -45,12 +53,6 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
                 spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
                 spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 200, 200)
                 spotName = spot?.title
-                
-                if spot?.bust == true {
-                    iconBust.hidden = false
-                } else {
-                    iconBust.hidden = true
-                }
                 
                 self.mapView.setRegion(spotRegion, animated: true)
                 ///Red Pin
@@ -101,7 +103,22 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         
         if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spotLoc.latitude),\(spotLoc.longitude)"){
             let objectsToShare = [img,spotMap,messageStr]
+            
             let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            
+            activityVC.excludedActivityTypes = [
+                UIActivityTypeAirDrop,
+                UIActivityTypePostToTwitter,
+                UIActivityTypePostToWeibo,
+                UIActivityTypePrint,
+                UIActivityTypeCopyToPasteboard,
+                UIActivityTypeAssignToContact,
+                UIActivityTypeAddToReadingList,
+                UIActivityTypePostToFlickr,
+                UIActivityTypePostToVimeo,
+                UIActivityTypePostToTencentWeibo
+            ]
+            
             
             self.presentViewController(activityVC, animated: true, completion: nil)
 
