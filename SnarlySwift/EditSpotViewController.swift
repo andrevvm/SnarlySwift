@@ -157,6 +157,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 spot!.bust = false
             }
             
+            self.managedObjectContext?.save(nil)
             performSegueWithIdentifier("toSpots", sender: self)
             
         }

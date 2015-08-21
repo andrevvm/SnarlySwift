@@ -15,6 +15,8 @@ extension Double {
     var m: Double { return self }
     var km: Double { return self / 1_000.0 }
     var mi: Double { return self / 1_609.34 }
+    var ft: Double { return mi * 5_280.0 }
+    var mt: Double { return km * 1_000.0 }
 }
 
 class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
@@ -31,9 +33,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func spotFetchRequest() -> NSFetchRequest {
         let fetchRequest = NSFetchRequest(entityName: "Spots")
-        let sortDescriptor1 = NSSortDescriptor(key: "date", ascending: false)
-        let sortDescriptor2 = NSSortDescriptor(key: "distance", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor2, sortDescriptor1]
+        let sortDescriptor1 = NSSortDescriptor(key: "distance", ascending: true)
+        let sortDescriptor2 = NSSortDescriptor(key: "date", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
         return fetchRequest
     }
     
@@ -50,6 +52,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     var curLon:Double = 0
     var curLoc:CLLocation = CLLocation()
     
+    var refreshControl:UIRefreshControl!
+    
     var firstLaunch = false
     
     
@@ -60,16 +64,18 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
         self.title = "Spots"
-        
-        tableView.reloadData()
+
     }
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        //updateDistance()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        updateDistance()
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
             firstLaunch = true
@@ -84,6 +90,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             self.addData("Landhausplatz", url: "http://www.landezine.com/wp-content/uploads/2011/09/Landhausplatz-02-photo-guenter-wett.jpg", lat: 47.2640377, lon: 11.3961701)
             
             self.addData("Nansensgade", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 55.6835447, lon: 12.5651273)
+             
+            self.addData("Maybachufer", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 52.48948, lon: 13.43314)
             
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
             NSUserDefaults.standardUserDefaults().synchronize();
@@ -108,12 +116,26 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         //self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
-        updateDistance()
+        appDelegate.setLocationVars(locationManager.location)
+        
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl.backgroundColor = UIColor.clearColor()
+        self.refreshControl.tintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
+        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        tableView.addSubview(refreshControl)
         
         
     }
     
+    func refresh(sender:AnyObject)
+    {
+        updateDistance()
+    }
+    
     func doOnLocationUpdate(notification: NSNotification){
+        curLoc = appDelegate.location!
+        curLat = appDelegate.curLat!
+        curLon = appDelegate.curLon!
         updateDistance()
     }
     
@@ -129,6 +151,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         if appDelegate.location != nil {
             curLoc = appDelegate.location!
             if(appDelegate.curLat != nil) {
+                curLoc = appDelegate.location!
                 curLat = appDelegate.curLat!
                 curLon = appDelegate.curLon!
                 updateDistance()
@@ -358,7 +381,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func getDistanceString(spot:Spots) -> NSString {
         
-        if curLat == 0 && curLon == 0 {
+        if curLat as Double == 0.0 && curLon as Double == 0.0 {
             return ""
         }
         
@@ -387,22 +410,51 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             distanceNum = distance.mi as Double
         }
         
-        if distanceNum < 5 {
-            distanceDisplay = NSString(format:"%.01f", distanceNum)
-        } else {
-            distanceDisplay = NSString(format:"%.00f", distanceNum)
+        var short = false;
+        
+        if distance.ft < 1000 || distance.mt < 800 {
+            short = true;
         }
         
-        if distanceDisplay == "0.0" {
+        if distanceNum < 0.05 {
             distanceString = "Here now"
-        } else if distanceNum > 1000 {
-            distanceString = "1000+ " + (distanceLabel as String)
+        } else if short == true {
+            
+            if isMetric == true {
+                distanceNum = Double(round(distance.mt / 10.0) * 10)
+                distanceLabel = "m"
+            } else {
+                distanceNum = Double(round(distance.ft / 10.0) * 10)
+                distanceLabel = "ft"
+            }
+            
+            distanceDisplay = NSString(format:"%.00f", distanceNum)
+            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
+            
+        } else if distanceNum < 2 && short == false {
+            
+            distanceDisplay = NSString(format:"%.01f", distanceNum)
+            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
+            
+        } else if distanceNum > 50 && distanceNum < 1500 {
+        
+            distanceNum = Double(round(distanceNum / 10.0) * 10)
+            distanceDisplay = NSString(format:"%.00f", distanceNum)
+            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
+            
+        } else if distanceNum > 1500 {
+            distanceString = "1500+ " + (distanceLabel as String)
         } else {
+            distanceDisplay = NSString(format:"%.00f", distanceNum)
             distanceString = "\(distanceDisplay) " + (distanceLabel as String)
         }
         
         return distanceString
 
+    }
+    
+    func roundToTens(x : Double) -> Int {
+        return 10 * Int(round(x / 10.0))
     }
 
     
@@ -471,13 +523,27 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func updateDistance() {
         
-        println("Update Distance")
-        
         if curLat == 0 && curLon == 0 {
-            return
+            
+            
+            if appDelegate.location != nil {
+                curLoc = appDelegate.location!
+                curLat = appDelegate.curLat!
+                curLon = appDelegate.curLon!
+
+            } else {
+                
+                var timer = NSTimer.scheduledTimerWithTimeInterval(0.4, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
+                
+                if self.refreshControl != nil {
+                    self.refreshControl.endRefreshing()
+                }
+                
+                return
+            }
+            
+            
         }
-        
-        println(curLat)
         
         // Create a fetch request
         var fetchRequest = NSFetchRequest()
@@ -494,13 +560,14 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             if error == nil {
                 for spot in spots {
                     
+                    let spot = spot as! Spots
                     
                     //Update display location if empty
-                    if (spot as! Spots).loc_disp == nil || (spot as! Spots).loc_disp == "" {
+                    if spot.loc_disp == nil || spot.loc_disp == "" {
                         
                         appDelegate.getLocationString(spot.loc_lat as Double, loc_lon: spot.loc_lon as Double, completion: { (answer) -> Void in
                             
-                            (spot as! Spots).loc_disp = answer
+                            spot.loc_disp = answer
                             
                         })
                         
@@ -512,14 +579,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
                     var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
                     var locale = NSLocale.currentLocale()
                     let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
-                    var distanceNum:Double = 0.0
-                    if isMetric == true {
-                        distanceNum = distance.km as Double
-                    } else {
-                        distanceNum = distance.mi as Double
-                    }
+                    var distanceNum:Double = distance
                     
-                    (spot as! Spots).distance = distanceNum
+                    spot.distance = distanceNum
+                    
                 }
                 
                 // Save the updated managed objects into the store
@@ -531,6 +594,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
         
         tableView.reloadData()
+        if self.refreshControl != nil {
+            self.refreshControl.endRefreshing()
+        }
+        
     }
     
     
