@@ -75,7 +75,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        updateDistance()
+        //updateDistance()
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
             firstLaunch = true
@@ -132,13 +132,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         updateDistance()
     }
     
-    func doOnLocationUpdate(notification: NSNotification){
-        curLoc = appDelegate.location!
-        curLat = appDelegate.curLat!
-        curLon = appDelegate.curLon!
-        updateDistance()
-    }
-    
     override func viewDidDisappear(animated: Bool) {
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0") == false){
             firstLaunch = false
@@ -148,15 +141,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         
-        if appDelegate.location != nil {
-            curLoc = appDelegate.location!
-            if(appDelegate.curLat != nil) {
-                curLoc = appDelegate.location!
-                curLat = appDelegate.curLat!
-                curLon = appDelegate.curLon!
-                updateDistance()
-            }
-        }
+        var location = locations.last as! CLLocation
+        
+        curLoc = location
+        curLat = location.coordinate.latitude
+        curLon = location.coordinate.longitude
+        updateDistance()
+        
         
     }
     

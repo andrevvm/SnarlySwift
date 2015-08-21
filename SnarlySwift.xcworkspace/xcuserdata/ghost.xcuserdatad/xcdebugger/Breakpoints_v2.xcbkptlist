@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/AppDelegate.swift"
-            timestampString = "461865754.784347"
+            timestampString = "461879541.367001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "175"
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "461878252.463864"
+            timestampString = "461879541.367001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "617"
-            endingLineNumber = "617"
+            startingLineNumber = "608"
+            endingLineNumber = "608"
             landmarkName = "prepareForSegue(_:sender:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "461875936.039234"
+            timestampString = "461879541.367001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
             landmarkName = "checkSpots()"
             landmarkType = "5">
          </BreakpointContent>
@@ -166,11 +166,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "461875936.039234"
+            timestampString = "461879541.367001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "297"
-            endingLineNumber = "297"
+            startingLineNumber = "288"
+            endingLineNumber = "288"
             landmarkName = "tableView(_:editActionsForRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -214,11 +214,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "461878202.264502"
+            timestampString = "461879541.367001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "566"
-            endingLineNumber = "566"
+            startingLineNumber = "557"
+            endingLineNumber = "557"
             landmarkName = "updateDistance()"
             landmarkType = "5">
          </BreakpointContent>
@@ -230,11 +230,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "461875936.039234"
+            timestampString = "461879541.367001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "386"
-            endingLineNumber = "386"
+            startingLineNumber = "377"
+            endingLineNumber = "377"
             landmarkName = "getDistanceString(_:)"
             landmarkType = "5">
          </BreakpointContent>

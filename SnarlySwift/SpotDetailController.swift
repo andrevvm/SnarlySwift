@@ -101,8 +101,10 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         
         var messageStr = "— Sent with http://getsnarly.com"
         
+        var spotTitle: String = spotName + " "
+        
         if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spotLoc.latitude),\(spotLoc.longitude)"){
-            let objectsToShare = [img,spotMap,messageStr]
+            let objectsToShare = [img,spotTitle,spotMap,messageStr]
             
             let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             
