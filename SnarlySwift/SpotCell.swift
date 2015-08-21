@@ -12,6 +12,7 @@ class SpotCell: UITableViewCell {
     @IBOutlet var spotLabel: UILabel!
     @IBOutlet var spotPhoto: UIImageView!
     @IBOutlet var sampleOverlay: UIImageView!
+    @IBOutlet var cityLabel: UILabel!
     @IBOutlet var distanceLabel: UILabel!
     
     required init(coder aDecoder: NSCoder) {

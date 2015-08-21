@@ -46,6 +46,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     var tempImage: UIImage!
     var alreadyLoaded: Bool!
     
+    var locationString: String!
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -65,6 +67,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         } else {
             navigationBar.topItem!.title = "New Spot"
         }
+        
+        var location = appDelegate.location
         
     }
     
@@ -101,6 +105,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             spot.notes = txtSpotNotes.text
             spot.photo = imageData
             spot.distance = 0
+            spot.loc_disp = appDelegate.locationString
             
             if switchBust.on {
                 spot.bust = true
@@ -108,12 +113,11 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 spot.bust = false
             }
             
-            var locationManager = appDelegate.locationManager
-            var location = locationManager.location
+            var location = appDelegate.location
             
             if location != nil {
-                spot.loc_lat = Double(location.coordinate.latitude)
-                spot.loc_lon = Double(location.coordinate.longitude)
+                spot.loc_lat = appDelegate.curLat!
+                spot.loc_lon = appDelegate.curLon!
                 
                 managedObjectContext?.save(nil)
                 performSegueWithIdentifier("toSpots", sender: self)
@@ -129,6 +133,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction!) in
                     spot.loc_lat = 0
                     spot.loc_lon = 0
+                    
                     self.managedObjectContext?.save(nil)
                     self.performSegueWithIdentifier("toSpots", sender: self)
                 }))

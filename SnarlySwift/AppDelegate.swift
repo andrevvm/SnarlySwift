@@ -16,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var window: UIWindow?
     
     let locationManager: CLLocationManager = CLLocationManager()
+    var location: CLLocation?
+    var locationString: String?
+    var curLon: Double?
+    var curLat: Double?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
@@ -25,9 +29,63 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
         locationManager.startUpdatingLocation()
         
+        location = locationManager.location
+        
+        setLocationVars(location)
+        
         setupAppearance()
     
+    
         return true
+    }
+    
+    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+        NSNotificationCenter.defaultCenter().postNotificationName("doOnLocationUpdate", object: nil)
+        location = locations.last as! CLLocation
+        setLocationVars(location)
+    }
+    
+    func setLocationVars(location:CLLocation?) {
+        if location != nil {
+            getLocationString(location!.coordinate.latitude as Double, loc_lon: location!.coordinate.longitude as Double, completion: { (answer) -> Void in
+        
+                self.locationString = answer
+        
+            })
+        }
+        
+        curLon = location?.coordinate.longitude
+        curLat = location?.coordinate.latitude
+    }
+    
+    func getLocationString(loc_lat:Double, loc_lon:Double, completion: (answer: String?) -> Void) {
+        
+        let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
+        
+        CLGeocoder().reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
+            if (error != nil) {
+                println("Reverse geocoder failed with an error" + error.localizedDescription)
+                completion(answer: "")
+            } else if placemarks.count > 0 {
+                let pm = placemarks[0] as! CLPlacemark
+                
+                var area:NSString = ""
+                
+                if pm.ISOcountryCode == "US" {
+                    area = pm.administrativeArea
+                } else {
+                    area = pm.country
+                }
+                
+                var city:NSString = pm.locality
+                
+                completion(answer: "\(city), \(area)")
+            } else {
+                println("Problems with the data received from geocoder.")
+                completion(answer: "")
+            }
+        })
+        
     }
     
     func setupAppearance() {

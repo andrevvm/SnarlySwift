@@ -51,7 +51,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
                 var spotLati: CLLocationDegrees = loc_lat
                 var spotLong: CLLocationDegrees = loc_lon
                 spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
-                spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 200, 200)
+                spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 1200, 1200)
                 spotName = spot?.title
                 
                 self.mapView.setRegion(spotRegion, animated: true)

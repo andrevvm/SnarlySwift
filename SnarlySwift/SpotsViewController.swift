@@ -33,10 +33,11 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         let fetchRequest = NSFetchRequest(entityName: "Spots")
         let sortDescriptor1 = NSSortDescriptor(key: "date", ascending: false)
         let sortDescriptor2 = NSSortDescriptor(key: "distance", ascending: true)
-        let sortDescriptor3 = NSSortDescriptor(key: "bust", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor3, sortDescriptor2, sortDescriptor1]
+        fetchRequest.sortDescriptors = [sortDescriptor2, sortDescriptor1]
         return fetchRequest
     }
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     @IBOutlet var EmptyBg: UIImageView!
     @IBOutlet var tableView: UITableView!
@@ -60,19 +61,11 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         super.viewDidAppear(Bool())
         self.title = "Spots"
         
-        self.updateData()
+        tableView.reloadData()
     }
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-    }
-    
-    func locationManager(manager:CLLocationManager, didUpdateLocations locations:[AnyObject]) {
-        curLoc = locations[locations.endIndex - 1] as! CLLocation
-        curLat = Double(curLoc.coordinate.latitude)
-        curLon = Double(curLoc.coordinate.longitude)
-        
-        self.updateData()
     }
     
     override func viewDidLoad() {
@@ -82,6 +75,16 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             firstLaunch = true
             //Put any code here and it will be executed only once.
             self.populateData()
+            
+            self.addData("MACBA", url: "http://galaxypro.s3.amazonaws.com/spot-media/315/315-macba-skate-barcelona-spain.jpg", lat: 41.3831913, lon: 2.1668668)
+            self.addData("Kulturforum", url: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Berlin_Kulturforum_2002a.jpg", lat: 52.5100104, lon: 13.3698381)
+            
+            self.addData("3rd & Army", url: "http://www.whyelfiles.com/wf-navigator/wp-content/uploads/2013/02/IMG_7060.jpg", lat: 37.7480432, lon: -122.3890937)
+            
+            self.addData("Landhausplatz", url: "http://www.landezine.com/wp-content/uploads/2011/09/Landhausplatz-02-photo-guenter-wett.jpg", lat: 47.2640377, lon: 11.3961701)
+            
+            self.addData("Nansensgade", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 55.6835447, lon: 12.5651273)
+            
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
             NSUserDefaults.standardUserDefaults().synchronize();
         }
@@ -105,6 +108,32 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         //self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
+        updateDistance()
+        
+        
+    }
+    
+    func doOnLocationUpdate(notification: NSNotification){
+        updateDistance()
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0") == false){
+            firstLaunch = false
+            tableView.reloadData()
+        }
+    }
+    
+    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+        
+        if appDelegate.location != nil {
+            curLoc = appDelegate.location!
+            if(appDelegate.curLat != nil) {
+                curLat = appDelegate.curLat!
+                curLon = appDelegate.curLon!
+                updateDistance()
+            }
+        }
         
     }
     
@@ -130,12 +159,21 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             var spot = spot as! Spots
             
             var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
+            var loc_disp = spot.loc_disp as String?
             var loc_lat = spot.loc_lat as Double
             var loc_lon = spot.loc_lon as Double
             var location = CLLocation(latitude: loc_lat, longitude: loc_lon)
             
             var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
-            var distanceNum = distance.mi as Double
+            
+            var locale = NSLocale.currentLocale()
+            let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
+            var distanceNum:Double = 0.0
+            if isMetric == true {
+                distanceNum = distance.km as Double
+            } else {
+                distanceNum = distance.mi as Double
+            }
             
         }
         
@@ -185,9 +223,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             var sampleOverlay = cell.contentView.viewWithTag(15) as! UIImageView
             
-            if(firstLaunch == true && spot.title == "The Wedge hubba") {
-                cell.sampleOverlay.layer.cornerRadius = 3
-                cell.sampleOverlay.clipsToBounds = true
+            if(firstLaunch == true && indexPath.row == 0) {
                 cell.sampleOverlay.hidden = false
             } else {
                 cell.sampleOverlay.hidden = true
@@ -205,7 +241,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             cell.spotLabel.text = spot.title
             cell.spotPhoto.image = UIImage(data: spot.photo as NSData)
             
-            cell.distanceLabel.text = getDistanceString(spot) as String
+            if appDelegate.location != nil {
+                cell.distanceLabel.text = getDistanceString(spot) as String
+            } else {
+                cell.distanceLabel.text = ""
+            }
+            
+            cell.cityLabel.text = spot.loc_disp
             
             cell.spotPhoto.layer.cornerRadius = 3
             cell.spotPhoto.clipsToBounds = true
@@ -226,9 +268,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         let img:UIImage = UIImage(data: spot.photo as NSData!)!
         
         var messageStr: String = "— Sent with http://getsnarly.com"
+        var spotTitle: String = spot.title! + " "
         
         if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spot.loc_lat),\(spot.loc_lon)"){
-            let objectsToShare = [img, spotMap, messageStr]
+            let objectsToShare = [img, spotTitle, spotMap, messageStr]
             let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             
             activityVC.excludedActivityTypes = [
@@ -333,20 +376,29 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         var distanceDisplay:NSString = ""
         var distanceString:NSString = ""
         
-        if distance.mi < 5 {
-            distanceDisplay = NSString(format:"%.01f", distance.mi)
+        var locale = NSLocale.currentLocale()
+        let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
+        var distanceNum:Double = 0.0
+        var distanceLabel:NSString = "mi"
+        if isMetric == true {
+            distanceNum = distance.km as Double
+            distanceLabel = "km"
         } else {
-            distanceDisplay = NSString(format:"%.00f", distance.mi)
+            distanceNum = distance.mi as Double
         }
         
-        if distanceDisplay == "1.0" {
-            distanceString = "1 mile"
-        } else if distanceDisplay == "0.0" {
-            distanceString = "Here now"
-        } else if distance.mi > 1000 {
-            distanceString = "1000+ miles"
+        if distanceNum < 5 {
+            distanceDisplay = NSString(format:"%.01f", distanceNum)
         } else {
-            distanceString = "\(distanceDisplay) miles"
+            distanceDisplay = NSString(format:"%.00f", distanceNum)
+        }
+        
+        if distanceDisplay == "0.0" {
+            distanceString = "Here now"
+        } else if distanceNum > 1000 {
+            distanceString = "1000+ " + (distanceLabel as String)
+        } else {
+            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
         }
         
         return distanceString
@@ -385,12 +437,48 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         spot.loc_lat = 33.466661
         spot.loc_lon = -111.915254
+        spot.loc_disp = "Scottsdale, AZ"
             
         managedObjectContext?.save(nil)
         
     }
     
-    func updateData() {
+    func addData(title:String, url:String, lat:Double, lon:Double) {
+        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+        
+        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
+        let image: UIImage?
+        var imageData: NSData?
+        
+        if let url = NSURL(string: url) {
+            if let data = NSData(contentsOfURL: url){
+                image = UIImage(data: data)
+                imageData = NSData(data: UIImageJPEGRepresentation(image, 0.8))
+            }
+        }
+    
+        spot.title = title as String
+        spot.notes = ""
+        spot.photo = imageData!
+        spot.distance = 0
+        spot.bust = false
+        
+        spot.loc_lat = lat
+        spot.loc_lon = lon
+        
+        managedObjectContext?.save(nil)
+    }
+    
+    func updateDistance() {
+        
+        println("Update Distance")
+        
+        if curLat == 0 && curLon == 0 {
+            return
+        }
+        
+        println(curLat)
+        
         // Create a fetch request
         var fetchRequest = NSFetchRequest()
         var entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
@@ -405,11 +493,31 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         if let spots = fetchedObjects {
             if error == nil {
                 for spot in spots {
+                    
+                    
+                    //Update display location if empty
+                    if (spot as! Spots).loc_disp == nil || (spot as! Spots).loc_disp == "" {
+                        
+                        appDelegate.getLocationString(spot.loc_lat as Double, loc_lon: spot.loc_lon as Double, completion: { (answer) -> Void in
+                            
+                            (spot as! Spots).loc_disp = answer
+                            
+                        })
+                        
+                    }
+                    
                     var loc_lat = spot.loc_lat as Double
                     var loc_lon = spot.loc_lon as Double
                     var location = CLLocation(latitude: loc_lat, longitude: loc_lon)
                     var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
-                    var distanceNum = distance.mi as Double
+                    var locale = NSLocale.currentLocale()
+                    let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
+                    var distanceNum:Double = 0.0
+                    if isMetric == true {
+                        distanceNum = distance.km as Double
+                    } else {
+                        distanceNum = distance.mi as Double
+                    }
                     
                     (spot as! Spots).distance = distanceNum
                 }

@@ -14,11 +14,12 @@ class Spots: NSManagedObject {
     @NSManaged var bust: Bool
     @NSManaged var date: NSDate
     @NSManaged var distance: NSNumber
+    @NSManaged var loc_disp: String?
     @NSManaged var loc_lat: NSNumber
     @NSManaged var loc_lon: NSNumber
     @NSManaged var notes: String
     @NSManaged var photo: NSData
-    @NSManaged var title: String
+    @NSManaged var title: String?
     
     override func awakeFromInsert()  {
         super.awakeFromInsert()

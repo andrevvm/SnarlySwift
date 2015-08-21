@@ -1,17 +1,14 @@
 {
   "images" : [
     {
-      "idiom" : "universal"
-    },
-    {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Spot.png"
+      "filename" : "spot-overlay.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "Spot@2x.png"
+      "filename" : "spot-overlay@2x.png"
     },
     {
       "idiom" : "universal",
