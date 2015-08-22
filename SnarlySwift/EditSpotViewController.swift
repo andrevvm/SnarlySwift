@@ -78,8 +78,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
     }
     
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(Bool())
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(Bool())
+        
+        self.navigationController?.navigationBarHidden = false
         
         if let tempConst = tempImage {
             saveButton.enabled = true

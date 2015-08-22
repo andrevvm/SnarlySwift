@@ -63,13 +63,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
-        self.title = "Spots"
-        
     }
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        
         tableView.reloadData()
+        self.navigationController?.navigationBarHidden = false
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
@@ -139,8 +139,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.refreshControl = UIRefreshControl()
         self.refreshControl.backgroundColor = UIColor.clearColor()
         self.refreshControl.tintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
+        
+        var attr = [NSForegroundColorAttributeName:UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)]
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Refresh location", attributes:attr)
+        
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.addSubview(refreshControl)
+
         
     }
     

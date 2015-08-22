@@ -92,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
         UINavigationBar.appearance().barTintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
         
-        UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont(name: "Apercu-Bold", size: 16)!, NSForegroundColorAttributeName : UIColor.whiteColor()]
+        UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont(name: "Apercu-Bold", size: 18)!, NSForegroundColorAttributeName : UIColor.whiteColor()]
 
         UINavigationBar.appearance().tintColor = UIColor.whiteColor()
         

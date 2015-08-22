@@ -24,9 +24,15 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     var spotRegion: MKCoordinateRegion!
     var spotName: String!
     
+    override func viewWillAppear(animated: Bool) {
+
+        self.navigationController?.navigationBarHidden = false
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        //self.navigationController.navigationBar.topItem.title = ""
+        
         if spot != nil {
             self.title = spot?.title
             if spot?.notes == "" {
