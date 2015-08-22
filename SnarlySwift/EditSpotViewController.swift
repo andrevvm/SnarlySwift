@@ -70,6 +70,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         var location = appDelegate.location
         
+        txtSpotName.attributedPlaceholder = NSAttributedString(string:"Spot name",
+            attributes:[NSForegroundColorAttributeName: UIColor(red: 0.658, green: 0.607, blue: 0.611, alpha: 1.0)])
+        
+        txtSpotNotes.attributedPlaceholder = NSAttributedString(string:"Notes",
+            attributes:[NSForegroundColorAttributeName: UIColor(red: 0.658, green: 0.607, blue: 0.611, alpha: 1.0)])
+        
     }
     
     override func viewDidAppear(animated: Bool) {

@@ -69,7 +69,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        //updateDistance()
+        tableView.reloadData()
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
