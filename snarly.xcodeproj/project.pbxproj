@@ -16,6 +16,8 @@
 		E6121B96198FC5E500E72142 /* SnarlySwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B95198FC5E500E72142 /* SnarlySwiftTests.swift */; };
 		E6121BA1198FCC0000E72142 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6121BA0198FCC0000E72142 /* MapKit.framework */; };
 		E6121BA4198FD34400E72142 /* SpotsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121BA3198FD34400E72142 /* SpotsViewController.swift */; };
+		E61CC7651B87EBEE001DC70C /* apercu-bold-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E61CC7631B87EBEE001DC70C /* apercu-bold-webfont.ttf */; };
+		E61CC7661B87EBEE001DC70C /* apercu-regular-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E61CC7641B87EBEE001DC70C /* apercu-regular-webfont.ttf */; };
 		E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AF519923C4A00118206 /* SpotDetailController.swift */; };
 		E62A6AFF1992463E00118206 /* Spots.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AFE1992463E00118206 /* Spots.swift */; };
 		E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */; };
@@ -48,6 +50,8 @@
 		E6121B9F198FCBF600E72142 /* SnarlySwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SnarlySwift.entitlements; sourceTree = "<group>"; };
 		E6121BA0198FCC0000E72142 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		E6121BA3198FD34400E72142 /* SpotsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotsViewController.swift; sourceTree = "<group>"; };
+		E61CC7631B87EBEE001DC70C /* apercu-bold-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "apercu-bold-webfont.ttf"; sourceTree = "<group>"; };
+		E61CC7641B87EBEE001DC70C /* apercu-regular-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "apercu-regular-webfont.ttf"; sourceTree = "<group>"; };
 		E62A6AF519923C4A00118206 /* SpotDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotDetailController.swift; sourceTree = "<group>"; };
 		E62A6AFE1992463E00118206 /* Spots.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spots.swift; sourceTree = "<group>"; };
 		E63C25941B865C1600BD773F /* SnarlySwift 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 5.xcdatamodel"; sourceTree = "<group>"; };
@@ -102,6 +106,8 @@
 		E6121B7C198FC5E400E72142 /* SnarlySwift */ = {
 			isa = PBXGroup;
 			children = (
+				E61CC7631B87EBEE001DC70C /* apercu-bold-webfont.ttf */,
+				E61CC7641B87EBEE001DC70C /* apercu-regular-webfont.ttf */,
 				E6121B9F198FCBF600E72142 /* SnarlySwift.entitlements */,
 				E6121B7F198FC5E400E72142 /* AppDelegate.swift */,
 				E6121B84198FC5E500E72142 /* ViewController.swift */,
@@ -244,8 +250,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E61CC7651B87EBEE001DC70C /* apercu-bold-webfont.ttf in Resources */,
 				E6121B88198FC5E500E72142 /* Main.storyboard in Resources */,
 				E6121B8A198FC5E500E72142 /* Images.xcassets in Resources */,
+				E61CC7661B87EBEE001DC70C /* apercu-regular-webfont.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

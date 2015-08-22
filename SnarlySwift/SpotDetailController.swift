@@ -130,7 +130,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
 
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        tableView.estimatedRowHeight = 50.0
+        tableView.estimatedRowHeight = 52.0
         tableView.rowHeight = UITableViewAutomaticDimension
         return 1
     }
@@ -141,7 +141,9 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.textLabel!.lineBreakMode = .ByWordWrapping
         cell.textLabel!.numberOfLines = 0;
         cell.textLabel!.textAlignment = .Center;
-        cell.textLabel!.font = UIFont(name: "Avenir-Roman", size: 14)
+        cell.textLabel!.font = UIFont(name: "Apercu", size: 12)
+        cell.textLabel!.backgroundColor = UIColor.whiteColor()
+        cell.backgroundColor = UIColor.whiteColor()
         
         return cell
     }
