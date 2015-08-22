@@ -35,7 +35,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         let fetchRequest = NSFetchRequest(entityName: "Spots")
         let sortDescriptor1 = NSSortDescriptor(key: "distance", ascending: true)
         let sortDescriptor2 = NSSortDescriptor(key: "date", ascending: false)
-        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
+        fetchRequest.sortDescriptors = [sortDescriptor1]
         return fetchRequest
     }
     
@@ -64,12 +64,28 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
         self.title = "Spots"
-
+        
     }
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         //updateDistance()
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        
+        if let visibleCells = tableView!.visibleCells() as? [SpotCell] {
+            for parallaxCell in visibleCells {
+                parallax(parallaxCell)
+            }
+        }
+    }
+    
+    func parallax(cell: SpotCell) {
+    
+        var yOffset = ((tableView.contentOffset.y - cell.frame.origin.y) / ImageHeight) * OffsetSpeed
+        cell.spotPhoto.frame.origin.y = yOffset - 40
+
     }
     
     override func viewDidLoad() {
@@ -123,7 +139,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.refreshControl.tintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.addSubview(refreshControl)
-        
         
     }
     
@@ -225,6 +240,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
         
+        parallax(cell)
         self.configureCell(cell, atIndexPath: indexPath)
         
         return cell
@@ -232,6 +248,8 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func configureCell(cell: SpotCell,
         atIndexPath indexPath: NSIndexPath) {
+            
+            
             
             let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
             
@@ -263,8 +281,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             cell.cityLabel.text = spot.loc_disp
             
-            cell.spotPhoto.layer.cornerRadius = 3
-            cell.spotPhoto.clipsToBounds = true
+            //cell.spotMask.layer.cornerRadius = 3
+            cell.spotMask.clipsToBounds = true
+        
             
     }
     
@@ -344,7 +363,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     return [editAction, deleteAction, shareAction]
     }
     
-    
+
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
@@ -403,7 +422,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         var short = false;
         
-        if distance.ft < 1000 || distance.mt < 800 {
+        if isMetric == true && distance.mt < 500 {
+            short = true;
+        } else if distance.mi < 0.2 {
             short = true;
         }
         
@@ -459,7 +480,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     func hasSpots() {
         tableView.hidden = false
         NewSpot.hidden = false
-        NewSpotGradient.hidden = false
+        NewSpotGradient.hidden = true
         EmptyBg.hidden = true
     }
     
@@ -590,9 +611,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
         
     }
-    
-    
-    
+
 
     /*
     // MARK: - Navigation

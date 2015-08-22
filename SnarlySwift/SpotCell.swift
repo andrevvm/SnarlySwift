@@ -8,9 +8,13 @@
 
 import UIKit
 
+let ImageHeight: CGFloat = 280.0
+let OffsetSpeed: CGFloat = 20.0
+
 class SpotCell: UITableViewCell {
     @IBOutlet var spotLabel: UILabel!
     @IBOutlet var spotPhoto: UIImageView!
+    @IBOutlet var spotMask: UIView!
     @IBOutlet var sampleOverlay: UIImageView!
     @IBOutlet var cityLabel: UILabel!
     @IBOutlet var distanceLabel: UILabel!
@@ -22,5 +26,12 @@ class SpotCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
+        
+    
+    func offset(offset: CGPoint) {
+        spotPhoto!.frame = CGRectOffset(self.imageView!.bounds, offset.x, offset.y)
+    }
+    
+    
 
 }
