@@ -20,6 +20,20 @@
                ReferencedContainer = "container:snarly.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E6121B8E198FC5E500E72142"
+               BuildableName = "SnarlySwiftTests.xctest"
+               BlueprintName = "SnarlySwiftTests"
+               ReferencedContainer = "container:snarly.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
