@@ -404,7 +404,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="qhq-0c-mgG" secondAttribute="trailing" constant="20" id="6qn-Lv-Ez1"/>
-                            <constraint firstItem="H2A-5H-5Ac" firstAttribute="top" secondItem="qhq-0c-mgG" secondAttribute="bottom" constant="13" id="EQh-fh-ooU"/>
+                            <constraint firstItem="H2A-5H-5Ac" firstAttribute="top" secondItem="qhq-0c-mgG" secondAttribute="bottom" constant="15" id="EQh-fh-ooU"/>
                             <constraint firstItem="vdk-nq-IIU" firstAttribute="top" secondItem="4E3-iZ-FuC" secondAttribute="bottom" constant="20" symbolic="YES" id="Fpr-fw-Z06">
                                 <variation key="widthClass=compact" constant="5"/>
                             </constraint>

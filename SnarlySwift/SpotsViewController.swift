@@ -106,8 +106,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             self.addData("Landhausplatz", url: "http://www.landezine.com/wp-content/uploads/2011/09/Landhausplatz-02-photo-guenter-wett.jpg", lat: 47.2640377, lon: 11.3961701)
             
             self.addData("Nansensgade", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 55.6835447, lon: 12.5651273)
-             
-            self.addData("Maybachufer", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 52.48948, lon: 13.43314)
+            
+            self.addData("Up ledges", url: "http://www.artschoolvets.com/blog/motherfuckindaviddeery/files/2010/07/DSC06594.jpg", lat: 52.496649, lon: 13.449445)
+            
+            self.addData("Blubba", url: "http://quartersnacks.com/wp-content/uploads/2010/05/P5180017.jpg", lat: 40.7141164, lon: -74.0034033)
             
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
             NSUserDefaults.standardUserDefaults().synchronize();
