@@ -235,7 +235,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "172"
             endingLineNumber = "172"
-            landmarkName = "managedObjectContext"
+            landmarkName = "persistentStoreCoordinator"
             landmarkType = "19">
          </BreakpointContent>
       </BreakpointProxy>
