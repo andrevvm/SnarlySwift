@@ -28,7 +28,7 @@ class CompressedImage: UIImageView {
     }
 }
 
-class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, CLLocationManagerDelegate {
+class EditSpotViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, CLLocationManagerDelegate, UITextFieldDelegate {
     
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     var spot: Spots? = nil
@@ -40,6 +40,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     @IBOutlet var imagePreview : CompressedImage!
     @IBOutlet var captureButton: UIButton!
     @IBOutlet var saveButton: UIBarButtonItem!
+    @IBOutlet var editView: UIView!
+    @IBOutlet var topConstraint: NSLayoutConstraint!
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
@@ -52,6 +54,11 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         super.viewDidLoad()
         alreadyLoaded = false
+        
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name:UIKeyboardWillShowNotification, object: nil);
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name:UIKeyboardWillHideNotification, object: nil);
+        
         
         if(spot != nil) {
             alreadyLoaded = true
@@ -180,6 +187,37 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
+    func keyboardWillShow(sender: NSNotification) {
+        
+        let info = sender.userInfo!
+        
+        let frame = -(info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue().height
+        
+        self.topConstraint.constant = frame + 50
+        UIView.animateWithDuration(0.5) {
+            self.view.layoutIfNeeded()
+        }
+        
+        
+    }
+    
+    func keyboardWillHide(sender: NSNotification) {
+        
+        self.topConstraint.constant = 0
+        UIView.animateWithDuration(0.5) {
+            self.view.layoutIfNeeded()
+        }
+        
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        if textField == txtSpotName { // Switch focus to other text field
+            txtSpotNotes.becomeFirstResponder()
+        }
+        return true
+    }
+    
     @IBAction func capture(sender : AnyObject) {
         if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
             
@@ -198,4 +236,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+
 }

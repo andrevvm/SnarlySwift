@@ -556,7 +556,7 @@
                                     </mask>
                                 </variation>
                             </navigationBar>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yJa-q6-RQ5" customClass="TPKeyboardAvoidingScrollView">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yJa-q6-RQ5">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qaB-a1-ohu">
@@ -603,24 +603,6 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gev-tE-Q90">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                         <subviews>
-                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Notes" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="1Vs-wr-XFY">
-                                                <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="30" id="HA6-2M-eBo"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" name="Apercu" family="Apercu" pointSize="16"/>
-                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                                <variation key="default">
-                                                    <mask key="constraints">
-                                                        <exclude reference="HA6-2M-eBo"/>
-                                                    </mask>
-                                                </variation>
-                                                <variation key="widthClass=compact">
-                                                    <mask key="constraints">
-                                                        <include reference="HA6-2M-eBo"/>
-                                                    </mask>
-                                                </variation>
-                                            </textField>
                                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="icon-location" translatesAutoresizingMaskIntoConstraints="NO" id="No4-FF-5Yg">
                                                 <rect key="frame" x="0.0" y="-15" width="11" height="15"/>
                                                 <variation key="widthClass=compact" fixedFrame="YES">
@@ -680,13 +662,34 @@
                                                 <rect key="contentStretch" x="0.0" y="0.0" width="0.49999999999999961" height="0.49999999999999961"/>
                                                 <color key="onTintColor" red="0.95548576119999995" green="0.20836433770000001" blue="0.25333964819999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </switch>
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Notes" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="1Vs-wr-XFY">
+                                                <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="30" id="HA6-2M-eBo"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="Apercu" family="Apercu" pointSize="16"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
+                                                <variation key="default">
+                                                    <mask key="constraints">
+                                                        <exclude reference="HA6-2M-eBo"/>
+                                                    </mask>
+                                                </variation>
+                                                <variation key="widthClass=compact">
+                                                    <mask key="constraints">
+                                                        <include reference="HA6-2M-eBo"/>
+                                                    </mask>
+                                                </variation>
+                                                <connections>
+                                                    <outlet property="delegate" destination="DiA-zv-VOp" id="dk0-Yo-jkv"/>
+                                                </connections>
+                                            </textField>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Spot name" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="fMJ-Q0-RDj">
                                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="bv6-mH-G6j"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="Apercu" family="Apercu" pointSize="16"/>
-                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="next"/>
                                                 <variation key="default">
                                                     <mask key="constraints">
                                                         <exclude reference="bv6-mH-G6j"/>
@@ -697,6 +700,9 @@
                                                         <include reference="bv6-mH-G6j"/>
                                                     </mask>
                                                 </variation>
+                                                <connections>
+                                                    <outlet property="delegate" destination="DiA-zv-VOp" id="0Np-xV-pSf"/>
+                                                </connections>
                                             </textField>
                                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="icon-bust" translatesAutoresizingMaskIntoConstraints="NO" id="YxG-ms-ooO">
                                                 <rect key="frame" x="0.0" y="-17" width="15" height="17"/>
@@ -731,13 +737,13 @@
                                         </constraints>
                                         <variation key="default">
                                             <mask key="subviews">
-                                                <exclude reference="1Vs-wr-XFY"/>
                                                 <exclude reference="No4-FF-5Yg"/>
                                                 <exclude reference="uKG-DT-zZI"/>
                                                 <exclude reference="BRj-qW-WEL"/>
                                                 <exclude reference="8tM-IJ-xok"/>
                                                 <exclude reference="zEv-Qj-07T"/>
                                                 <exclude reference="oa2-I4-eHP"/>
+                                                <exclude reference="1Vs-wr-XFY"/>
                                                 <exclude reference="fMJ-Q0-RDj"/>
                                                 <exclude reference="YxG-ms-ooO"/>
                                             </mask>
@@ -761,13 +767,13 @@
                                         </variation>
                                         <variation key="widthClass=compact">
                                             <mask key="subviews">
-                                                <include reference="1Vs-wr-XFY"/>
                                                 <include reference="No4-FF-5Yg"/>
                                                 <include reference="uKG-DT-zZI"/>
                                                 <include reference="BRj-qW-WEL"/>
                                                 <include reference="8tM-IJ-xok"/>
                                                 <include reference="zEv-Qj-07T"/>
                                                 <include reference="oa2-I4-eHP"/>
+                                                <include reference="1Vs-wr-XFY"/>
                                                 <include reference="fMJ-Q0-RDj"/>
                                                 <include reference="YxG-ms-ooO"/>
                                             </mask>
@@ -855,7 +861,7 @@
                                         <include reference="9eu-jl-r2E"/>
                                         <include reference="AXV-Gb-auG"/>
                                         <include reference="KVe-X5-CbY"/>
-                                        <include reference="XXA-5Q-AwY"/>
+                                        <exclude reference="XXA-5Q-AwY"/>
                                     </mask>
                                 </variation>
                             </scrollView>
@@ -904,10 +910,12 @@
                     <navigationItem key="navigationItem" title="New Spot" id="4fv-UN-J9h"/>
                     <connections>
                         <outlet property="captureButton" destination="qaB-a1-ohu" id="1xe-ip-S0s"/>
+                        <outlet property="editView" destination="yJa-q6-RQ5" id="SRH-Id-hBB"/>
                         <outlet property="imagePreview" destination="rds-Dm-3xz" id="za7-Gh-fEb"/>
                         <outlet property="navigationBar" destination="fH6-0K-EDy" id="ha5-Ed-l1u"/>
                         <outlet property="saveButton" destination="EqD-wq-CgM" id="hMy-Ik-tww"/>
                         <outlet property="switchBust" destination="oa2-I4-eHP" id="ti8-5Y-S1W"/>
+                        <outlet property="topConstraint" destination="KVe-X5-CbY" id="Cfs-c5-abZ"/>
                         <outlet property="txtSpotName" destination="fMJ-Q0-RDj" id="Ten-Bw-Cjl"/>
                         <outlet property="txtSpotNotes" destination="1Vs-wr-XFY" id="zhN-bF-WEY"/>
                         <segue destination="vkW-CO-tCh" kind="unwind" identifier="toSpots" unwindAction="unwindToSpots:" id="KEh-51-eJb"/>

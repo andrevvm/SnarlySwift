@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A28562C0E3B6499F9DC8AEFB /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 62FF6E7DDE1A4B0BB0BF3973 /* libPods.a */; };
 		E6121B80198FC5E400E72142 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B7F198FC5E400E72142 /* AppDelegate.swift */; };
 		E6121B83198FC5E500E72142 /* SnarlySwift.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E6121B81198FC5E500E72142 /* SnarlySwift.xcdatamodeld */; };
 		E6121B85198FC5E500E72142 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B84198FC5E500E72142 /* ViewController.swift */; };
@@ -36,8 +35,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2F2C79072E42431FB1E63BBA /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
-		62FF6E7DDE1A4B0BB0BF3973 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6121B7A198FC5E400E72142 /* SnarlySwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnarlySwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6121B7E198FC5E400E72142 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E6121B7F198FC5E400E72142 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -71,7 +68,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6121BA1198FCC0000E72142 /* MapKit.framework in Frameworks */,
-				A28562C0E3B6499F9DC8AEFB /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +88,6 @@
 				E6121B92198FC5E500E72142 /* SnarlySwiftTests */,
 				E6121B7B198FC5E400E72142 /* Products */,
 				E6121BA2198FCC1000E72142 /* Frameworks */,
-				2F2C79072E42431FB1E63BBA /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -157,7 +152,6 @@
 			isa = PBXGroup;
 			children = (
 				E6121BA0198FCC0000E72142 /* MapKit.framework */,
-				62FF6E7DDE1A4B0BB0BF3973 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -169,11 +163,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E6121B99198FC5E500E72142 /* Build configuration list for PBXNativeTarget "SnarlySwift" */;
 			buildPhases = (
-				4D6A15518E304DBCA2BF82CD /* Check Pods Manifest.lock */,
 				E6121B76198FC5E400E72142 /* Sources */,
 				E6121B77198FC5E400E72142 /* Frameworks */,
 				E6121B78198FC5E400E72142 /* Resources */,
-				04F2F16C62664C79BB4F504D /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -268,39 +260,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		04F2F16C62664C79BB4F504D /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4D6A15518E304DBCA2BF82CD /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E6121B76198FC5E400E72142 /* Sources */ = {
@@ -428,7 +387,6 @@
 		};
 		E6121B9A198FC5E500E72142 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F2C79072E42431FB1E63BBA /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -447,7 +405,6 @@
 		};
 		E6121B9B198FC5E500E72142 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F2C79072E42431FB1E63BBA /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -467,7 +424,6 @@
 		E6121B9D198FC5E500E72142 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SnarlySwift.app/SnarlySwift";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -479,14 +435,13 @@
 				INFOPLIST_FILE = SnarlySwiftTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnarlySwift.app/SnarlySwift";
 			};
 			name = Debug;
 		};
 		E6121B9E198FC5E500E72142 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SnarlySwift.app/SnarlySwift";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -494,7 +449,7 @@
 				INFOPLIST_FILE = SnarlySwiftTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnarlySwift.app/SnarlySwift";
 			};
 			name = Release;
 		};
