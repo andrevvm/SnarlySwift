@@ -58,7 +58,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     var firstLaunch = false
     
-    
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
     
     }
@@ -70,7 +69,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
-        tableView.reloadData()
+        self.reloadData()
         self.navigationController?.navigationBarHidden = false
     }
     
@@ -100,18 +99,18 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             //Put any code here and it will be executed only once.
             self.populateData()
             
-            self.addData("MACBA", url: "http://galaxypro.s3.amazonaws.com/spot-media/315/315-macba-skate-barcelona-spain.jpg", lat: 41.3831913, lon: 2.1668668)
-            self.addData("Kulturforum", url: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Berlin_Kulturforum_2002a.jpg", lat: 52.5100104, lon: 13.3698381)
-            
-            self.addData("3rd & Army", url: "http://www.whyelfiles.com/wf-navigator/wp-content/uploads/2013/02/IMG_7060.jpg", lat: 37.7480432, lon: -122.3890937)
-            
-            self.addData("Landhausplatz", url: "http://www.landezine.com/wp-content/uploads/2011/09/Landhausplatz-02-photo-guenter-wett.jpg", lat: 47.2640377, lon: 11.3961701)
-            
-            self.addData("Nansensgade", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 55.6835447, lon: 12.5651273)
-            
-            self.addData("Up ledges", url: "http://www.artschoolvets.com/blog/motherfuckindaviddeery/files/2010/07/DSC06594.jpg", lat: 52.496649, lon: 13.449445)
-            
-            self.addData("Blubba", url: "http://quartersnacks.com/wp-content/uploads/2010/05/P5180017.jpg", lat: 40.7141164, lon: -74.0034033)
+//            self.addData("MACBA", url: "http://galaxypro.s3.amazonaws.com/spot-media/315/315-macba-skate-barcelona-spain.jpg", lat: 41.3831913, lon: 2.1668668)
+//            self.addData("Kulturforum", url: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Berlin_Kulturforum_2002a.jpg", lat: 52.5100104, lon: 13.3698381)
+//            
+//            self.addData("3rd & Army", url: "http://www.whyelfiles.com/wf-navigator/wp-content/uploads/2013/02/IMG_7060.jpg", lat: 37.7480432, lon: -122.3890937)
+//            
+//            self.addData("Landhausplatz", url: "http://www.landezine.com/wp-content/uploads/2011/09/Landhausplatz-02-photo-guenter-wett.jpg", lat: 47.2640377, lon: 11.3961701)
+//            
+//            self.addData("Nansensgade", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 55.6835447, lon: 12.5651273)
+//            
+//            self.addData("Spot der Visionaire", url: "http://www.artschoolvets.com/blog/motherfuckindaviddeery/files/2010/07/DSC06594.jpg", lat: 52.496649, lon: 13.449445)
+//            
+//            self.addData("Blubba", url: "http://quartersnacks.com/wp-content/uploads/2010/05/P5180017.jpg", lat: 40.7141164, lon: -74.0034033)
             
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
             NSUserDefaults.standardUserDefaults().synchronize();
@@ -159,7 +158,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     override func viewDidDisappear(animated: Bool) {
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0") == false){
             firstLaunch = false
-            tableView.reloadData()
+            self.reloadData()
         }
     }
     
@@ -215,7 +214,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
         }
         
-        //tableView.reloadData()
     }
     
     func checkSpots() {
@@ -296,12 +294,12 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
     }
     
-    func controllerDidChangeContent(controller: NSFetchedResultsController!) {
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
         self.checkSpots()
         self.setSpots()
     }
     
-    func tableView(tableView: UITableView!, editActionsForRowAtIndexPath indexPath: NSIndexPath!) -> [AnyObject]! {
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
         var shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
             
@@ -372,29 +370,33 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     return [editAction, deleteAction, shareAction]
     }
     
-
-    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
-        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        var selectedSpot = managedObject as! Spots
-        
-        performSegueWithIdentifier("spotDetail", sender: selectedSpot)
+    func tableView(tableView: UITableView!, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
     }
     
 
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        switch editingStyle {
-        case .Delete:
-            let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-            managedObjectContext?.deleteObject(managedObject)
-            managedObjectContext?.save(nil)
+//    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+//        
+//        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+//        var selectedSpot = managedObject as! Spots
+//        
+//        performSegueWithIdentifier("spotDetail", sender: selectedSpot)
+//    }
+    
 
-            // remove the deleted item from the `UITableView`
-            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        default:
-            return
-            
-        }
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+//        switch editingStyle {
+//        case .Delete:
+//            let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+//            managedObjectContext?.deleteObject(managedObject)
+//            managedObjectContext?.save(nil)
+//
+//            // remove the deleted item from the `UITableView`
+//            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+//        default:
+//            return
+//            
+//        }
     }
     
     
@@ -542,6 +544,15 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         managedObjectContext?.save(nil)
     }
     
+    func reloadData() {
+        
+        if tableView.editing {
+            return
+        }
+        
+        tableView.reloadData()
+    }
+    
     func updateDistance() {
         
         if curLat == 0 && curLon == 0 {
@@ -554,7 +565,9 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
 
             } else {
                 
-                var timer = NSTimer.scheduledTimerWithTimeInterval(0.4, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
+                appDelegate.locationManager.startUpdatingLocation()
+                
+                var timer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
                 
                 if self.refreshControl != nil {
                     self.refreshControl.endRefreshing()
@@ -614,7 +627,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             }
         }
         
-        tableView.reloadData()
+        self.reloadData()
         if self.refreshControl != nil {
             self.refreshControl.endRefreshing()
         }
