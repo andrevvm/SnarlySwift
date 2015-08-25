@@ -211,10 +211,11 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
+        
         if textField == txtSpotName { // Switch focus to other text field
             txtSpotNotes.becomeFirstResponder()
         }
+        textField.resignFirstResponder()
         return true
     }
     
