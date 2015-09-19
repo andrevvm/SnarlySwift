@@ -75,8 +75,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             navigationBar.topItem!.title = "New Spot"
         }
         
-        var location = appDelegate.location
-        
         txtSpotName.attributedPlaceholder = NSAttributedString(string:"Spot name",
             attributes:[NSForegroundColorAttributeName: UIColor(red: 0.658, green: 0.607, blue: 0.611, alpha: 1.0)])
         
@@ -114,10 +112,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
             
-            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.2))
+            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 0.2)!)
             
             spot.title = txtSpotName.text
-            spot.notes = txtSpotNotes.text
+            spot.notes = txtSpotNotes.text!
             spot.photo = imageData
             spot.distance = 0
             spot.loc_disp = appDelegate.locationString
@@ -128,7 +126,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 spot.bust = false
             }
             
-            var location = appDelegate.location
+            let location = appDelegate.location
             
             if location != nil {
                 spot.loc_lat = appDelegate.curLat!
@@ -142,34 +140,50 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 
             } else {
                 
-                var locationAlert = UIAlertController(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", preferredStyle: UIAlertControllerStyle.Alert)
+                var locationAlert: AnyObject
                 
-                locationAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
-                    self.managedObjectContext?.deleteObject(spot)
-                }))
+                if #available(iOS 8.0, *) {
+                    locationAlert = UIAlertController(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", preferredStyle: UIAlertControllerStyle.Alert)
+                } else {
                 
-                locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction) in
-                    spot.loc_lat = 0
-                    spot.loc_lon = 0
-                    
-                    do {
-                        try self.managedObjectContext?.save()
-                    } catch _ {
-                    }
-                    self.performSegueWithIdentifier("toSpots", sender: self)
-                }))
+                    locationAlert = UIAlertView(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", delegate: self, cancelButtonTitle: "OK")
                 
-                presentViewController(locationAlert, animated: true, completion: nil)
+                }
+                
+                if #available(iOS 8.0, *) {
+                    locationAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
+                        self.managedObjectContext?.deleteObject(spot)
+                    }))
+                } else {
+                    // Fallback on earlier versions
+                }
+                
+                if #available(iOS 8.0, *) {
+                    locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction) in
+                        spot.loc_lat = 0
+                        spot.loc_lon = 0
+                        
+                        do {
+                            try self.managedObjectContext?.save()
+                        } catch _ {
+                        }
+                        self.performSegueWithIdentifier("toSpots", sender: self)
+                    }))
+                } else {
+                    // Fallback on earlier versions
+                }
+                
+                presentViewController(locationAlert as! UIViewController, animated: true, completion: nil)
                 
                 
             }
             
         } else {
             
-            var imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image, 0.0))
+            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 0.0)!)
             
             spot!.title = txtSpotName.text
-            spot!.notes = txtSpotNotes.text
+            spot!.notes = txtSpotNotes.text!
             spot!.photo = imageData
             
             if switchBust.on {
@@ -190,7 +204,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
     }
     
-    func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         imagePreview.image=tempImage
         self.dismissViewControllerAnimated(true, completion: nil)
@@ -234,7 +248,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             var imag = UIImagePickerController()
             imag.delegate = self
             imag.sourceType = UIImagePickerControllerSourceType.Camera;
-            imag.mediaTypes = [kUTTypeImage]
+            imag.mediaTypes = [kUTTypeImage as String]
             imag.allowsEditing = false
             
             self.presentViewController(imag, animated: true, completion: nil)

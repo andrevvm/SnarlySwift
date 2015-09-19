@@ -129,7 +129,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     lazy var applicationDocumentsDirectory: NSURL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "andrevv.SnarlySwift" in the application's documents Application Support directory.
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
-        return urls[urls.endIndex-1] as! NSURL
+        return urls[urls.endIndex-1] 
     }()
 //
     lazy var managedObjectModel: NSManagedObjectModel = {
@@ -151,21 +151,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             //NSPersistentStoreRebuildFromUbiquitousContentOption: true
         ]
         
-        var error: NSError? = nil
         var failureReason = "There was an error creating or loading the application's saved data."
-
-        if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: storeOptions, error: &error) == nil {
+        
+        do {
+            try coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: storeOptions)
+        } catch let error as NSError {
             coordinator = nil
             // Report any error we got.
             let dict = NSMutableDictionary()
             dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
             dict[NSLocalizedFailureReasonErrorKey] = failureReason
             dict[NSUnderlyingErrorKey] = error
-            error = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict as [NSObject : AnyObject])
+            
             // Replace this with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog("Unresolved error \(error), \(error!.userInfo)")
-            abort()
+            NSLog("Unresolved error \(error), \(error.userInfo)")
+
         }
         
         return coordinator
@@ -185,15 +186,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     // MARK: - Core Data Saving support
 
     func saveContext () {
-        if let moc = self.managedObjectContext {
-            var error: NSError? = nil
-            if moc.hasChanges && !moc.save(&error) {
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                NSLog("Unresolved error \(error), \(error!.userInfo)")
-                abort()
-            }
+        
+        do {
+            let moc = try self.managedObjectContext
+        } catch let error as NSError {
+            NSLog("Unresolved error \(error), \(error.userInfo)")
         }
+        
     }
 
 }
