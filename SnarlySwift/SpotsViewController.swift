@@ -75,7 +75,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         
-        if let visibleCells = tableView!.visibleCells() as? [SpotCell] {
+        if let visibleCells = tableView!.visibleCells as? [SpotCell] {
             for parallaxCell in visibleCells {
                 parallax(parallaxCell)
             }
@@ -84,7 +84,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func parallax(cell: SpotCell) {
     
-        var yOffset = ((tableView.contentOffset.y - cell.frame.origin.y) / ImageHeight) * OffsetSpeed
+        let yOffset = ((tableView.contentOffset.y - cell.frame.origin.y) / ImageHeight) * OffsetSpeed
         cell.spotPhoto.frame.origin.y = yOffset - 40
 
     }
@@ -141,7 +141,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.refreshControl.backgroundColor = UIColor.clearColor()
         self.refreshControl.tintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
         
-        var attr = [NSForegroundColorAttributeName:UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)]
+        let attr = [NSForegroundColorAttributeName:UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)]
         self.refreshControl.attributedTitle = NSAttributedString(string: "Refresh location", attributes:attr)
         
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
@@ -162,7 +162,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
     }
     
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         var location = locations.last as! CLLocation
         
@@ -186,24 +186,27 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     func fetchSpots() {
         fetchedResultController = getFetchedResultController()
         fetchedResultController.delegate = self
-        fetchedResultController.performFetch(nil)
+        do {
+            try fetchedResultController.performFetch()
+        } catch _ {
+        }
     }
 
     
     func setSpots() {
         for spot in fetchedResultController.fetchedObjects! {
             
-            var spot = spot as! Spots
+            let spot = spot as! Spots
             
             var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
             var loc_disp = spot.loc_disp as String?
-            var loc_lat = spot.loc_lat as Double
-            var loc_lon = spot.loc_lon as Double
-            var location = CLLocation(latitude: loc_lat, longitude: loc_lon)
+            let loc_lat = spot.loc_lat as Double
+            let loc_lon = spot.loc_lon as Double
+            let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
             
-            var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
+            let distance = curLoc.distanceFromLocation(location) as CLLocationDistance
             
-            var locale = NSLocale.currentLocale()
+            let locale = NSLocale.currentLocale()
             let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
             var distanceNum:Double = 0.0
             if isMetric == true {
@@ -268,7 +271,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
                 cell.sampleOverlay.hidden = true
             }
             
-            var bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
+            let bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
             
             if spot.bust {
                 bustIcon.hidden = false
@@ -299,16 +302,16 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.setSpots()
     }
     
-    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
-        var shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
             
         let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
             
         let img:UIImage = UIImage(data: spot.photo as NSData!)!
         
-        var messageStr: String = "— Sent with http://getsnarly.com"
-        var spotTitle: String = spot.title! + " "
+        let messageStr: String = "— Sent with http://getsnarly.com"
+        let spotTitle: String = spot.title! + " "
         
         if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spot.loc_lat),\(spot.loc_lon)"){
             let objectsToShare = [img, spotTitle, spotMap, messageStr]
@@ -335,7 +338,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     shareAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-share")!)
     
-    var editAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
+    let editAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
         let spot:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         self.performSegueWithIdentifier("editSpot", sender: spot)
@@ -343,19 +346,22 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     editAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-edit")!)
     
-    var deleteAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
+    let deleteAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
         
-        var deleteAlert = UIAlertController(title: "Delete spot?", message: "You won't be able to recover this spot until the next time you go there!", preferredStyle: UIAlertControllerStyle.Alert)
+        let deleteAlert = UIAlertController(title: "Delete spot?", message: "You won't be able to recover this spot until the next time you go there!", preferredStyle: UIAlertControllerStyle.Alert)
         
         deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
             return false
         }))
         
-        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction!) in
+        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
             let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
             self.managedObjectContext?.deleteObject(managedObject)
-            self.managedObjectContext?.save(nil)
+            do {
+                try self.managedObjectContext?.save()
+            } catch _ {
+            }
             
             // remove the deleted item from the `UITableView`
             self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
@@ -378,7 +384,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        var selectedSpot = managedObject as! Spots
+        let selectedSpot = managedObject as! Spots
         
         performSegueWithIdentifier("spotDetail", sender: selectedSpot)
     }
@@ -411,16 +417,16 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
         
         var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
-        var loc_lat = spot.loc_lat as Double
-        var loc_lon = spot.loc_lon as Double
-        var location = CLLocation(latitude: loc_lat, longitude: loc_lon)
+        let loc_lat = spot.loc_lat as Double
+        let loc_lon = spot.loc_lon as Double
+        let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
         
-        var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
+        let distance = curLoc.distanceFromLocation(location) as CLLocationDistance
         
         var distanceDisplay:NSString = ""
         var distanceString:NSString = ""
         
-        var locale = NSLocale.currentLocale()
+        let locale = NSLocale.currentLocale()
         let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
         var distanceNum:Double = 0.0
         var distanceLabel:NSString = "mi"
@@ -514,7 +520,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         spot.loc_lon = -111.915254
         spot.loc_disp = "Scottsdale, AZ"
             
-        managedObjectContext?.save(nil)
+        do {
+            try managedObjectContext?.save()
+        } catch _ {
+        }
         
     }
     
@@ -541,7 +550,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         spot.loc_lat = lat
         spot.loc_lon = lon
         
-        managedObjectContext?.save(nil)
+        do {
+            try managedObjectContext?.save()
+        } catch _ {
+        }
     }
     
     func reloadData() {
@@ -580,13 +592,19 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
         
         // Create a fetch request
-        var fetchRequest = NSFetchRequest()
-        var entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
+        let fetchRequest = NSFetchRequest()
+        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
         fetchRequest.entity = entitySpot
         
         // Execute the fetch request
         var error : NSError?
-        var fetchedObjects = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: &error)
+        var fetchedObjects: [AnyObject]?
+        do {
+            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
+        } catch let error1 as NSError {
+            error = error1
+            fetchedObjects = nil
+        }
         
         // Change the attributer name of
         // each managed object to the self.name
@@ -607,20 +625,23 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
                         
                     }
                     
-                    var loc_lat = spot.loc_lat as Double
-                    var loc_lon = spot.loc_lon as Double
-                    var location = CLLocation(latitude: loc_lat, longitude: loc_lon)
-                    var distance = curLoc.distanceFromLocation(location) as CLLocationDistance
-                    var locale = NSLocale.currentLocale()
+                    let loc_lat = spot.loc_lat as Double
+                    let loc_lon = spot.loc_lon as Double
+                    let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
+                    let distance = curLoc.distanceFromLocation(location) as CLLocationDistance
+                    let locale = NSLocale.currentLocale()
                     let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
-                    var distanceNum:Double = distance
+                    let distanceNum:Double = distance
                     
                     spot.distance = distanceNum
                     
                 }
                 
                 // Save the updated managed objects into the store
-                if !self.managedObjectContext!.save(&error) {
+                do {
+                    try self.managedObjectContext!.save()
+                } catch let error1 as NSError {
+                    error = error1
                     NSLog("Unresolved error (error), (error!.userInfo)")
                     abort()
                 }

@@ -19,7 +19,7 @@ class SpotCell: UITableViewCell {
     @IBOutlet var cityLabel: UILabel!
     @IBOutlet var distanceLabel: UILabel!
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     

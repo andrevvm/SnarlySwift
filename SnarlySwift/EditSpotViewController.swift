@@ -134,7 +134,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 spot.loc_lat = appDelegate.curLat!
                 spot.loc_lon = appDelegate.curLon!
                 
-                managedObjectContext?.save(nil)
+                do {
+                    try managedObjectContext?.save()
+                } catch _ {
+                }
                 performSegueWithIdentifier("toSpots", sender: self)
                 
             } else {
@@ -145,11 +148,14 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                     self.managedObjectContext?.deleteObject(spot)
                 }))
                 
-                locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction!) in
+                locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction) in
                     spot.loc_lat = 0
                     spot.loc_lon = 0
                     
-                    self.managedObjectContext?.save(nil)
+                    do {
+                        try self.managedObjectContext?.save()
+                    } catch _ {
+                    }
                     self.performSegueWithIdentifier("toSpots", sender: self)
                 }))
                 
@@ -172,7 +178,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 spot!.bust = false
             }
             
-            self.managedObjectContext?.save(nil)
+            do {
+                try self.managedObjectContext?.save()
+            } catch _ {
+            }
             performSegueWithIdentifier("toSpots", sender: self)
             
         }
@@ -181,7 +190,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
     }
     
-    func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+    func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         imagePreview.image=tempImage
         self.dismissViewControllerAnimated(true, completion: nil)
@@ -225,7 +234,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             var imag = UIImagePickerController()
             imag.delegate = self
             imag.sourceType = UIImagePickerControllerSourceType.Camera;
-            imag.mediaTypes = [kUTTypeImage!]
+            imag.mediaTypes = [kUTTypeImage]
             imag.allowsEditing = false
             
             self.presentViewController(imag, animated: true, completion: nil)

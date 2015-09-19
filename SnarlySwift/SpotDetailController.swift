@@ -51,18 +51,18 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
 
             
             if spot?.loc_lat != 0 && spot?.loc_lon != 0 {
-                var loc_lat = spot?.loc_lat as! CLLocationDegrees
-                var loc_lon = spot?.loc_lon as! CLLocationDegrees
+                let loc_lat = spot?.loc_lat as! CLLocationDegrees
+                let loc_lon = spot?.loc_lon as! CLLocationDegrees
                 
-                var spotLati: CLLocationDegrees = loc_lat
-                var spotLong: CLLocationDegrees = loc_lon
+                let spotLati: CLLocationDegrees = loc_lat
+                let spotLong: CLLocationDegrees = loc_lon
                 spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
                 spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 1200, 1200)
                 spotName = spot?.title
                 
                 self.mapView.setRegion(spotRegion, animated: true)
                 ///Red Pin
-                var spotPin = MKPointAnnotation()
+                let spotPin = MKPointAnnotation()
                 spotPin.coordinate = spotLoc
                 spotPin.title = spot?.title
                 self.mapView.addAnnotation(spotPin)
@@ -90,12 +90,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func openMap(sender:UIButton) {
-        var options = [
+        let options = [
             MKLaunchOptionsMapCenterKey: NSValue(MKCoordinate: spotRegion.center),
             MKLaunchOptionsMapSpanKey: NSValue(MKCoordinateSpan: spotRegion.span)
         ]
-        var placemark = MKPlacemark(coordinate: spotLoc, addressDictionary: nil)
-        var mapItem = MKMapItem(placemark: placemark)
+        let placemark = MKPlacemark(coordinate: spotLoc, addressDictionary: nil)
+        let mapItem = MKMapItem(placemark: placemark)
         mapItem.name = spotName
         mapItem.openInMapsWithLaunchOptions(options)
     }
@@ -105,9 +105,9 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         let img: UIImage = spotPhoto.image!
         let loc = spotLoc
         
-        var messageStr = "— Sent with http://getsnarly.com"
+        let messageStr = "— Sent with http://getsnarly.com"
         
-        var spotTitle: String = spotName + " "
+        let spotTitle: String = spotName + " "
         
         if let spotMap = NSURL(string: "http://maps.google.com/maps?q=\(spotLoc.latitude),\(spotLoc.longitude)"){
             let objectsToShare = [img,spotTitle,spotMap,messageStr]
@@ -142,7 +142,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCellWithIdentifier("NotesCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("NotesCell", forIndexPath: indexPath) 
         cell.textLabel!.text = spot?.notes
         cell.textLabel!.lineBreakMode = .ByWordWrapping
         cell.textLabel!.numberOfLines = 0;
