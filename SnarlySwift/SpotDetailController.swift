@@ -103,7 +103,6 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     func shareSpot() {
         
         let img: UIImage = spotPhoto.image!
-        let loc = spotLoc
         
         let messageStr = "— Sent with http://getsnarly.com"
         

@@ -88,7 +88,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         self.navigationController?.navigationBarHidden = false
         
-        if let tempConst = tempImage {
+        if (tempImage != nil) {
             saveButton.enabled = true
         } else {
             saveButton.enabled = false
@@ -245,7 +245,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     @IBAction func capture(sender : AnyObject) {
         if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
             
-            var imag = UIImagePickerController()
+            let imag = UIImagePickerController()
             imag.delegate = self
             imag.sourceType = UIImagePickerControllerSourceType.Camera;
             imag.mediaTypes = [kUTTypeImage as String]

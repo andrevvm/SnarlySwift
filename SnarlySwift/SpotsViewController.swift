@@ -33,9 +33,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func spotFetchRequest() -> NSFetchRequest {
         let fetchRequest = NSFetchRequest(entityName: "Spots")
-        let checkRequest = NSFetchRequest(entityName: "Spots")
         let sortDescriptor1 = NSSortDescriptor(key: "distance", ascending: true)
-        let sortDescriptor2 = NSSortDescriptor(key: "date", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor1]
         
         return fetchRequest
@@ -202,7 +200,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             let spot = spot as! Spots
             
-            let loc_disp = spot.loc_disp as String?
             let loc_lat = spot.loc_lat as Double
             let loc_lon = spot.loc_lon as Double
             let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
