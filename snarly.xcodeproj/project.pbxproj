@@ -19,6 +19,13 @@
 		E61CC7661B87EBEE001DC70C /* apercu-regular-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E61CC7641B87EBEE001DC70C /* apercu-regular-webfont.ttf */; };
 		E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AF519923C4A00118206 /* SpotDetailController.swift */; };
 		E62A6AFF1992463E00118206 /* Spots.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AFE1992463E00118206 /* Spots.swift */; };
+		E66C7BD71BADC4F800E1444B /* FacebookSDKStrings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E66C7BD31BADC4F800E1444B /* FacebookSDKStrings.bundle */; settings = {ASSET_TAGS = (); }; };
+		E66C7BD81BADC4F800E1444B /* FBAudienceNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BD41BADC4F800E1444B /* FBAudienceNetwork.framework */; settings = {ASSET_TAGS = (); }; };
+		E66C7BD91BADC4F800E1444B /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BD51BADC4F800E1444B /* FBSDKCoreKit.framework */; settings = {ASSET_TAGS = (); }; };
+		E66C7BDA1BADC4F800E1444B /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BD61BADC4F800E1444B /* FBSDKLoginKit.framework */; settings = {ASSET_TAGS = (); }; };
+		E66C7BDE1BADC5DD00E1444B /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BDB1BADC5DD00E1444B /* Bolts.framework */; settings = {ASSET_TAGS = (); }; };
+		E66C7BDF1BADC5DD00E1444B /* FBSDKMessengerShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BDC1BADC5DD00E1444B /* FBSDKMessengerShareKit.framework */; settings = {ASSET_TAGS = (); }; };
+		E66C7BE01BADC5DD00E1444B /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BDD1BADC5DD00E1444B /* FBSDKShareKit.framework */; settings = {ASSET_TAGS = (); }; };
 		E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */; };
 		E6C6061B1991182000338777 /* SpotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C6061A1991182000338777 /* SpotCell.swift */; };
 /* End PBXBuildFile section */
@@ -52,6 +59,13 @@
 		E62A6AF519923C4A00118206 /* SpotDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotDetailController.swift; sourceTree = "<group>"; };
 		E62A6AFE1992463E00118206 /* Spots.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spots.swift; sourceTree = "<group>"; };
 		E63C25941B865C1600BD773F /* SnarlySwift 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 5.xcdatamodel"; sourceTree = "<group>"; };
+		E66C7BD31BADC4F800E1444B /* FacebookSDKStrings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = FacebookSDKStrings.bundle; sourceTree = "<group>"; };
+		E66C7BD41BADC4F800E1444B /* FBAudienceNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBAudienceNetwork.framework; sourceTree = "<group>"; };
+		E66C7BD51BADC4F800E1444B /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		E66C7BD61BADC4F800E1444B /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
+		E66C7BDB1BADC5DD00E1444B /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
+		E66C7BDC1BADC5DD00E1444B /* FBSDKMessengerShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKMessengerShareKit.framework; sourceTree = "<group>"; };
+		E66C7BDD1BADC5DD00E1444B /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKShareKit.framework; sourceTree = "<group>"; };
 		E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SnarlySwift-Bridging-Header.h"; sourceTree = "<group>"; };
 		E6A3CAA61B357C0200C77B4B /* SnarlySwift 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 3.xcdatamodel"; sourceTree = "<group>"; };
 		E6A3CAA71B35905500C77B4B /* SnarlySwift 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 4.xcdatamodel"; sourceTree = "<group>"; };
@@ -65,7 +79,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E66C7BDE1BADC5DD00E1444B /* Bolts.framework in Frameworks */,
 				E6121BA1198FCC0000E72142 /* MapKit.framework in Frameworks */,
+				E66C7BD91BADC4F800E1444B /* FBSDKCoreKit.framework in Frameworks */,
+				E66C7BE01BADC5DD00E1444B /* FBSDKShareKit.framework in Frameworks */,
+				E66C7BDA1BADC4F800E1444B /* FBSDKLoginKit.framework in Frameworks */,
+				E66C7BDF1BADC5DD00E1444B /* FBSDKMessengerShareKit.framework in Frameworks */,
+				E66C7BD81BADC4F800E1444B /* FBAudienceNetwork.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,6 +168,13 @@
 		E6121BA2198FCC1000E72142 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E66C7BDB1BADC5DD00E1444B /* Bolts.framework */,
+				E66C7BDC1BADC5DD00E1444B /* FBSDKMessengerShareKit.framework */,
+				E66C7BDD1BADC5DD00E1444B /* FBSDKShareKit.framework */,
+				E66C7BD31BADC4F800E1444B /* FacebookSDKStrings.bundle */,
+				E66C7BD41BADC4F800E1444B /* FBAudienceNetwork.framework */,
+				E66C7BD51BADC4F800E1444B /* FBSDKCoreKit.framework */,
+				E66C7BD61BADC4F800E1444B /* FBSDKLoginKit.framework */,
 				E6121BA0198FCC0000E72142 /* MapKit.framework */,
 			);
 			name = Frameworks;
@@ -245,6 +272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E61CC7651B87EBEE001DC70C /* apercu-bold-webfont.ttf in Resources */,
+				E66C7BD71BADC4F800E1444B /* FacebookSDKStrings.bundle in Resources */,
 				E6121B88198FC5E500E72142 /* Main.storyboard in Resources */,
 				E6121B8A198FC5E500E72142 /* Images.xcassets in Resources */,
 				E61CC7661B87EBEE001DC70C /* apercu-regular-webfont.ttf in Resources */,
@@ -392,6 +420,10 @@
 				CODE_SIGN_ENTITLEMENTS = SnarlySwift/SnarlySwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = SnarlySwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -411,6 +443,10 @@
 				CODE_SIGN_ENTITLEMENTS = SnarlySwift/SnarlySwift.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = SnarlySwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
