@@ -375,13 +375,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     }
     
 
-//    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//        
-//        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-//        var selectedSpot = managedObject as! Spots
-//        
-//        performSegueWithIdentifier("spotDetail", sender: selectedSpot)
-//    }
+    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+        var selectedSpot = managedObject as! Spots
+        
+        performSegueWithIdentifier("spotDetail", sender: selectedSpot)
+    }
     
 
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
