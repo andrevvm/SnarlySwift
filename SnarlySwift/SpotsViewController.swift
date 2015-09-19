@@ -121,7 +121,11 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.setSpots()
         
         if CLLocationManager.authorizationStatus() == .NotDetermined {
-            locationManager.requestWhenInUseAuthorization()
+            if #available(iOS 8.0, *) {
+                locationManager.requestWhenInUseAuthorization()
+            } else {
+                // Fallback on earlier versions
+            }
         }
         
         locationManager.delegate = self
@@ -164,11 +168,11 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        var location = locations.last as! CLLocation
+        let location = locations.last
         
-        curLoc = location
-        curLat = location.coordinate.latitude
-        curLon = location.coordinate.longitude
+        curLoc = location!
+        curLat = location!.coordinate.latitude
+        curLon = location!.coordinate.longitude
         updateDistance()
         
         
@@ -198,8 +202,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             let spot = spot as! Spots
             
-            var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
-            var loc_disp = spot.loc_disp as String?
+            let loc_disp = spot.loc_disp as String?
             let loc_lat = spot.loc_lat as Double
             let loc_lon = spot.loc_lon as Double
             let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
@@ -263,7 +266,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
             
-            var sampleOverlay = cell.contentView.viewWithTag(15) as! UIImageView
+            cell.contentView.viewWithTag(15) as! UIImageView
             
             if(firstLaunch == true && indexPath.row == 0) {
                 cell.sampleOverlay.hidden = false
@@ -302,6 +305,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.setSpots()
     }
     
+    @available(iOS 8.0, *)
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
@@ -381,7 +385,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     }
     
 
-    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         let selectedSpot = managedObject as! Spots
@@ -416,7 +420,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             return "???"
         }
         
-        var coordinates = CLLocationCoordinate2DMake(curLat, curLon)
         let loc_lat = spot.loc_lat as Double
         let loc_lon = spot.loc_lon as Double
         let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
@@ -508,7 +511,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
         
         let image = UIImage(named: "sample-spot")
-        var imageData = NSData(data: UIImageJPEGRepresentation(image, 0.8))
+        let imageData = NSData(data: UIImageJPEGRepresentation(image!, 0.8)!)
         
         spot.title = "The Wedge hubba"
         spot.notes = ""
@@ -537,7 +540,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         if let url = NSURL(string: url) {
             if let data = NSData(contentsOfURL: url){
                 image = UIImage(data: data)
-                imageData = NSData(data: UIImageJPEGRepresentation(image, 0.8))
+                imageData = NSData(data: UIImageJPEGRepresentation(image!, 0.8)!)
             }
         }
     
@@ -579,7 +582,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
                 
                 appDelegate.locationManager.startUpdatingLocation()
                 
-                var timer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
+                NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
                 
                 if self.refreshControl != nil {
                     self.refreshControl.endRefreshing()
@@ -629,8 +632,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
                     let loc_lon = spot.loc_lon as Double
                     let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
                     let distance = curLoc.distanceFromLocation(location) as CLLocationDistance
-                    let locale = NSLocale.currentLocale()
-                    let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
                     let distanceNum:Double = distance
                     
                     spot.distance = distanceNum
