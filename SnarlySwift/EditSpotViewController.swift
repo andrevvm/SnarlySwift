@@ -11,6 +11,7 @@ import MobileCoreServices
 import CoreData
 import CoreLocation
 import AssetsLibrary
+import ImageIO
 
 class CompressedImage: UIImageView {
     var compressedImageData: NSData?
@@ -45,6 +46,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
+    let spotSync = SnarlySpotSync()
+    
     var tempImage: UIImage!
     var alreadyLoaded: Bool!
     
@@ -71,6 +74,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 switchBust.on = false
             }
             navigationBar.topItem!.title = "Edit Spot"
+
+            
         } else {
             navigationBar.topItem!.title = "New Spot"
         }
@@ -112,7 +117,9 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
             
-            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 0.2)!)
+            
+            let resizedImage = RBResizeImage(imagePreview.image!)
+            let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
             
             spot.title = txtSpotName.text
             spot.notes = txtSpotNotes.text!
@@ -134,6 +141,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 
                 do {
                     try managedObjectContext?.save()
+                    self.spotSync.save(spot)
                 } catch _ {
                 }
                 performSegueWithIdentifier("toSpots", sender: self)
@@ -146,7 +154,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                     locationAlert = UIAlertController(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", preferredStyle: UIAlertControllerStyle.Alert)
                 } else {
                 
-                    locationAlert = UIAlertView(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", delegate: self, cancelButtonTitle: "OK")
+                    locationAlert = UIAlertView(title: "Location unknown!", message: "Try restarting the app to find your location.", delegate: self, cancelButtonTitle: "OK")
                 
                 }
                 
@@ -165,6 +173,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                         
                         do {
                             try self.managedObjectContext?.save()
+                            self.spotSync.save(spot)
                         } catch _ {
                         }
                         self.performSegueWithIdentifier("toSpots", sender: self)
@@ -180,7 +189,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
         } else {
             
-            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 0.0)!)
+            let resizedImage = RBResizeImage(imagePreview.image!)
+            let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
             
             spot!.title = txtSpotName.text
             spot!.notes = txtSpotNotes.text!
@@ -194,6 +204,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             do {
                 try self.managedObjectContext?.save()
+                if spot!.uuid != nil {
+                    self.spotSync.update(spot!, objectID: spot!.uuid!)
+                }
+                
             } catch _ {
             }
             performSegueWithIdentifier("toSpots", sender: self)
@@ -208,6 +222,34 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         imagePreview.image=tempImage
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func RBResizeImage(image: UIImage) -> UIImage {
+        let size = image.size
+        
+        let targetSize = CGSizeMake(968, 1296)
+        
+        let widthRatio  = targetSize.width  / image.size.width
+        let heightRatio = targetSize.height / image.size.height
+        
+        // Figure out what our orientation is, and use that to form the rectangle
+        var newSize: CGSize
+        if(widthRatio > heightRatio) {
+            newSize = CGSizeMake(size.width * heightRatio, size.height * heightRatio)
+        } else {
+            newSize = CGSizeMake(size.width * widthRatio,  size.height * widthRatio)
+        }
+        
+        // This is the rect that we've calculated out and this is what is actually used below
+        let rect = CGRectMake(0, 0, newSize.width, newSize.height)
+        
+        // Actually do the resizing to the rect using the ImageContext stuff
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.drawInRect(rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
     
     func keyboardWillShow(sender: NSNotification) {
@@ -253,6 +295,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             self.presentViewController(imag, animated: true, completion: nil)
         }
+    }
+    
+    func syncSpot(spot: Spots) {
+        
     }
     
     

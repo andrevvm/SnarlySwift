@@ -11,6 +11,7 @@ import CoreData
 
 class Spots: NSManagedObject {
     
+    @NSManaged var active: Bool
     @NSManaged var bust: Bool
     @NSManaged var date: NSDate
     @NSManaged var distance: NSNumber
@@ -19,7 +20,9 @@ class Spots: NSManagedObject {
     @NSManaged var loc_lon: NSNumber
     @NSManaged var notes: String
     @NSManaged var photo: NSData
+    @NSManaged var synced: Bool
     @NSManaged var title: String?
+    @NSManaged var uuid: String?
     
     override func awakeFromInsert()  {
         super.awakeFromInsert()

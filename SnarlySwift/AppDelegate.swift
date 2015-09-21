@@ -9,11 +9,12 @@
 import UIKit
 import CoreData
 import CoreLocation
+import Parse
+import ParseFacebookUtilsV4
+import Bolts
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
-    
-    //lazy var stack : CoreDataStack = CoreDataStack(modelName:"SnarlySwift", storeName:"SnarlySwiftStore")
                             
     var window: UIWindow?
     
@@ -24,6 +25,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var curLat: Double?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
+        
+        // Enable Local Datastore
+        Parse.enableLocalDatastore()
+        
+        // Initialize Parse.
+        Parse.setApplicationId("iuAEYOprPqDnC45lCQSlJRw096uacXs1dTbYwpOc",
+            clientKey: "HVbfx7aNRg7YTTanldKKKuFojxngUzMKQPUHK0qZ")
+        
+        // [Optional] Track statistics around application opens.
+        PFAnalytics.trackAppOpenedWithLaunchOptions(launchOptions)
+        //PFFacebookUtils.initializeFacebookWithApplicationLaunchOptions(launchOptions)
+        
         
         locationManager.delegate = self
         

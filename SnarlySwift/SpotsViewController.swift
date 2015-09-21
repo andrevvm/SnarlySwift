@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 import CoreLocation
-
+import Parse
 
 extension Double {
     var m: Double { return self }
@@ -33,13 +33,17 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func spotFetchRequest() -> NSFetchRequest {
         let fetchRequest = NSFetchRequest(entityName: "Spots")
+        let resultPredicate = NSPredicate(format: "active == YES")
         let sortDescriptor1 = NSSortDescriptor(key: "distance", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor1]
+        fetchRequest.predicate = resultPredicate
         
         return fetchRequest
     }
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    
+    let spotSync = SnarlySpotSync()
     
     @IBOutlet var EmptyBg: UIImageView!
     @IBOutlet var tableView: UITableView!
@@ -90,27 +94,35 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //updateDistance()
-        
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
             firstLaunch = true
             //Put any code here and it will be executed only once.
             self.populateData()
             
+            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
+            NSUserDefaults.standardUserDefaults().synchronize();
+        }
+        
+        let userID = UIDevice.currentDevice().identifierForVendor!.UUIDString
+        
+        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.1")){
+            
 //            self.addData("MACBA", url: "http://galaxypro.s3.amazonaws.com/spot-media/315/315-macba-skate-barcelona-spain.jpg", lat: 41.3831913, lon: 2.1668668)
 //            self.addData("Kulturforum", url: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Berlin_Kulturforum_2002a.jpg", lat: 52.5100104, lon: 13.3698381)
-//            
+//
 //            self.addData("3rd & Army", url: "http://www.whyelfiles.com/wf-navigator/wp-content/uploads/2013/02/IMG_7060.jpg", lat: 37.7480432, lon: -122.3890937)
-//            
+//
 //            self.addData("Landhausplatz", url: "http://www.landezine.com/wp-content/uploads/2011/09/Landhausplatz-02-photo-guenter-wett.jpg", lat: 47.2640377, lon: 11.3961701)
-//            
+//
 //            self.addData("Nansensgade", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 55.6835447, lon: 12.5651273)
-//            
+//
 //            self.addData("Spot der Visionaire", url: "http://www.artschoolvets.com/blog/motherfuckindaviddeery/files/2010/07/DSC06594.jpg", lat: 52.496649, lon: 13.449445)
-//            
+//
 //            self.addData("Blubba", url: "http://quartersnacks.com/wp-content/uploads/2010/05/P5180017.jpg", lat: 40.7141164, lon: -74.0034033)
             
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
+            setActive()
+            
+            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.1")
             NSUserDefaults.standardUserDefaults().synchronize();
         }
         
@@ -148,7 +160,32 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.addSubview(refreshControl)
-
+        
+        var user = PFUser()
+        user.username = userID
+        user.password = userID
+        
+        user.signUpInBackgroundWithBlock {
+            (succeeded: Bool, error: NSError?) -> Void in
+            if let error = error {
+                let errorString = error.userInfo["error"] as? NSString
+                print("not signed up!")
+            } else {
+                print("signed up!")
+            }
+        }
+        
+        
+        PFUser.logInWithUsernameInBackground(userID, password:userID) {
+            (user: PFUser?, error: NSError?) -> Void in
+            if user != nil {
+                self.syncNewSpots()
+                self.syncOutdatedSpots();
+            } else {
+                self.syncNewSpots()
+                self.syncOutdatedSpots();
+            }
+        }
         
     }
     
@@ -190,7 +227,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         fetchedResultController.delegate = self
         do {
             try fetchedResultController.performFetch()
-        } catch _ {
+        } catch {
         }
     }
 
@@ -293,8 +330,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             //cell.spotMask.layer.cornerRadius = 3
             cell.spotMask.clipsToBounds = true
-        
-            
+
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
@@ -358,7 +394,12 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
             let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-            self.managedObjectContext?.deleteObject(managedObject)
+            let selectedSpot = managedObject as! Spots
+            
+            self.spotSync.delete(selectedSpot, managedObject: managedObject)
+            
+            selectedSpot.active = false
+    
             do {
                 try self.managedObjectContext?.save()
             } catch _ {
@@ -366,6 +407,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             
             // remove the deleted item from the `UITableView`
             self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            
         }))
         
         self.presentViewController(deleteAlert, animated: true, completion: nil)
@@ -515,6 +557,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         spot.photo = imageData
         spot.distance = 0
         spot.bust = false
+        spot.synced = true
         
         spot.loc_lat = 33.466661
         spot.loc_lon = -111.915254
@@ -543,7 +586,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
         spot.title = title as String
         spot.notes = ""
-        spot.photo = imageData!
+        if (imageData != nil) {
+            spot.photo = imageData!
+        }
+        
         spot.distance = 0
         spot.bust = false
         
@@ -565,12 +611,97 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         tableView.reloadData()
     }
     
+    func syncNewSpots() {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Spots")
+        
+        let resultPredicate1 = NSPredicate(format: "synced == NO")
+        let resultPredicate2 = NSPredicate(format: "uuid == nil")
+        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2])
+        fetchRequest.predicate = predicate
+        
+        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entitySpot
+        
+        // Execute the fetch request
+        var error : NSError?
+        var fetchedObjects: [AnyObject]?
+        do {
+            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
+        } catch let error1 as NSError {
+            error = error1
+            fetchedObjects = nil
+        }
+        
+        // Change the attributer name of
+        // each managed object to the self.name
+        if let spots = fetchedObjects {
+            if error == nil {
+                for spot in spots {
+                    
+                    let spot = spot as! Spots
+                    
+                    spotSync.save(spot)
+                    
+                    
+                }
+                
+                
+            }
+        }
+        
+    }
+    
+    func syncOutdatedSpots() {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Spots")
+        
+        let resultPredicate1 = NSPredicate(format: "synced == NO")
+        let resultPredicate2 = NSPredicate(format: "uuid != nil")
+        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2])
+        fetchRequest.predicate = predicate
+        
+        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entitySpot
+        
+        // Execute the fetch request
+        var error : NSError?
+        var fetchedObjects: [AnyObject]?
+        do {
+            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
+        } catch let error1 as NSError {
+            error = error1
+            fetchedObjects = nil
+        }
+        
+        // Change the attributer name of
+        // each managed object to the self.name
+        if let spots = fetchedObjects {
+            if error == nil {
+                for spot in spots {
+                    
+                    let spot = spot as! Spots
+                    
+                    spotSync.update(spot, objectID: spot.uuid!)
+                    
+                    
+                }
+                
+                
+            }
+        }
+        
+    }
+    
+    
+
     func updateDistance() {
         
         if curLat == 0 && curLon == 0 {
             
             
             if appDelegate.location != nil {
+                
                 curLoc = appDelegate.location!
                 curLat = appDelegate.curLat!
                 curLon = appDelegate.curLon!
@@ -592,9 +723,10 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
         
         // Create a fetch request
-        let fetchRequest = NSFetchRequest()
-        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
-        fetchRequest.entity = entitySpot
+        
+        let fetchRequest = NSFetchRequest(entityName: "Spots")
+        let resultPredicate = NSPredicate(format: "active == YES")
+        fetchRequest.predicate = resultPredicate
         
         // Execute the fetch request
         var error : NSError?
@@ -649,6 +781,59 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         self.reloadData()
         if self.refreshControl != nil {
             self.refreshControl.endRefreshing()
+        }
+        
+    }
+    
+    func setActive() {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Spots")
+
+        let resultPredicate = NSPredicate(format: "synced = nil")
+        
+        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entitySpot
+        fetchRequest.predicate = resultPredicate
+        
+        // Execute the fetch request
+        var error : NSError?
+        var fetchedObjects: [AnyObject]?
+        do {
+            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
+        } catch let error1 as NSError {
+            error = error1
+            fetchedObjects = nil
+        }
+        
+        // Change the attributer name of
+        // each managed object to the self.name
+        if let spots = fetchedObjects {
+            if error == nil {
+                for spot in spots {
+                    
+                    let spot = spot as! Spots
+                    
+                    spot.active = true
+                    if spot.title != "The Wedge hubba" {
+                        spot.synced = false
+                    } else {
+                        spot.synced = true
+                    }
+                    
+                    // Save the updated managed objects into the store
+                    do {
+                        try self.managedObjectContext!.save()
+                    } catch let error1 as NSError {
+                        error = error1
+                        NSLog("Unresolved error (error), (error!.userInfo)")
+                        abort()
+                    }
+                    
+                    
+                }
+                
+                
+            }
         }
         
     }
