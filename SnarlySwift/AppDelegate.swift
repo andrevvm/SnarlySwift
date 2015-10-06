@@ -117,10 +117,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
     
     func setupAppearance() {
-
-        UINavigationBar.appearance().barTintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
         
-        UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont(name: "Apercu-Bold", size: 18)!, NSForegroundColorAttributeName : UIColor.whiteColor()]
+        UINavigationBar.appearance().barStyle = .Black
+
+        UINavigationBar.appearance().barTintColor = UIColor(red: 0.945, green: 0.22, blue: 0.275, alpha: 1.0)
+        UINavigationBar.appearance().translucent = false
+        
+        UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont(name: "Apercu-Bold", size: 16)!, NSForegroundColorAttributeName : UIColor.whiteColor()]
 
         UINavigationBar.appearance().tintColor = UIColor.whiteColor()
         

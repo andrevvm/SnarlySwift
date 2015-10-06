@@ -8,7 +8,7 @@
 
 import UIKit
 
-let ImageHeight: CGFloat = 280.0
+let ImageHeight: CGFloat = 330.0
 let OffsetSpeed: CGFloat = 20.0
 
 class SpotCell: UITableViewCell {
@@ -28,10 +28,9 @@ class SpotCell: UITableViewCell {
     }
         
     
-    func offset(offset: CGPoint) {
-        spotPhoto!.frame = CGRectOffset(self.imageView!.bounds, offset.x, offset.y)
-    }
-    
+//    func offset(offset: CGPoint) {
+//        spotPhoto!.frame = CGRectOffset(self.imageView!.bounds, offset.x, offset.y)
+//    }
     
 
 }

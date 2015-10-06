@@ -64,10 +64,8 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>We're watching you!</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Your message</string>
+	<string>Snarly can only save your spots if you allow your location to be used!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Snarly can only save your spots if you allow your location to be used!</string>
 	<key>UIAppFonts</key>
@@ -87,7 +85,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
 </dict>
 </plist>

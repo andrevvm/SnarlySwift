@@ -118,6 +118,10 @@ class SnarlySpotSync {
         
         PFSpot["active"] = spot.active
         
+        if(spot.title == nil) {
+            spot.title = ""
+        }
+        
         PFSpot["title"] = spot.title
         PFSpot["location"] = Point
         

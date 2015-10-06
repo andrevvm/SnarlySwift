@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E60583B91BB5FA5F00974885 /* SnarlyMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60583B81BB5FA5F00974885 /* SnarlyMenu.swift */; settings = {ASSET_TAGS = (); }; };
 		E6121B80198FC5E400E72142 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B7F198FC5E400E72142 /* AppDelegate.swift */; };
 		E6121B83198FC5E500E72142 /* SnarlySwift.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E6121B81198FC5E500E72142 /* SnarlySwift.xcdatamodeld */; };
 		E6121B85198FC5E500E72142 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B84198FC5E500E72142 /* ViewController.swift */; };
@@ -58,6 +59,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E60583B81BB5FA5F00974885 /* SnarlyMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlyMenu.swift; sourceTree = "<group>"; };
 		E6121B7A198FC5E400E72142 /* SnarlySwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnarlySwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6121B7E198FC5E400E72142 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E6121B7F198FC5E400E72142 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 				E62A6AF519923C4A00118206 /* SpotDetailController.swift */,
 				E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */,
 				E6C6061A1991182000338777 /* SpotCell.swift */,
+				E60583B81BB5FA5F00974885 /* SnarlyMenu.swift */,
 			);
 			path = SnarlySwift;
 			sourceTree = "<group>";
@@ -364,6 +367,7 @@
 				E6121BA4198FD34400E72142 /* SpotsViewController.swift in Sources */,
 				E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */,
 				E6121B85198FC5E500E72142 /* ViewController.swift in Sources */,
+				E60583B91BB5FA5F00974885 /* SnarlyMenu.swift in Sources */,
 				E6C6061B1991182000338777 /* SpotCell.swift in Sources */,
 				E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */,
 				E6121B83198FC5E500E72142 /* SnarlySwift.xcdatamodeld in Sources */,

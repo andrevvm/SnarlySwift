@@ -33,6 +33,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     var spot: Spots? = nil
+    var capturedImage: UIImage?
 
     @IBOutlet var navigationBar: UINavigationBar!
     @IBOutlet var txtSpotName: UITextField!
@@ -80,6 +81,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             navigationBar.topItem!.title = "New Spot"
         }
         
+        
+        
         txtSpotName.attributedPlaceholder = NSAttributedString(string:"Spot name",
             attributes:[NSForegroundColorAttributeName: UIColor(red: 0.658, green: 0.607, blue: 0.611, alpha: 1.0)])
         
@@ -93,14 +96,15 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         self.navigationController?.navigationBarHidden = false
         
+        if(capturedImage != nil) {
+            tempImage = capturedImage
+            imagePreview.image = tempImage
+        }
+        
         if (tempImage != nil) {
             saveButton.enabled = true
         } else {
             saveButton.enabled = false
-            if !alreadyLoaded {
-                alreadyLoaded = true
-                capture(captureButton)
-            }
         }
         
         if spot != nil {
@@ -218,11 +222,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-        imagePreview.image=tempImage
-        self.dismissViewControllerAnimated(true, completion: nil)
-    }
+
     
     func RBResizeImage(image: UIImage) -> UIImage {
         let size = image.size
@@ -295,7 +295,15 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
             self.presentViewController(imag, animated: true, completion: nil)
         }
+        
     }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+        imagePreview.image=tempImage
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+
     
     func syncSpot(spot: Spots) {
         

@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import CoreLocation
+import MobileCoreServices
 import Parse
 
 extension Double {
@@ -19,7 +20,7 @@ extension Double {
     var mt: Double { return km * 1_000.0 }
 }
 
-class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
+class SpotsViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
     
     var myData: Array<AnyObject> = []
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
@@ -44,11 +45,13 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     let spotSync = SnarlySpotSync()
+    let editSpotsView = EditSpotViewController()
     
     @IBOutlet var EmptyBg: UIImageView!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var NewSpot: UIButton!
     @IBOutlet var NewSpotGradient: UIImageView!
+    @IBOutlet var NavBar: UINavigationBar!
     
     var locationManager = CLLocationManager()
     
@@ -56,12 +59,100 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     var curLon:Double = 0
     var curLoc:CLLocation = CLLocation()
     
+    let imag = UIImagePickerController()
+    
     var refreshControl:UIRefreshControl!
     
     var firstLaunch = false
     
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
     
+    }
+    
+    @IBAction func capture(sender : AnyObject) {
+        
+        let location = appDelegate.location
+        
+        if location != nil {
+        
+            if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
+                
+                self.presentViewController(imag, animated: true, completion: nil)
+                
+            } else {
+                
+                var cameraAlert: AnyObject
+                
+                cameraAlert = UIAlertView(title: "Camera not found", message: "Your camera must be enabled to add a spot.", delegate: self, cancelButtonTitle: "OK")
+                
+                cameraAlert.show()
+                
+            }
+            
+        } else {
+            
+            var locationAlert: AnyObject
+            
+            locationAlert = UIAlertView(title: "Location unknown!", message: "Try restarting the app or enabling wifi/data to find your location.", delegate: self, cancelButtonTitle: "OK")
+            
+            locationAlert.show()
+            
+        }
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        let tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+        
+        self.dismissViewControllerAnimated(true, completion: nil)
+        
+        saveSpot(tempImage)
+        
+        //self.performSegueWithIdentifier("newSpot", sender: tempImage)
+    }
+    
+    func saveSpot(capturedImage:UIImage) {
+        
+        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
+        
+        
+        let resizedImage = editSpotsView.RBResizeImage(capturedImage)
+        let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
+        
+        spot.title = ""
+        spot.photo = imageData
+        spot.distance = 0
+        spot.loc_disp = appDelegate.locationString
+        
+        let location = appDelegate.location
+        
+        if location != nil {
+            spot.loc_lat = appDelegate.curLat!
+            spot.loc_lon = appDelegate.curLon!
+            
+            do {
+                try managedObjectContext?.save()
+                self.spotSync.save(spot)
+            } catch _ {
+            
+            }
+            
+            self.tableView.setContentOffset(CGPointZero, animated:true)
+            
+        } else {
+            
+            
+            
+            var locationAlert: AnyObject
+            
+            locationAlert = UIAlertView(title: "Location unknown!", message: "Try restarting the app or enabling wifi/data to find your location.", delegate: self, cancelButtonTitle: "OK")
+            
+            presentViewController(locationAlert as! UIViewController, animated: true, completion: nil)
+            
+            
+            
+        }
+        
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -73,6 +164,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         self.reloadData()
         self.navigationController?.navigationBarHidden = false
+        
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
@@ -84,15 +176,39 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         }
     }
     
-    func parallax(cell: SpotCell) {
     
+    func parallax(cell: SpotCell) {
+        
         let yOffset = ((tableView.contentOffset.y - cell.frame.origin.y) / ImageHeight) * OffsetSpeed
-        cell.spotPhoto.frame.origin.y = yOffset - 40
+        cell.spotPhoto.frame.origin.y = yOffset - 65
 
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        let navBarTitleView = UIView(frame: CGRectMake(0.0, 0.0, self.view.frame.width, 44.0))
+//        navBarTitleView.backgroundColor = UIColor(red: 0.9414, green: 0.2187, blue: 0.2734, alpha: 1.0)
+//        
+//        let button = UIButton(type: UIButtonType.System)
+//        button.frame = CGRectMake(100, 100, 100, 50)
+//        button.backgroundColor = UIColor.greenColor()
+//        button.setTitle("Test Button", forState: UIControlState.Normal)
+//        button.setContentHuggingPriority(1000, forAxis: .Horizontal)
+//        //button.addTarget(self, action: "buttonAction:", forControlEvents: UIControlEvents.TouchUpInside)
+//        
+//        navBarTitleView.addSubview(button)
+//        
+//        self.navigationItem.titleView = navBarTitleView
+        
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
+            
+            imag.delegate = self
+            imag.sourceType = UIImagePickerControllerSourceType.Camera;
+            imag.mediaTypes = [kUTTypeImage as String]
+            imag.allowsEditing = false
+            
+        }
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
             firstLaunch = true
@@ -187,6 +303,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
             }
         }
         
+        
     }
     
     func refresh(sender:AnyObject)
@@ -195,6 +312,7 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     }
     
     override func viewDidDisappear(animated: Bool) {
+        
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0") == false){
             firstLaunch = false
             self.reloadData()
@@ -287,7 +405,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
         
-        parallax(cell)
         self.configureCell(cell, atIndexPath: indexPath)
         
         return cell
@@ -295,7 +412,6 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     
     func configureCell(cell: SpotCell,
         atIndexPath indexPath: NSIndexPath) {
-            
             
             
             let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
@@ -849,17 +965,32 @@ class SpotsViewController: UIViewController, UITableViewDelegate, CLLocationMana
     }
     */
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
         if segue.identifier == "spotDetail" {
+            
             let spotController:SpotDetailController = segue.destinationViewController as! SpotDetailController
             spotController.spot = sender as? Spots
+
+        }
+        
+        if segue.identifier == "newSpot" {
+            
+            let editController = segue.destinationViewController as! EditSpotViewController
+
+            let image = sender as? UIImage
+            editController.capturedImage = image
+            
         }
         
         if segue.identifier == "editSpot" {
+            
             let editController = segue.destinationViewController as! EditSpotViewController
             let spot = sender as? Spots
             editController.spot = spot
+            
         }
+
         
     }
 
