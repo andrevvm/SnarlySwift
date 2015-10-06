@@ -32,6 +32,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         
         if spot != nil {
             self.title = spot?.title
@@ -48,6 +49,8 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             } else {
                 iconBust.hidden = true
             }
+            
+            tableView.rowHeight = 50
 
             
             if spot?.loc_lat != 0 && spot?.loc_lon != 0 {
@@ -135,8 +138,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
 
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        tableView.estimatedRowHeight = 52.0
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = 50
         return 1
     }
     

@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var locationString: String?
     var curLon: Double?
     var curLat: Double?
+    var settingLocation: Bool = false
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
@@ -67,17 +68,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        NSNotificationCenter.defaultCenter().postNotificationName("doOnLocationUpdate", object: nil)
         location = locations.last
-        setLocationVars(location)
+        if location != nil {
+            setLocationVars(location)
+        }
+        
     }
     
     func setLocationVars(location:CLLocation?) {
-        if location != nil {
+        
+        if (self.locationString == nil && self.settingLocation == false && location != nil) {
+            self.settingLocation = true
             getLocationString(location!.coordinate.latitude as Double, loc_lon: location!.coordinate.longitude as Double, completion: { (answer) -> Void in
-        
+                self.settingLocation = false
                 self.locationString = answer
-        
             })
         }
         
@@ -86,6 +90,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
     
     func getLocationString(loc_lat:Double, loc_lon:Double, completion: (answer: String?) -> Void) {
+        
+        print("getlocationstring")
         
         let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
         
@@ -121,7 +127,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         UINavigationBar.appearance().barStyle = .Black
 
         UINavigationBar.appearance().barTintColor = UIColor(red: 0.945, green: 0.22, blue: 0.275, alpha: 1.0)
-        UINavigationBar.appearance().translucent = false
+        
+        
+        if (UIDevice.currentDevice().systemVersion as NSString).floatValue >= 8.0 {
+            
+            UINavigationBar.appearance().translucent = false
+        }
         
         UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont(name: "Apercu-Bold", size: 16)!, NSForegroundColorAttributeName : UIColor.whiteColor()]
 

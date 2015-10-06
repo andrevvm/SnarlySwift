@@ -10,13 +10,24 @@ import Foundation
 
 class SnarlyMenu: UIViewController {
     
-    @IBOutlet var navigationBar: UIView?
+    @IBAction func unwindToMenu(segue: UIStoryboardSegue) {
+    }
     
     
     override func viewDidLoad() {
         
-        navigationBar!.backgroundColor = UIColor(red: 0.9414, green: 0.2187, blue: 0.2734, alpha: 1.0)
+        super.viewDidLoad()
         
     }
     
+    override func viewDidAppear(animated: Bool) {
+
+        self.navigationController?.navigationBar.backgroundColor = UIColor(red: 0.9414, green: 0.2187, blue: 0.2734, alpha: 1.0)
+        
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return UIStatusBarStyle.LightContent
+    }
+
 }

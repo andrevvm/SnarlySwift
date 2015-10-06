@@ -20,6 +20,9 @@
 		E61CC7661B87EBEE001DC70C /* apercu-regular-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E61CC7641B87EBEE001DC70C /* apercu-regular-webfont.ttf */; };
 		E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AF519923C4A00118206 /* SpotDetailController.swift */; };
 		E62A6AFF1992463E00118206 /* Spots.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AFE1992463E00118206 /* Spots.swift */; };
+		E667A1A41BC4517F001890F4 /* SnarlyNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */; settings = {ASSET_TAGS = (); }; };
+		E668585C1BC43ABD00857DD4 /* MenuSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E668585B1BC43ABD00857DD4 /* MenuSegue.swift */; settings = {ASSET_TAGS = (); }; };
+		E668585E1BC43F7A00857DD4 /* MenuSegueUnwind.swift in Sources */ = {isa = PBXBuildFile; fileRef = E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */; settings = {ASSET_TAGS = (); }; };
 		E66C7BD71BADC4F800E1444B /* FacebookSDKStrings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E66C7BD31BADC4F800E1444B /* FacebookSDKStrings.bundle */; settings = {ASSET_TAGS = (); }; };
 		E66C7BD81BADC4F800E1444B /* FBAudienceNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BD41BADC4F800E1444B /* FBAudienceNetwork.framework */; settings = {ASSET_TAGS = (); }; };
 		E66C7BD91BADC4F800E1444B /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BD51BADC4F800E1444B /* FBSDKCoreKit.framework */; settings = {ASSET_TAGS = (); }; };
@@ -78,6 +81,9 @@
 		E62A6AF519923C4A00118206 /* SpotDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotDetailController.swift; sourceTree = "<group>"; };
 		E62A6AFE1992463E00118206 /* Spots.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spots.swift; sourceTree = "<group>"; };
 		E63C25941B865C1600BD773F /* SnarlySwift 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 5.xcdatamodel"; sourceTree = "<group>"; };
+		E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlyNavController.swift; sourceTree = "<group>"; };
+		E668585B1BC43ABD00857DD4 /* MenuSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuSegue.swift; sourceTree = "<group>"; };
+		E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuSegueUnwind.swift; sourceTree = "<group>"; };
 		E66C7BD31BADC4F800E1444B /* FacebookSDKStrings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = FacebookSDKStrings.bundle; sourceTree = "<group>"; };
 		E66C7BD41BADC4F800E1444B /* FBAudienceNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBAudienceNetwork.framework; sourceTree = "<group>"; };
 		E66C7BD51BADC4F800E1444B /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
@@ -180,6 +186,9 @@
 				E6121B7F198FC5E400E72142 /* AppDelegate.swift */,
 				E6121B84198FC5E500E72142 /* ViewController.swift */,
 				E6121B86198FC5E500E72142 /* Main.storyboard */,
+				E668585B1BC43ABD00857DD4 /* MenuSegue.swift */,
+				E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */,
+				E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */,
 				E6121B89198FC5E500E72142 /* Images.xcassets */,
 				E6121B81198FC5E500E72142 /* SnarlySwift.xcdatamodeld */,
 				E62A6AFE1992463E00118206 /* Spots.swift */,
@@ -369,11 +378,14 @@
 				E6121B85198FC5E500E72142 /* ViewController.swift in Sources */,
 				E60583B91BB5FA5F00974885 /* SnarlyMenu.swift in Sources */,
 				E6C6061B1991182000338777 /* SpotCell.swift in Sources */,
+				E667A1A41BC4517F001890F4 /* SnarlyNavController.swift in Sources */,
 				E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */,
 				E6121B83198FC5E500E72142 /* SnarlySwift.xcdatamodeld in Sources */,
 				E6121B80198FC5E400E72142 /* AppDelegate.swift in Sources */,
 				E66C7C041BAEF85E00E1444B /* SnarlySpotSync.swift in Sources */,
+				E668585C1BC43ABD00857DD4 /* MenuSegue.swift in Sources */,
 				E62A6AFF1992463E00118206 /* Spots.swift in Sources */,
+				E668585E1BC43F7A00857DD4 /* MenuSegueUnwind.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

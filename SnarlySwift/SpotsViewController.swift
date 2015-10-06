@@ -69,6 +69,10 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     }
     
+    @IBAction func hideMenu(sender: UIStoryboardSegue){
+        
+    }
+    
     @IBAction func capture(sender : AnyObject) {
         
         let location = appDelegate.location
@@ -303,6 +307,8 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             }
         }
         
+        self.tableView.rowHeight = 200.0
+        
         
     }
     
@@ -334,6 +340,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return UIStatusBarStyle.LightContent
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -509,20 +516,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         }))
         
         deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
-            let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-            let selectedSpot = managedObject as! Spots
-            
-            self.spotSync.delete(selectedSpot, managedObject: managedObject)
-            
-            selectedSpot.active = false
-    
-            do {
-                try self.managedObjectContext?.save()
-            } catch _ {
-            }
-            
-            // remove the deleted item from the `UITableView`
-            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            self.deleteSpot(indexPath)
             
         }))
         
@@ -550,18 +544,30 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
 
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-//        switch editingStyle {
-//        case .Delete:
-//            let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-//            managedObjectContext?.deleteObject(managedObject)
-//            managedObjectContext?.save(nil)
-//
-//            // remove the deleted item from the `UITableView`
-//            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-//        default:
-//            return
-//            
-//        }
+        switch editingStyle {
+        case .Delete:
+            self.deleteSpot(indexPath)
+        default:
+            return
+            
+        }
+    }
+    
+    func deleteSpot(indexPath: NSIndexPath) {
+        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+        let selectedSpot = managedObject as! Spots
+        
+        self.spotSync.delete(selectedSpot, managedObject: managedObject)
+        
+        selectedSpot.active = false
+        
+        do {
+            try self.managedObjectContext?.save()
+        } catch _ {
+        }
+        
+        // remove the deleted item from the `UITableView`
+        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
     }
     
     
@@ -826,7 +832,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
                 
                 appDelegate.locationManager.startUpdatingLocation()
                 
-                NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
+                //NSTimer.scheduledTimerWithTimeInterval(100, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
                 
                 if self.refreshControl != nil {
                     self.refreshControl.endRefreshing()
@@ -993,5 +999,5 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
 
         
     }
-
+    
 }
