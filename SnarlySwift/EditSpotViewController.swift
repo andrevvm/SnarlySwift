@@ -33,6 +33,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     var spot: Spots? = nil
+    var newSpot: Spots? = nil
     var capturedImage: UIImage?
 
     @IBOutlet var navigationBar: UINavigationBar!
@@ -44,43 +45,27 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var editView: UIView!
     @IBOutlet var topConstraint: NSLayoutConstraint!
+    @IBOutlet var bottomGuide: UILabel!
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     let spotSync = SnarlySpotSync()
     
     var tempImage: UIImage!
-    var alreadyLoaded: Bool!
     
+    var location: CLLocation!
     var locationString: String!
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return UIStatusBarStyle.LightContent
+    }
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        alreadyLoaded = false
-        
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillShow:"), name:UIKeyboardWillShowNotification, object: nil);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("keyboardWillHide:"), name:UIKeyboardWillHideNotification, object: nil);
-        
-        
-        if(spot != nil) {
-            alreadyLoaded = true
-            txtSpotName.text = spot!.title
-            txtSpotNotes.text = spot!.notes
-            imagePreview.image = UIImage(data: spot?.photo as NSData!)
-            if spot!.bust {
-                switchBust.on = true
-            } else {
-                switchBust.on = false
-            }
-            navigationBar.topItem!.title = "Edit Spot"
-
-            
-        } else {
-            navigationBar.topItem!.title = "New Spot"
-        }
-        
         
         
         txtSpotName.attributedPlaceholder = NSAttributedString(string:"Spot name",
@@ -96,105 +81,65 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         self.navigationController?.navigationBarHidden = false
         
-        if(capturedImage != nil) {
-            tempImage = capturedImage
+        if(newSpot != nil) {
+            tempImage = UIImage(data: newSpot?.photo as NSData!)
             imagePreview.image = tempImage
         }
         
-        if (tempImage != nil) {
-            saveButton.enabled = true
+        if(spot != nil) {
+            txtSpotName.text = spot!.title
+            txtSpotNotes.text = spot!.notes
+            imagePreview.image = UIImage(data: spot?.photo as NSData!)
+            if spot!.bust {
+                switchBust.on = true
+            } else {
+                switchBust.on = false
+            }
+            navigationBar.topItem!.title = "Edit Spot"
+            
         } else {
-            saveButton.enabled = false
+            navigationBar.topItem!.title = "New Spot"
         }
         
-        if spot != nil {
-            saveButton.enabled = true
-        }
+        saveButton.enabled = true
     }
     
     
-    
     @IBAction func saveSpot(sender: UIBarButtonItem) {
-        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
         
-        if(spot == nil) {
+        if(newSpot != nil) {
             
+            let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
             let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
             
-            
-            let resizedImage = RBResizeImage(imagePreview.image!)
-            let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
+            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 0.6)!)
             
             spot.title = txtSpotName.text
             spot.notes = txtSpotNotes.text!
             spot.photo = imageData
             spot.distance = 0
             spot.loc_disp = appDelegate.locationString
+            spot.loc_lat = newSpot!.loc_lat
+            spot.loc_lon = newSpot!.loc_lon
+            spot.active = true
             
             if switchBust.on {
                 spot.bust = true
             } else {
                 spot.bust = false
             }
-            
-            let location = appDelegate.location
-            
-            if location != nil {
-                spot.loc_lat = appDelegate.curLat!
-                spot.loc_lon = appDelegate.curLon!
                 
-                do {
-                    try managedObjectContext?.save()
-                    self.spotSync.save(spot)
-                } catch _ {
-                }
-                performSegueWithIdentifier("toSpots", sender: self)
-                
-            } else {
-                
-                var locationAlert: AnyObject
-                
-                if #available(iOS 8.0, *) {
-                    locationAlert = UIAlertController(title: "Location unknown!", message: "You can save without the location, or try again to find your location.", preferredStyle: UIAlertControllerStyle.Alert)
-                } else {
-                
-                    locationAlert = UIAlertView(title: "Location unknown!", message: "Try restarting the app to find your location.", delegate: self, cancelButtonTitle: "OK")
-                
-                }
-                
-                if #available(iOS 8.0, *) {
-                    locationAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
-                        self.managedObjectContext?.deleteObject(spot)
-                    }))
-                } else {
-                    // Fallback on earlier versions
-                }
-                
-                if #available(iOS 8.0, *) {
-                    locationAlert.addAction(UIAlertAction(title: "Save", style: .Default, handler: { (action: UIAlertAction) in
-                        spot.loc_lat = 0
-                        spot.loc_lon = 0
-                        
-                        do {
-                            try self.managedObjectContext?.save()
-                            self.spotSync.save(spot)
-                        } catch _ {
-                        }
-                        self.performSegueWithIdentifier("toSpots", sender: self)
-                    }))
-                } else {
-                    // Fallback on earlier versions
-                }
-                
-                presentViewController(locationAlert as! UIViewController, animated: true, completion: nil)
-                
-                
+            do {
+                try managedObjectContext?.save()
+                self.spotSync.save(spot)
+            } catch _ {
             }
+            performSegueWithIdentifier("toSpots", sender: self)
+            
             
         } else {
             
-            let resizedImage = RBResizeImage(imagePreview.image!)
-            let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
+            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 0.6)!)
             
             spot!.title = txtSpotName.text
             spot!.notes = txtSpotNotes.text!
@@ -258,8 +203,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         let frame = -(info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue().height
         
-        self.topConstraint.constant = frame + 50
-        UIView.animateWithDuration(0.5) {
+        let screenHeight = UIScreen.mainScreen().bounds.size.height
+        
+        let offset = screenHeight - editView.frame.size.height - 310
+        
+        self.topConstraint.constant = frame + offset
+        UIView.animateWithDuration(0.3) {
             self.view.layoutIfNeeded()
         }
         
@@ -269,7 +218,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     func keyboardWillHide(sender: NSNotification) {
         
         self.topConstraint.constant = 0
-        UIView.animateWithDuration(0.5) {
+        UIView.animateWithDuration(0.3) {
             self.view.layoutIfNeeded()
         }
         
@@ -300,7 +249,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-        imagePreview.image=tempImage
+        
+        let resizedImage = RBResizeImage(tempImage)
+        
+        imagePreview.image=resizedImage
         self.dismissViewControllerAnimated(true, completion: nil)
     }
 

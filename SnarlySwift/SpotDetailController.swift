@@ -24,6 +24,10 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     var spotRegion: MKCoordinateRegion!
     var spotName: String!
     
+    @IBAction func unwindToSpots(unwindSegue: UIStoryboardSegue) {
+        print("unwind")
+    }
+    
     override func viewWillAppear(animated: Bool) {
 
         self.navigationController?.navigationBarHidden = false
@@ -80,12 +84,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let shareButton = UIBarButtonItem(image: UIImage(named: "btn-share"), style: .Plain, target: self, action: shareSelector)
         
-        let backSelector: Selector = "backToSpots"
-        
-        let backButton = UIBarButtonItem(image: UIImage(named: "btn-back"), style: .Plain, target: self, action: backSelector)
+//        let backSelector: Selector = "unwindToSpots"
+//        
+//        let backButton = UIBarButtonItem(image: UIImage(named: "btn-back"), style: .Plain, target: self, action: backSelector)
 
         self.navigationItem.rightBarButtonItem = shareButton
-        self.navigationItem.leftBarButtonItem = backButton
+        //self.navigationItem.leftBarButtonItem = backButton
     }
     
     func backToSpots() {

@@ -43,6 +43,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     }
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var location: CLLocation?
     
     let spotSync = SnarlySpotSync()
     let editSpotsView = EditSpotViewController()
@@ -58,6 +59,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     var curLat:Double = 0
     var curLon:Double = 0
     var curLoc:CLLocation = CLLocation()
+    var distanceNum:Double = 0.0
     
     let imag = UIImagePickerController()
     
@@ -75,7 +77,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     @IBAction func capture(sender : AnyObject) {
         
-        let location = appDelegate.location
+        location = appDelegate.location
         
         if location != nil {
         
@@ -107,53 +109,39 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         let tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismissViewControllerAnimated(false, completion: nil)
         
-        saveSpot(tempImage)
-        
-        //self.performSegueWithIdentifier("newSpot", sender: tempImage)
+        self.createSpot(tempImage)
     }
     
-    func saveSpot(capturedImage:UIImage) {
-        
-        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
-        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
-        
+    func createSpot(capturedImage:UIImage) {
         
         let resizedImage = editSpotsView.RBResizeImage(capturedImage)
         let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
         
-        spot.title = ""
-        spot.photo = imageData
-        spot.distance = 0
-        spot.loc_disp = appDelegate.locationString
+        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+        let newSpot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
         
-        let location = appDelegate.location
+        newSpot.photo = imageData
+        newSpot.loc_disp = appDelegate.locationString
+        newSpot.active = false
         
-        if location != nil {
-            spot.loc_lat = appDelegate.curLat!
-            spot.loc_lon = appDelegate.curLon!
+        let newLocation = self.location
+        
+        if newLocation != nil {
             
-            do {
-                try managedObjectContext?.save()
-                self.spotSync.save(spot)
-            } catch _ {
+            newSpot.loc_lat = (newLocation?.coordinate.latitude)!
+            newSpot.loc_lon = (newLocation?.coordinate.longitude)!
             
-            }
-            
-            self.tableView.setContentOffset(CGPointZero, animated:true)
+            self.performSegueWithIdentifier("newSpot", sender: newSpot)
             
         } else {
-            
-            
             
             var locationAlert: AnyObject
             
             locationAlert = UIAlertView(title: "Location unknown!", message: "Try restarting the app or enabling wifi/data to find your location.", delegate: self, cancelButtonTitle: "OK")
             
             presentViewController(locationAlert as! UIViewController, animated: true, completion: nil)
-            
-            
             
         }
         
@@ -281,35 +269,34 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.addSubview(refreshControl)
         
-        var user = PFUser()
+        let user = PFUser()
         user.username = userID
         user.password = userID
         
-        user.signUpInBackgroundWithBlock {
-            (succeeded: Bool, error: NSError?) -> Void in
-            if let error = error {
-                let errorString = error.userInfo["error"] as? NSString
-                print("not signed up!")
-            } else {
-                print("signed up!")
-            }
-        }
-        
-        
         PFUser.logInWithUsernameInBackground(userID, password:userID) {
-            (user: PFUser?, error: NSError?) -> Void in
-            if user != nil {
+            (login: PFUser?, error: NSError?) -> Void in
+            if login != nil {
                 self.syncNewSpots()
                 self.syncOutdatedSpots();
             } else {
                 self.syncNewSpots()
                 self.syncOutdatedSpots();
+                
+                user.signUpInBackgroundWithBlock {
+                    (succeeded: Bool, error: NSError?) -> Void in
+                    if let error = error {
+                        let errorString = error.userInfo["error"] as? NSString
+                        print(errorString)
+                    } else {
+                        print("signed up!")
+                    }
+                }
             }
         }
         
         self.tableView.rowHeight = 200.0
         
-        
+        updateDistance()
     }
     
     func refresh(sender:AnyObject)
@@ -332,8 +319,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         curLoc = location!
         curLat = location!.coordinate.latitude
         curLon = location!.coordinate.longitude
-        updateDistance()
-        
         
     }
     
@@ -370,7 +355,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             
             let locale = NSLocale.currentLocale()
             let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
-            var distanceNum:Double = 0.0
+            
             if isMetric == true {
                 distanceNum = distance.km as Double
             } else {
@@ -419,7 +404,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     func configureCell(cell: SpotCell,
         atIndexPath indexPath: NSIndexPath) {
-            
             
             let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
             
@@ -984,8 +968,8 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             
             let editController = segue.destinationViewController as! EditSpotViewController
 
-            let image = sender as? UIImage
-            editController.capturedImage = image
+            let newSpot = sender as? Spots
+            editController.newSpot = newSpot
             
         }
         

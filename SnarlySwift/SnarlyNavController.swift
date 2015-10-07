@@ -29,6 +29,11 @@ class SnarlyNavController: UINavigationController {
                     
                 })
                 return unwindSegue
+            } else {
+                let unwindSegue = UIStoryboardSegue(identifier: id, source: fromViewController, destination: toViewController, performHandler: { () -> Void in
+                    
+                })
+                return unwindSegue
             }
         }
         

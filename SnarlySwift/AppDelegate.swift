@@ -91,8 +91,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     func getLocationString(loc_lat:Double, loc_lon:Double, completion: (answer: String?) -> Void) {
         
-        print("getlocationstring")
-        
         let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
         
         CLGeocoder().reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
@@ -139,6 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         UINavigationBar.appearance().tintColor = UIColor.whiteColor()
         
     }
+    
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
