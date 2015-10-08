@@ -26,6 +26,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fb1021831967868805</string>
+				<string>snarly</string>
 			</array>
 		</dict>
 	</array>
