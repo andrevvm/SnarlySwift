@@ -493,9 +493,9 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         let selectedSpot = managedObject as! Spots
         
+        selectedSpot.active = false
         SnarlySpotSync().delete(selectedSpot, managedObject: managedObject)
         
-        selectedSpot.active = false
         
         do {
             try self.managedObjectContext?.save()

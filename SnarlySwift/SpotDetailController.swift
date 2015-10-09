@@ -275,9 +275,9 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func deleteSpot() {
-        SnarlySpotSync().delete(self.spot!, managedObject: self.managedObject!)
         
         self.spot!.active = false
+        SnarlySpotSync().delete(self.spot!, managedObject: self.managedObject!)
         
         do {
             try self.managedObjectContext?.save()
@@ -294,11 +294,6 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             editController.spot = spot
             
         }
-        
-        if segue.identifier == "deleteSpot" {
-            print("DELETEEEEE")
-        }
-        
         
     }
     
