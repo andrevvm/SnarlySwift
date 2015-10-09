@@ -60,7 +60,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func hideMenu() {
         UIView.animateWithDuration(0.3, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
-            self.optionsMenuTop.constant = -195
+            self.optionsMenuTop.constant = -200
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 self.menu = false
@@ -68,7 +68,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func setMenu() {
-        self.optionsMenuTop.constant = -195
+        self.optionsMenuTop.constant = -200
         self.menu = false
         self.view.layoutIfNeeded()
     }
