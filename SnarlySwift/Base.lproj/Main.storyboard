@@ -561,15 +561,24 @@
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="top" restorationIdentifier="EmptyBg" image="empty-bg" translatesAutoresizingMaskIntoConstraints="NO" id="dZx-y3-0Cj">
                                 <rect key="frame" x="0.0" y="-568" width="320" height="568"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="320" id="Pp9-Ai-Muw"/>
+                                    <constraint firstAttribute="height" constant="536" id="urz-C8-aPn">
+                                        <variation key="widthClass=compact" constant="505"/>
+                                    </constraint>
                                     <constraint firstAttribute="width" secondItem="dZx-y3-0Cj" secondAttribute="height" multiplier="40:71" id="zCT-n5-3Fj"/>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="constraints">
+                                        <exclude reference="Pp9-Ai-Muw"/>
+                                        <exclude reference="urz-C8-aPn"/>
                                         <exclude reference="zCT-n5-3Fj"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact">
+                                <variation key="widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="0.0" width="400" height="536"/>
                                     <mask key="constraints">
+                                        <include reference="Pp9-Ai-Muw"/>
+                                        <include reference="urz-C8-aPn"/>
                                         <exclude reference="zCT-n5-3Fj"/>
                                     </mask>
                                 </variation>
@@ -976,6 +985,7 @@
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QFK-XN-cEt">
                                 <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="60" id="cld-OW-FxA"/>
                                     <constraint firstAttribute="height" constant="60" id="f6E-eW-tCT"/>
@@ -996,7 +1006,8 @@
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <action selector="capture:" destination="7Ny-Sg-xxJ" eventType="touchUpInside" id="X53-G5-6ds"/>
+                                    <action selector="capture:" destination="7Ny-Sg-xxJ" eventType="touchUpInside" id="f6n-cY-T79"/>
+                                    <outletCollection property="gestureRecognizers" destination="700-S2-LlH" appends="YES" id="4hJ-ck-9RX"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1008,6 +1019,7 @@
                             <constraint firstItem="vdk-nq-IIU" firstAttribute="top" secondItem="4E3-iZ-FuC" secondAttribute="bottom" constant="20" symbolic="YES" id="Fpr-fw-Z06">
                                 <variation key="widthClass=compact" constant="5"/>
                             </constraint>
+                            <constraint firstItem="dZx-y3-0Cj" firstAttribute="centerY" secondItem="FhW-RB-VLJ" secondAttribute="centerY" id="JSo-8c-AdD"/>
                             <constraint firstItem="paH-1i-arH" firstAttribute="leading" secondItem="FhW-RB-VLJ" secondAttribute="leading" id="KHU-Jf-gwP"/>
                             <constraint firstAttribute="trailing" secondItem="paH-1i-arH" secondAttribute="trailing" id="KJ6-4d-6Me"/>
                             <constraint firstItem="dZx-y3-0Cj" firstAttribute="leading" secondItem="FhW-RB-VLJ" secondAttribute="leading" id="SQ3-V5-gU3"/>
@@ -1016,6 +1028,7 @@
                             </constraint>
                             <constraint firstAttribute="centerX" secondItem="qhq-0c-mgG" secondAttribute="centerX" id="aNT-9d-1ST"/>
                             <constraint firstAttribute="centerX" secondItem="QFK-XN-cEt" secondAttribute="centerX" id="d7b-qO-nYA"/>
+                            <constraint firstItem="dZx-y3-0Cj" firstAttribute="centerX" secondItem="FhW-RB-VLJ" secondAttribute="centerX" id="gfA-GY-c1d"/>
                             <constraint firstItem="qhq-0c-mgG" firstAttribute="leading" secondItem="FhW-RB-VLJ" secondAttribute="leading" constant="20" id="ghx-l0-dDT"/>
                             <constraint firstAttribute="trailing" secondItem="dZx-y3-0Cj" secondAttribute="trailing" id="jSa-of-KHE"/>
                             <constraint firstAttribute="bottom" secondItem="dZx-y3-0Cj" secondAttribute="bottom" id="k3e-h3-0G1"/>
@@ -1042,11 +1055,17 @@
                             </mask>
                             <mask key="constraints">
                                 <exclude reference="9sH-I2-nWY"/>
+                                <exclude reference="JSo-8c-AdD"/>
                                 <exclude reference="SQ3-V5-gU3"/>
+                                <exclude reference="gfA-GY-c1d"/>
                                 <exclude reference="jSa-of-KHE"/>
                                 <exclude reference="k3e-h3-0G1"/>
                                 <exclude reference="uAw-Qh-5k5"/>
                                 <exclude reference="wSP-Iu-IXj"/>
+                                <exclude reference="Fpr-fw-Z06"/>
+                                <exclude reference="Toa-nw-prV"/>
+                                <exclude reference="p8h-MC-lOZ"/>
+                                <exclude reference="wzT-P9-YkH"/>
                                 <exclude reference="KHU-Jf-gwP"/>
                                 <exclude reference="KJ6-4d-6Me"/>
                                 <exclude reference="d7b-qO-nYA"/>
@@ -1056,10 +1075,6 @@
                                 <exclude reference="ghx-l0-dDT"/>
                                 <exclude reference="EQh-fh-ooU"/>
                                 <exclude reference="mBx-BH-NPP"/>
-                                <exclude reference="Fpr-fw-Z06"/>
-                                <exclude reference="Toa-nw-prV"/>
-                                <exclude reference="p8h-MC-lOZ"/>
-                                <exclude reference="wzT-P9-YkH"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
@@ -1071,12 +1086,18 @@
                                 <include reference="QFK-XN-cEt"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="9sH-I2-nWY"/>
-                                <include reference="SQ3-V5-gU3"/>
-                                <include reference="jSa-of-KHE"/>
-                                <include reference="k3e-h3-0G1"/>
-                                <include reference="uAw-Qh-5k5"/>
-                                <include reference="wSP-Iu-IXj"/>
+                                <exclude reference="9sH-I2-nWY"/>
+                                <include reference="JSo-8c-AdD"/>
+                                <exclude reference="SQ3-V5-gU3"/>
+                                <include reference="gfA-GY-c1d"/>
+                                <exclude reference="jSa-of-KHE"/>
+                                <exclude reference="k3e-h3-0G1"/>
+                                <exclude reference="uAw-Qh-5k5"/>
+                                <exclude reference="wSP-Iu-IXj"/>
+                                <include reference="Fpr-fw-Z06"/>
+                                <include reference="Toa-nw-prV"/>
+                                <include reference="p8h-MC-lOZ"/>
+                                <include reference="wzT-P9-YkH"/>
                                 <include reference="KHU-Jf-gwP"/>
                                 <include reference="KJ6-4d-6Me"/>
                                 <include reference="d7b-qO-nYA"/>
@@ -1086,10 +1107,6 @@
                                 <exclude reference="ghx-l0-dDT"/>
                                 <include reference="EQh-fh-ooU"/>
                                 <include reference="mBx-BH-NPP"/>
-                                <include reference="Fpr-fw-Z06"/>
-                                <include reference="Toa-nw-prV"/>
-                                <include reference="p8h-MC-lOZ"/>
-                                <include reference="wzT-P9-YkH"/>
                             </mask>
                         </variation>
                     </view>
@@ -1107,11 +1124,16 @@
                         <outlet property="NewSpotGradient" destination="paH-1i-arH" id="0hV-k7-qTr"/>
                         <outlet property="tableView" destination="vdk-nq-IIU" id="4St-sK-HyH"/>
                         <segue destination="Bg3-tF-T77" kind="show" identifier="spotDetail" id="FxR-pi-UZ1"/>
-                        <segue destination="DiA-zv-VOp" kind="presentation" identifier="newSpot" animates="NO" id="plb-2R-AK9"/>
+                        <segue destination="DiA-zv-VOp" kind="presentation" identifier="newSpot" id="plb-2R-AK9"/>
                         <segue destination="DiA-zv-VOp" kind="presentation" identifier="editSpot" id="ghX-Ga-w87"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z1S-i8-7cV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pongPressGestureRecognizer delaysTouchesEnded="NO" allowableMovement="10" minimumPressDuration="0.5" id="700-S2-LlH">
+                    <connections>
+                        <action selector="library:" destination="7Ny-Sg-xxJ" id="Ls4-Ga-ahE"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-984" y="534"/>
         </scene>
@@ -2076,6 +2098,6 @@
         <image name="sample-overlay" width="165" height="69"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hPY-ik-0iO"/>
+        <segue reference="plb-2R-AK9"/>
     </inferredMetricsTieBreakers>
 </document>

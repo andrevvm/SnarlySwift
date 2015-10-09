@@ -19,13 +19,13 @@ class MenuSegueUnwind: UIStoryboardSegue {
         let window = UIApplication.sharedApplication().keyWindow
         window?.insertSubview(firstVCView, aboveSubview: secondVCView)
         
-        UIView.animateWithDuration(0.8, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+        UIView.animateWithDuration(0.5, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
             secondVCView.frame = CGRectOffset(secondVCView.frame, -screenWidth, 0.0)
             }) { (Finished) -> Void in
                 
         }
         
-        UIView.animateWithDuration(0.4, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+        UIView.animateWithDuration(0.25, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
             firstVCView.frame = CGRectOffset(firstVCView.frame, -(screenWidth), 0.0)
             }) { (Finished) -> Void in
                 

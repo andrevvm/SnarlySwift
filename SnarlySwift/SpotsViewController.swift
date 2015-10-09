@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import CoreLocation
+import AssetsLibrary
 import MobileCoreServices
 import Parse
 
@@ -68,47 +69,67 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     @IBAction func capture(sender : AnyObject) {
         
-        location = appDelegate.location
-        
-        if location != nil {
-        
-            if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
-                
-                self.presentViewController(imag, animated: true, completion: nil)
-                
-            } else {
-                
-                var cameraAlert: AnyObject
-                
-                cameraAlert = UIAlertView(title: "Camera not found", message: "Your camera must be enabled to add a spot.", delegate: self, cancelButtonTitle: "OK")
-                
-                cameraAlert.show()
-                
-            }
+        self.initCamera()
+        self.presentViewController(imag, animated: true, completion: nil)
             
+    }
+    
+    @IBAction func library(sender : UIGestureRecognizer) {
+        
+        if(sender.state == UIGestureRecognizerState.Began) {
+            let chooser = imag
+            imag.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
+            self.presentViewController(chooser, animated: true, completion: nil)
+        }
+        
+    }
+    
+    func initCamera() {
+        imag.delegate = self
+        imag.mediaTypes = [kUTTypeImage as String]
+        
+//        if #available(iOS 8.0, *) {
+//            imag.modalPresentationStyle = UIModalPresentationStyle.Popover
+//            
+//            let libraryImg: UIImage = UIImage(named: "btn-expand")!
+//            let btn: UIBarButtonItem = UIBarButtonItem(image: libraryImg, style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
+//            
+//            let popper = imag.popoverPresentationController
+//            // returns a UIPopoverPresentationController
+//            popper?.barButtonItem = btn
+//            
+//        } else {
+//            // Fallback on earlier versions
+//        }
+        
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
+            imag.sourceType = UIImagePickerControllerSourceType.Camera;
+            imag.allowsEditing = false
         } else {
-            
-            var locationAlert: AnyObject
-            
-            locationAlert = UIAlertView(title: "Location unknown!", message: "Try restarting the app or enabling wifi/data to find your location.", delegate: self, cancelButtonTitle: "OK")
-            
-            locationAlert.show()
-            
+            imag.sourceType = UIImagePickerControllerSourceType.PhotoLibrary;
         }
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        
         let tempImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         
-        self.dismissViewControllerAnimated(false, completion: nil)
+        let resizedImage = editSpotsView.RBResizeImage(tempImage)
+        let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
         
-        self.createSpot(tempImage)
+        
+        
+        self.dismissViewControllerAnimated(true, completion: {
+            if (picker.sourceType == .PhotoLibrary) {
+                self.createSpotFromLibrary(info, imageData: imageData)
+            } else if (picker.sourceType == .Camera) {
+                self.createSpotFromCamera(imageData)
+            }
+        })
+        
     }
     
-    func createSpot(capturedImage:UIImage) {
-        
-        let resizedImage = editSpotsView.RBResizeImage(capturedImage)
-        let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
+    func createSpotFromCamera(imageData:NSData) {
         
         let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
         let newSpot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
@@ -117,7 +138,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         newSpot.loc_disp = appDelegate.locationString
         newSpot.active = false
         
-        let newLocation = self.location
+        let newLocation = appDelegate.location
         
         if newLocation != nil {
             
@@ -130,11 +151,51 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             
             var locationAlert: AnyObject
             
-            locationAlert = UIAlertView(title: "Location unknown!", message: "Try restarting the app or enabling wifi/data to find your location.", delegate: self, cancelButtonTitle: "OK")
+            locationAlert = UIAlertView(title: "Location unknown!", message: "You can't create a new spot without a location", delegate: self, cancelButtonTitle: "OK")
             
-            presentViewController(locationAlert as! UIViewController, animated: true, completion: nil)
+            locationAlert.show()
             
         }
+        
+    }
+    
+    func createSpotFromLibrary(info:[String : AnyObject], imageData: NSData) {
+        
+        let library = ALAssetsLibrary()
+        let url: NSURL = info[UIImagePickerControllerReferenceURL] as! NSURL
+        
+        var locationAlert: AnyObject
+        
+        locationAlert = UIAlertView(title: "Location unknown!", message: "There's no location associated with the image you chose.", delegate: self, cancelButtonTitle: "OK")
+        
+        library.assetForURL(url, resultBlock: { (asset: ALAsset!) in
+            if let asset = asset {
+                if let assetLocation = asset.valueForProperty(ALAssetPropertyLocation) {
+                    let latitude = (assetLocation as! CLLocation).coordinate.latitude
+                    let longitude = (assetLocation as! CLLocation).coordinate.longitude
+                    
+                    let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
+                    let newSpot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: self.managedObjectContext)
+                    
+                    newSpot.photo = imageData
+                    newSpot.active = false
+                    newSpot.loc_lat = latitude
+                    newSpot.loc_lon = longitude
+                    
+                    self.performSegueWithIdentifier("newSpot", sender: newSpot)
+                    return
+                } else {
+                    locationAlert.show()
+                }
+            } else {
+                
+                locationAlert.show()
+            
+            }
+            },
+            failureBlock: { (error: NSError!) in
+                print(error.localizedDescription)
+            })
         
     }
     
@@ -169,29 +230,8 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        let navBarTitleView = UIView(frame: CGRectMake(0.0, 0.0, self.view.frame.width, 44.0))
-//        navBarTitleView.backgroundColor = UIColor(red: 0.9414, green: 0.2187, blue: 0.2734, alpha: 1.0)
-//        
-//        let button = UIButton(type: UIButtonType.System)
-//        button.frame = CGRectMake(100, 100, 100, 50)
-//        button.backgroundColor = UIColor.greenColor()
-//        button.setTitle("Test Button", forState: UIControlState.Normal)
-//        button.setContentHuggingPriority(1000, forAxis: .Horizontal)
-//        //button.addTarget(self, action: "buttonAction:", forControlEvents: UIControlEvents.TouchUpInside)
-//        
-//        navBarTitleView.addSubview(button)
-//        
-//        self.navigationItem.titleView = navBarTitleView
-        
-        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
             
-            imag.delegate = self
-            imag.sourceType = UIImagePickerControllerSourceType.Camera;
-            imag.mediaTypes = [kUTTypeImage as String]
-            imag.allowsEditing = false
-            
-        }
+        initCamera()
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
             firstLaunch = true

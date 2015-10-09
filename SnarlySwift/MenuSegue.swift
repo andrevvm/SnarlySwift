@@ -28,7 +28,7 @@ class MenuSegue: UIStoryboardSegue {
         
         // Animate the transition.
         
-        UIView.animateWithDuration(0.4, animations: { () -> Void in
+        UIView.animateWithDuration(0.25, animations: { () -> Void in
             secondVCView.frame = CGRectOffset(secondVCView.frame, screenWidth, 0.0)
             }) { (Finished) -> Void in
                 self.sourceViewController.presentViewController(self.destinationViewController as UIViewController,
@@ -36,7 +36,7 @@ class MenuSegue: UIStoryboardSegue {
                     completion: nil)
         }
 
-        UIView.animateWithDuration(0.8, animations: { () -> Void in
+        UIView.animateWithDuration(0.5, animations: { () -> Void in
             firstVCView.frame = CGRectOffset(firstVCView.frame, screenWidth, 0.0)
             
         })        
