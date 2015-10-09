@@ -8,15 +8,23 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var spot: Spots? = nil
+    var managedObject: NSManagedObject? = nil
     
     @IBOutlet var spotPhoto: UIImageView!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var mapButton: UIButton!
     @IBOutlet var iconBust: UIImageView!
+    @IBOutlet var optionsMenu: UIView!
+    @IBOutlet var optionsMenuTop: NSLayoutConstraint!
+    
+    @IBOutlet var menuEditButton: UIButton!
+    @IBOutlet var menuShareButton: UIButton!
+    @IBOutlet var menuDeleteButton: UIButton!
     
     var locationManager: CLLocationManager = CLLocationManager()
     
@@ -24,20 +32,58 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     var spotRegion: MKCoordinateRegion!
     var spotName: String!
     
+    var menu: Bool = false
+    
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    
     @IBAction func unwindToSpots(unwindSegue: UIStoryboardSegue) {
-        print("unwind")
+        
+    }
+    
+    @IBAction func toggleMenu() {
+        
+        if !menu {
+            self.showMenu()
+        } else {
+            self.hideMenu()
+        }
+    }
+    
+    func showMenu() {
+        UIView.animateWithDuration(0.3, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.optionsMenuTop.constant = 0
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                self.menu = true
+        })
+    }
+    
+    func hideMenu() {
+        UIView.animateWithDuration(0.3, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.optionsMenuTop.constant = -195
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                self.menu = false
+        })
+    }
+    
+    func setMenu() {
+        self.optionsMenuTop.constant = -195
+        self.menu = false
+        self.view.layoutIfNeeded()
+    }
+    
+    func initMenuButtons() {
+        menuEditButton.addTarget(self, action: "menuEditSpot:", forControlEvents: UIControlEvents.TouchUpInside)
+        menuShareButton.addTarget(self, action: "shareSpot:", forControlEvents: UIControlEvents.TouchUpInside)
+        menuDeleteButton.addTarget(self, action: "menuDeleteSpot:", forControlEvents: UIControlEvents.TouchUpInside)
     }
     
     override func viewWillAppear(animated: Bool) {
-
-        self.navigationController?.navigationBarHidden = false
         
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        self.setMenu()
 
-        
+        //self.navigationController?.navigationBarHidden = false
         if spot != nil {
             self.title = spot?.title
             if spot?.notes == "" {
@@ -55,7 +101,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             
             tableView.rowHeight = 50
-
+            
             
             if spot?.loc_lat != 0 && spot?.loc_lon != 0 {
                 let loc_lat = spot?.loc_lat as! CLLocationDegrees
@@ -79,16 +125,23 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             
             
         }
+
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let shareSelector: Selector = "shareSpot"
+        self.initMenuButtons()
         
-        let shareButton = UIBarButtonItem(image: UIImage(named: "btn-share"), style: .Plain, target: self, action: shareSelector)
+        //let shareSelector: Selector = "shareSpot"
+        
+        //let shareButton = UIBarButtonItem(image: UIImage(named: "btn-options"), style: .Plain, target: self, action: shareSelector)
         
 //        let backSelector: Selector = "unwindToSpots"
 //        
 //        let backButton = UIBarButtonItem(image: UIImage(named: "btn-back"), style: .Plain, target: self, action: backSelector)
 
-        self.navigationItem.rightBarButtonItem = shareButton
+        //self.navigationItem.rightBarButtonItem = shareButton
         //self.navigationItem.leftBarButtonItem = backButton
     }
     
@@ -107,7 +160,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         mapItem.openInMapsWithLaunchOptions(options)
     }
     
-    func shareSpot() {
+    func shareSpot(sender:UIButton) {
         
         let img: UIImage = spotPhoto.image!
         
@@ -136,6 +189,44 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             
             self.presentViewController(activityVC, animated: true, completion: nil)
 
+        }
+        
+        self.toggleMenu()
+        
+    }
+    
+    func menuEditSpot(sender:UIButton) {
+        
+        self.performSegueWithIdentifier("editSpot", sender: nil)
+        
+    }
+    
+    func menuDeleteSpot(sender:UIButton) {
+        
+        if #available(iOS 8.0, *) {
+            
+            let deleteAlert = UIAlertController(title: "Delete spot?", message: "You won't be able to recover this spot until the next time you go there!", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
+                return false
+            }))
+            
+            deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
+                
+                self.performSegueWithIdentifier("deleteSpot", sender: nil)
+                self.deleteSpot()
+                
+            }))
+            
+            self.presentViewController(deleteAlert, animated: true, completion: {
+                
+            })
+            
+        } else {
+            
+            self.performSegueWithIdentifier("deleteSpot", sender: nil)
+            self.deleteSpot()
+            
         }
         
     }
@@ -181,6 +272,34 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
             }
             
             return pinView
+    }
+    
+    func deleteSpot() {
+        SnarlySpotSync().delete(self.spot!, managedObject: self.managedObject!)
+        
+        self.spot!.active = false
+        
+        do {
+            try self.managedObjectContext?.save()
+        } catch _ {
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if segue.identifier == "editSpot" {
+            
+            let editController = segue.destinationViewController as! EditSpotViewController
+            let spot = self.spot
+            editController.spot = spot
+            
+        }
+        
+        if segue.identifier == "deleteSpot" {
+            print("DELETEEEEE")
+        }
+        
+        
     }
     
     

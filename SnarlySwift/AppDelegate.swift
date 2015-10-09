@@ -39,11 +39,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         PFAnalytics.trackAppOpenedWithLaunchOptions(launchOptions)
         //PFFacebookUtils.initializeFacebookWithApplicationLaunchOptions(launchOptions)
         
+        if CLLocationManager.authorizationStatus() == .NotDetermined {
+            if #available(iOS 8.0, *) {
+                locationManager.requestWhenInUseAuthorization()
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         
         locationManager.delegate = self
-        
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-
         locationManager.startUpdatingLocation()
         
         location = locationManager.location

@@ -49,8 +49,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
-    let spotSync = SnarlySpotSync()
-    
     var tempImage: UIImage!
     
     var location: CLLocation!
@@ -131,10 +129,10 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 
             do {
                 try managedObjectContext?.save()
-                self.spotSync.save(spot)
+                SnarlySpotSync().save(spot)
             } catch _ {
             }
-            performSegueWithIdentifier("toSpots", sender: self)
+            performSegueWithIdentifier("newSpot", sender: self)
             
             
         } else {
@@ -154,12 +152,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             do {
                 try self.managedObjectContext?.save()
                 if spot!.uuid != nil {
-                    self.spotSync.update(spot!, objectID: spot!.uuid!)
+                    SnarlySpotSync().update(spot!, objectID: spot!.uuid!)
                 }
                 
             } catch _ {
             }
-            performSegueWithIdentifier("toSpots", sender: self)
+            performSegueWithIdentifier("editSpot", sender: self)
             
         }
         
@@ -265,6 +263,15 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if segue.identifier == "editSpot" {
+            print("GOBACK")
+        }
+        
+        
     }
     
 

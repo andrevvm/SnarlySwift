@@ -12,14 +12,6 @@ import CoreLocation
 import MobileCoreServices
 import Parse
 
-extension Double {
-    var m: Double { return self }
-    var km: Double { return self / 1_000.0 }
-    var mi: Double { return self / 1_609.34 }
-    var ft: Double { return mi * 5_280.0 }
-    var mt: Double { return km * 1_000.0 }
-}
-
 class SpotsViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
     
     var myData: Array<AnyObject> = []
@@ -45,7 +37,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var location: CLLocation?
     
-    let spotSync = SnarlySpotSync()
     let editSpotsView = EditSpotViewController()
     
     @IBOutlet var EmptyBg: UIImageView!
@@ -235,20 +226,8 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         }
         
         self.fetchSpots()
-        self.checkSpots()
+        //self.checkSpots()
         self.setSpots()
-        
-        if CLLocationManager.authorizationStatus() == .NotDetermined {
-            if #available(iOS 8.0, *) {
-                locationManager.requestWhenInUseAuthorization()
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.startUpdatingLocation()
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
@@ -296,12 +275,13 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         self.tableView.rowHeight = 200.0
         
-        updateDistance()
+        SnarlyUtils().curLoc = appDelegate.location
+        SpotList().updateDistance(self)
     }
     
     func refresh(sender:AnyObject)
     {
-        updateDistance()
+        SpotList().updateDistance(self)
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -333,6 +313,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     }
     
     func fetchSpots() {
+        print("fetch")
         fetchedResultController = getFetchedResultController()
         fetchedResultController.delegate = self
         do {
@@ -343,54 +324,29 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
 
     
     func setSpots() {
-        for spot in fetchedResultController.fetchedObjects! {
-            
-            let spot = spot as! Spots
-            
-            let loc_lat = spot.loc_lat as Double
-            let loc_lon = spot.loc_lon as Double
-            let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
-            
-            let distance = curLoc.distanceFromLocation(location) as CLLocationDistance
-            
-            let locale = NSLocale.currentLocale()
-            let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
-            
-            if isMetric == true {
-                distanceNum = distance.km as Double
-            } else {
-                distanceNum = distance.mi as Double
-            }
-            
-        }
+        
+        
         
     }
-    
-    func checkSpots() {
-        if let fetchedSections: AnyObject = fetchedResultController.sections as AnyObject? {
-            if(fetchedSections[0].numberOfObjects > 0) {
-                self.hasSpots()
-            } else {
-                self.emptySpots()
-            }
-        }
-        
-    }
+
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        if let fetchedSections: AnyObject = fetchedResultController.sections as AnyObject? {
-            return fetchedSections.count
-        } else {
-            return 0
-        }
+        
+        return 1
+        
     }
         
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let fetchedSections: AnyObject = fetchedResultController.sections as AnyObject? {
-            return fetchedSections[section].numberOfObjects
+        
+        let objCount = SpotList().countObjects(section)
+        
+        if objCount > 0 {
+            self.hasSpots()
         } else {
-            return 0
+            self.emptySpots()
         }
+        
+        return objCount
     }
     
     func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
@@ -400,6 +356,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         self.configureCell(cell, atIndexPath: indexPath)
         
         return cell
+        
     }
     
     func configureCell(cell: SpotCell,
@@ -427,11 +384,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             cell.spotLabel.text = spot.title
             cell.spotPhoto.image = UIImage(data: spot.photo as NSData)
             
-            if appDelegate.location != nil {
-                cell.distanceLabel.text = getDistanceString(spot) as String
-            } else {
-                cell.distanceLabel.text = ""
-            }
+            cell.distanceLabel.text = SnarlyUtils().getDistanceString(spot) as String
             
             cell.cityLabel.text = spot.loc_disp
             
@@ -441,7 +394,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        self.checkSpots()
         self.setSpots()
     }
     
@@ -541,7 +493,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         let selectedSpot = managedObject as! Spots
         
-        self.spotSync.delete(selectedSpot, managedObject: managedObject)
+        SnarlySpotSync().delete(selectedSpot, managedObject: managedObject)
         
         selectedSpot.active = false
         
@@ -552,86 +504,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         // remove the deleted item from the `UITableView`
         self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-    }
-    
-    
-    func getDistanceString(spot:Spots) -> NSString {
-        
-        if curLat as Double == 0.0 && curLon as Double == 0.0 {
-            return ""
-        }
-        
-        if spot.loc_lat == 0 && spot.loc_lon == 0 {
-            return "???"
-        }
-        
-        let loc_lat = spot.loc_lat as Double
-        let loc_lon = spot.loc_lon as Double
-        let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
-        
-        let distance = curLoc.distanceFromLocation(location) as CLLocationDistance
-        
-        var distanceDisplay:NSString = ""
-        var distanceString:NSString = ""
-        
-        let locale = NSLocale.currentLocale()
-        let isMetric = locale.objectForKey(NSLocaleUsesMetricSystem) as! Bool
-        var distanceNum:Double = 0.0
-        var distanceLabel:NSString = "mi"
-        if isMetric == true {
-            distanceNum = distance.km as Double
-            distanceLabel = "km"
-        } else {
-            distanceNum = distance.mi as Double
-        }
-        
-        var short = false;
-        
-        if isMetric == true && distance.mt < 500 {
-            short = true;
-        } else if distance.mi < 0.2 {
-            short = true;
-        }
-        
-        if distanceNum < 0.05 {
-            distanceString = "Here now"
-        } else if short == true {
-            
-            if isMetric == true {
-                distanceNum = Double(round(distance.mt / 10.0) * 10)
-                distanceLabel = "m"
-            } else {
-                distanceNum = Double(round(distance.ft / 10.0) * 10)
-                distanceLabel = "ft"
-            }
-            
-            distanceDisplay = NSString(format:"%.00f", distanceNum)
-            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
-            
-        } else if distanceNum < 2 && short == false {
-            
-            distanceDisplay = NSString(format:"%.01f", distanceNum)
-            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
-            
-        } else if distanceNum > 50 && distanceNum < 1500 {
-        
-            distanceNum = Double(round(distanceNum / 10.0) * 10)
-            distanceDisplay = NSString(format:"%.00f", distanceNum)
-            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
-            
-        } else if distanceNum > 1500 {
-            distanceString = "1500+ " + (distanceLabel as String)
-        } else {
-            distanceDisplay = NSString(format:"%.00f", distanceNum)
-            distanceString = "\(distanceDisplay) " + (distanceLabel as String)
-        }
-        
-        return distanceString
-
-    }
-    
-    func roundToTens(x : Double) -> Int {
-        return 10 * Int(round(x / 10.0))
     }
 
     
@@ -747,7 +619,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
                     
                     let spot = spot as! Spots
                     
-                    spotSync.save(spot)
+                    SnarlySpotSync().save(spot)
                     
                     
                 }
@@ -788,7 +660,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
                     
                     let spot = spot as! Spots
                     
-                    spotSync.update(spot, objectID: spot.uuid!)
+                    SnarlySpotSync().update(spot, objectID: spot.uuid!)
                     
                     
                 }
@@ -801,96 +673,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     
 
-    func updateDistance() {
         
-        if curLat == 0 && curLon == 0 {
-            
-            
-            if appDelegate.location != nil {
-                
-                curLoc = appDelegate.location!
-                curLat = appDelegate.curLat!
-                curLon = appDelegate.curLon!
-
-            } else {
-                
-                appDelegate.locationManager.startUpdatingLocation()
-                
-                //NSTimer.scheduledTimerWithTimeInterval(100, target: self, selector: Selector("updateDistance"), userInfo: nil, repeats: false)
-                
-                if self.refreshControl != nil {
-                    self.refreshControl.endRefreshing()
-                }
-                
-                return
-            }
-            
-            
-        }
-        
-        // Create a fetch request
-        
-        let fetchRequest = NSFetchRequest(entityName: "Spots")
-        let resultPredicate = NSPredicate(format: "active == YES")
-        fetchRequest.predicate = resultPredicate
-        
-        // Execute the fetch request
-        var error : NSError?
-        var fetchedObjects: [AnyObject]?
-        do {
-            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
-        } catch let error1 as NSError {
-            error = error1
-            fetchedObjects = nil
-        }
-        
-        // Change the attributer name of
-        // each managed object to the self.name
-        if let spots = fetchedObjects {
-            if error == nil {
-                for spot in spots {
-                    
-                    let spot = spot as! Spots
-                    
-                    //Update display location if empty
-                    if spot.loc_disp == nil || spot.loc_disp == "" {
-                        
-                        appDelegate.getLocationString(spot.loc_lat as Double, loc_lon: spot.loc_lon as Double, completion: { (answer) -> Void in
-                            
-                            spot.loc_disp = answer
-                            
-                        })
-                        
-                    }
-                    
-                    let loc_lat = spot.loc_lat as Double
-                    let loc_lon = spot.loc_lon as Double
-                    let location = CLLocation(latitude: loc_lat, longitude: loc_lon)
-                    let distance = curLoc.distanceFromLocation(location) as CLLocationDistance
-                    let distanceNum:Double = distance
-                    
-                    spot.distance = distanceNum
-                    
-                }
-                
-                // Save the updated managed objects into the store
-                do {
-                    try self.managedObjectContext!.save()
-                } catch let error1 as NSError {
-                    error = error1
-                    NSLog("Unresolved error (error), (error!.userInfo)")
-                    abort()
-                }
-            }
-        }
-        
-        self.reloadData()
-        if self.refreshControl != nil {
-            self.refreshControl.endRefreshing()
-        }
-        
-    }
-    
     func setActive() {
         
         let fetchRequest = NSFetchRequest(entityName: "Spots")
@@ -960,6 +743,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         if segue.identifier == "spotDetail" {
             
             let spotController:SpotDetailController = segue.destinationViewController as! SpotDetailController
+            spotController.managedObject = sender as? NSManagedObject
             spotController.spot = sender as? Spots
 
         }
