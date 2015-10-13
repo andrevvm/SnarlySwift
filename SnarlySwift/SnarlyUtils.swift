@@ -9,6 +9,7 @@
 import CoreData
 import CoreLocation
 import Foundation
+import Parse
 
 extension Double {
     var m: Double { return self }

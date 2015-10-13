@@ -9,6 +9,7 @@
 import CoreData
 import CoreLocation
 import Foundation
+import Parse
 
 class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerDelegate {
     
@@ -78,8 +79,13 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         let curLoc = appDelegate.location
         
         if curLoc == nil {
-            sender.refreshControl.endRefreshing()
-            return
+            if let refreshControl = sender.refreshControl {
+                refreshControl.endRefreshing()
+                return
+            } else {
+                return
+            }
+            
         }
         
         // Create a fetch request

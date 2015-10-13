@@ -203,7 +203,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         let screenHeight = UIScreen.mainScreen().bounds.size.height
         
-        let offset = screenHeight - editView.frame.size.height - 310
+        let offset = screenHeight - editView.frame.size.height - 210
         
         self.topConstraint.constant = frame + offset
         UIView.animateWithDuration(0.3) {

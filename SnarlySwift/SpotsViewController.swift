@@ -13,6 +13,7 @@ import AssetsLibrary
 import MobileCoreServices
 import Parse
 
+
 class SpotsViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
     
     var myData: Array<AnyObject> = []
@@ -45,6 +46,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     @IBOutlet var NewSpot: UIButton!
     @IBOutlet var NewSpotGradient: UIImageView!
     @IBOutlet var NavBar: UINavigationBar!
+    @IBOutlet var emptyTxt: UILabel!
     
     var locationManager = CLLocationManager()
     
@@ -148,8 +150,8 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             self.performSegueWithIdentifier("newSpot", sender: newSpot)
             
         } else {
-            
-            var locationAlert: AnyObject
+                
+            var locationAlert: UIAlertView
             
             locationAlert = UIAlertView(title: "Location unknown!", message: "You can't create a new spot without a location", delegate: self, cancelButtonTitle: "OK")
             
@@ -164,7 +166,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         let library = ALAssetsLibrary()
         let url: NSURL = info[UIImagePickerControllerReferenceURL] as! NSURL
         
-        var locationAlert: AnyObject
+        var locationAlert: UIAlertView
         
         locationAlert = UIAlertView(title: "Location unknown!", message: "There's no location associated with the image you chose.", delegate: self, cancelButtonTitle: "OK")
         
@@ -230,19 +232,27 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            
+        
+//        let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me/friends", parameters: nil)
+//        request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
+//            
+//            print(result)
+//            
+//        }
+//        
+
         initCamera()
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
             firstLaunch = true
             //Put any code here and it will be executed only once.
-            self.populateData()
+            //self.populateData()
             
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
             NSUserDefaults.standardUserDefaults().synchronize();
         }
         
-        let userID = UIDevice.currentDevice().identifierForVendor!.UUIDString
+        //let userID = UIDevice.currentDevice().identifierForVendor!.UUIDString
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.1")){
             
@@ -288,30 +298,30 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.addSubview(refreshControl)
         
-        let user = PFUser()
-        user.username = userID
-        user.password = userID
-        
-        PFUser.logInWithUsernameInBackground(userID, password:userID) {
-            (login: PFUser?, error: NSError?) -> Void in
-            if login != nil {
-                self.syncNewSpots()
-                self.syncOutdatedSpots();
-            } else {
-                self.syncNewSpots()
-                self.syncOutdatedSpots();
-                
-                user.signUpInBackgroundWithBlock {
-                    (succeeded: Bool, error: NSError?) -> Void in
-                    if let error = error {
-                        let errorString = error.userInfo["error"] as? NSString
-                        print(errorString)
-                    } else {
-                        print("signed up!")
-                    }
-                }
-            }
-        }
+//        let user = PFUser()
+//        user.username = userID
+//        user.password = userID
+//        
+//        PFUser.logInWithUsernameInBackground(userID, password:userID) {
+//            (login: PFUser?, error: NSError?) -> Void in
+//            if login != nil {
+//                self.syncNewSpots()
+//                self.syncOutdatedSpots();
+//            } else {
+//                self.syncNewSpots()
+//                self.syncOutdatedSpots();
+//                
+//                user.signUpInBackgroundWithBlock {
+//                    (succeeded: Bool, error: NSError?) -> Void in
+//                    if let error = error {
+//                        let errorString = error.userInfo["error"] as? NSString
+//                        print(errorString)
+//                    } else {
+//                        print("signed up!")
+//                    }
+//                }
+//            }
+//        }
         
         self.tableView.rowHeight = 200.0
         
@@ -549,9 +559,10 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     func emptySpots() {
         tableView.hidden = true
-        NewSpot.hidden = true
+        NewSpot.hidden = false
         NewSpotGradient.hidden = true
         EmptyBg.hidden = false
+        emptyTxt.hidden = false
     }
     
     func hasSpots() {
@@ -559,6 +570,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         NewSpot.hidden = false
         NewSpotGradient.hidden = true
         EmptyBg.hidden = true
+        emptyTxt.hidden = true
     }
     
     @IBAction func populateData() {
