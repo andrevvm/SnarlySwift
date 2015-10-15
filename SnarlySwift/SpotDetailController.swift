@@ -25,6 +25,8 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     @IBOutlet var spotNotes: UILabel!
     @IBOutlet var scrollView: UIScrollView!
     
+    @IBOutlet var photoHeight: NSLayoutConstraint!
+    
     @IBOutlet var menuEditButton: UIButton!
     @IBOutlet var menuShareButton: UIButton!
     @IBOutlet var menuDeleteButton: UIButton!
@@ -82,9 +84,15 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         menuDeleteButton.addTarget(self, action: "menuDeleteSpot:", forControlEvents: UIControlEvents.TouchUpInside)
     }
     
+    override func viewWillDisappear(animated: Bool) {
+        self.positionPhoto()
+    }
+    
     override func viewWillAppear(animated: Bool) {
         
         self.setMenu()
+        
+        self.positionPhoto()
 
         //self.navigationController?.navigationBarHidden = false
         if spot != nil {
@@ -148,9 +156,13 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         
-        let offset = scrollView.contentOffset.y
-        spotPhoto.frame.size.height = (320 - offset)
+        positionPhoto()
         
+    }
+    
+    func positionPhoto() {
+        let offset = scrollView.contentOffset.y
+        photoHeight.constant = (320 - offset)
     }
     
     override func viewDidLoad() {
