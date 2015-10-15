@@ -6,15 +6,17 @@
 //  Copyright (c) 2014 andrevv. All rights reserved.
 //
 
+import Bolts
 import UIKit
 import CoreData
 import CoreLocation
 import AssetsLibrary
 import MobileCoreServices
 import Parse
+import ParseUI
 
 
-class SpotsViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate  {
+class SpotsViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate {
     
     var myData: Array<AnyObject> = []
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
@@ -206,6 +208,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     }
     
     override func viewWillAppear(animated: Bool) {
+        
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
         self.reloadData()
@@ -233,14 +236,9 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me/friends", parameters: nil)
-//        request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
-//            
-//            print(result)
-//            
-//        }
-//        
-
+        SpotList().retrieveFriendsSpots()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showFriendsSpots:"), name:"retrievedFriendsSpots", object: nil);
+        
         initCamera()
         
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
@@ -412,15 +410,18 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     func configureCell(cell: SpotCell,
         atIndexPath indexPath: NSIndexPath) {
             
-            let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
-            
-            cell.contentView.viewWithTag(15) as! UIImageView
-            
             if(firstLaunch == true && indexPath.row == 0) {
                 cell.sampleOverlay.hidden = false
             } else {
                 cell.sampleOverlay.hidden = true
             }
+            
+            
+            let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+            
+            cell.contentView.viewWithTag(15) as! UIImageView
+            
+            
             
             let bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
             
@@ -443,6 +444,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
 
     }
     
+        
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
         self.setSpots()
     }
@@ -571,6 +573,16 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         NewSpotGradient.hidden = true
         EmptyBg.hidden = true
         emptyTxt.hidden = true
+    }
+    
+    func showFriendsSpots(sender: NSNotification) {
+        
+        let spots = sender.object as! [PFObject]
+        
+        for spot in spots {
+            print(spot["title"])
+        }
+        
     }
     
     @IBAction func populateData() {

@@ -74,6 +74,70 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         
     }
     
+    func retrieveSpot(indexPath: NSIndexPath) -> AnyObject {
+        switch type {
+            case "saved":
+                let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+                return spot
+            default:
+                return false
+        }
+        
+        
+    }
+    
+    func retrieveFriendsSpots() {
+        
+        let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me/friends?fields=id", parameters: nil)
+        request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
+            
+            if error == nil {
+
+                let userList:NSDictionary = result as! NSDictionary
+                let users = userList.valueForKey("data") as! NSArray
+                var facebookIds = [String]()
+                
+                for user in users {
+                    
+                    let id = user["id"] as! String
+                    facebookIds.append(id)
+                    
+                }
+                
+                let userQuery = PFUser.query()?.whereKey("facebookId", containedIn: facebookIds)
+
+                userQuery!.findObjectsInBackgroundWithBlock {
+                    (results: [PFObject]?, error: NSError?) -> Void in
+                    if error == nil {
+                        
+                        let spotsQuery = PFQuery(className: "Spots")
+                        spotsQuery.whereKey("active", equalTo: true)
+                        spotsQuery.whereKey("user", containedIn: results!)
+                        spotsQuery.orderByDescending("createdAt")
+                        spotsQuery.findObjectsInBackgroundWithBlock {
+                            (results: [PFObject]?, error: NSError?) -> Void in
+                            
+                            if error == nil {
+                                
+                                NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: results)
+                                
+                            } else {
+                                
+                            }
+                        }
+                        
+                    }
+                }
+                
+            }
+            
+            
+            
+        }
+        
+    }
+
+    
     func updateDistance(sender: SpotsViewController) {
         
         let curLoc = appDelegate.location
