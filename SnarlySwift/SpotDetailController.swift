@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewDelegate {
     var spot: Spots? = nil
     var managedObject: NSManagedObject? = nil
     
@@ -21,6 +21,9 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     @IBOutlet var iconBust: UIImageView!
     @IBOutlet var optionsMenu: UIView!
     @IBOutlet var optionsMenuTop: NSLayoutConstraint!
+    @IBOutlet var spotLocation: UILabel!
+    @IBOutlet var spotNotes: UILabel!
+    @IBOutlet var scrollView: UIScrollView!
     
     @IBOutlet var menuEditButton: UIButton!
     @IBOutlet var menuShareButton: UIButton!
@@ -86,22 +89,36 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
         //self.navigationController?.navigationBarHidden = false
         if spot != nil {
             self.title = spot?.title
-            if spot?.notes == "" {
-                tableView.hidden = true
-            } else {
-                tableView.hidden = false
-            }
+            
             spotPhoto.image = UIImage(data: spot?.photo as NSData!)
             
+//            if spot?.bust == true {
+//                iconBust.hidden = false
+//            } else {
+//                iconBust.hidden = true
+//            }
             
-            if spot?.bust == true {
-                iconBust.hidden = false
+            
+            if spot?.notes == "" {
+                
+                self.spotNotes.alpha = 0.5
+                
             } else {
-                iconBust.hidden = true
+                
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineSpacing = 6
+                let attrString = NSMutableAttributedString(string: (spot?.notes)!)
+                attrString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+                self.spotNotes.attributedText = attrString
+                
+                
+                self.spotNotes.alpha = 1
+                self.spotNotes.lineBreakMode = .ByWordWrapping
+                self.spotNotes.numberOfLines = 0;
+                
             }
             
-            tableView.rowHeight = 50
-            
+            self.spotLocation.text = spot?.loc_disp
             
             if spot?.loc_lat != 0 && spot?.loc_lon != 0 {
                 let loc_lat = spot?.loc_lat as! CLLocationDegrees
@@ -120,18 +137,28 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
                 spotPin.title = spot?.title
                 self.mapView.addAnnotation(spotPin)
                 
-                mapButton.addTarget(self, action: "openMap:", forControlEvents: UIControlEvents.TouchUpInside)
+                //mapButton.addTarget(self, action: "openMap:", forControlEvents: UIControlEvents.TouchUpInside)
             }
+            
             
             
         }
 
     }
     
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        
+        let offset = scrollView.contentOffset.y
+        spotPhoto.frame.size.height = (320 - offset)
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.initMenuButtons()
+        
+        scrollView.delegate = self
         
         //let shareSelector: Selector = "shareSpot"
         
@@ -143,6 +170,8 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
 
         //self.navigationItem.rightBarButtonItem = shareButton
         //self.navigationItem.leftBarButtonItem = backButton
+        
+        
     }
     
     func backToSpots() {
@@ -232,23 +261,23 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UITableViewDa
     }
 
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        tableView.rowHeight = 50
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("NotesCell", forIndexPath: indexPath) 
-        cell.textLabel!.text = spot?.notes
-        cell.textLabel!.lineBreakMode = .ByWordWrapping
-        cell.textLabel!.numberOfLines = 0;
-        cell.textLabel!.textAlignment = .Center;
-        cell.textLabel!.font = UIFont(name: "Apercu", size: 12)
-        cell.textLabel!.backgroundColor = UIColor.whiteColor()
-        cell.backgroundColor = UIColor.whiteColor()
-        
-        return cell
-    }
+//    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        tableView.rowHeight = 50
+//        return 1
+//    }
+//    
+//    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCellWithIdentifier("NotesCell", forIndexPath: indexPath) 
+//        cell.textLabel!.text = spot?.notes
+//        cell.textLabel!.lineBreakMode = .ByWordWrapping
+//        cell.textLabel!.numberOfLines = 0;
+//        cell.textLabel!.textAlignment = .Center;
+//        cell.textLabel!.font = UIFont(name: "Apercu", size: 12)
+//        cell.textLabel!.backgroundColor = UIColor.whiteColor()
+//        cell.backgroundColor = UIColor.whiteColor()
+//        
+//        return cell
+//    }
     
     func mapView(mapView: MKMapView!,
         viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
