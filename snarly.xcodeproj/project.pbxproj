@@ -22,6 +22,7 @@
 		E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AF519923C4A00118206 /* SpotDetailController.swift */; };
 		E62A6AFF1992463E00118206 /* Spots.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AFE1992463E00118206 /* Spots.swift */; };
 		E649628A1BC71B4800D7250F /* SpotList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64962891BC71B4800D7250F /* SpotList.swift */; settings = {ASSET_TAGS = (); }; };
+		E649B4F41BD1526600DE66A0 /* MapDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E649B4F31BD1526600DE66A0 /* MapDetailController.swift */; settings = {ASSET_TAGS = (); }; };
 		E667A1A41BC4517F001890F4 /* SnarlyNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */; settings = {ASSET_TAGS = (); }; };
 		E668585C1BC43ABD00857DD4 /* MenuSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E668585B1BC43ABD00857DD4 /* MenuSegue.swift */; settings = {ASSET_TAGS = (); }; };
 		E668585E1BC43F7A00857DD4 /* MenuSegueUnwind.swift in Sources */ = {isa = PBXBuildFile; fileRef = E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */; settings = {ASSET_TAGS = (); }; };
@@ -89,6 +90,7 @@
 		E62A6AFE1992463E00118206 /* Spots.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spots.swift; sourceTree = "<group>"; };
 		E63C25941B865C1600BD773F /* SnarlySwift 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 5.xcdatamodel"; sourceTree = "<group>"; };
 		E64962891BC71B4800D7250F /* SpotList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotList.swift; sourceTree = "<group>"; };
+		E649B4F31BD1526600DE66A0 /* MapDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapDetailController.swift; sourceTree = "<group>"; };
 		E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlyNavController.swift; sourceTree = "<group>"; };
 		E668585B1BC43ABD00857DD4 /* MenuSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuSegue.swift; sourceTree = "<group>"; };
 		E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuSegueUnwind.swift; sourceTree = "<group>"; };
@@ -208,16 +210,17 @@
 				E62A6AFE1992463E00118206 /* Spots.swift */,
 				E6121B7D198FC5E400E72142 /* Supporting Files */,
 				E6121BA3198FD34400E72142 /* SpotsViewController.swift */,
-				E66C7C031BAEF85E00E1444B /* SnarlySpotSync.swift */,
+				E62A6AF519923C4A00118206 /* SpotDetailController.swift */,
+				E649B4F31BD1526600DE66A0 /* MapDetailController.swift */,
 				E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */,
+				E66C7C031BAEF85E00E1444B /* SnarlySpotSync.swift */,
 				E64962891BC71B4800D7250F /* SpotList.swift */,
 				E6074C111BC728E000543060 /* SnarlyUtils.swift */,
-				E62A6AF519923C4A00118206 /* SpotDetailController.swift */,
-				E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */,
 				E6C6061A1991182000338777 /* SpotCell.swift */,
 				E60583B81BB5FA5F00974885 /* SnarlyMenu.swift */,
 				E6FB459F1BC99DD7006F20F0 /* SnarlyUser.swift */,
 				E6CB9A251BC6D2E200A7B2BF /* SnarlySettings.swift */,
+				E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */,
 			);
 			path = SnarlySwift;
 			sourceTree = "<group>";
@@ -400,6 +403,7 @@
 				E6CB9A261BC6D2E200A7B2BF /* SnarlySettings.swift in Sources */,
 				E60583B91BB5FA5F00974885 /* SnarlyMenu.swift in Sources */,
 				E6C6061B1991182000338777 /* SpotCell.swift in Sources */,
+				E649B4F41BD1526600DE66A0 /* MapDetailController.swift in Sources */,
 				E6074C121BC728E000543060 /* SnarlyUtils.swift in Sources */,
 				E667A1A41BC4517F001890F4 /* SnarlyNavController.swift in Sources */,
 				E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */,

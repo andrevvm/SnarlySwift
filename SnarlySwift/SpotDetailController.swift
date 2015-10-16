@@ -24,6 +24,8 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     @IBOutlet var spotLocation: UILabel!
     @IBOutlet var spotNotes: UILabel!
     @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet var bustView: UIView!
+    @IBOutlet var bustViewHeight: NSLayoutConstraint!
     
     @IBOutlet var photoHeight: NSLayoutConstraint!
     
@@ -100,12 +102,13 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             
             spotPhoto.image = UIImage(data: spot?.photo as NSData!)
             
-//            if spot?.bust == true {
-//                iconBust.hidden = false
-//            } else {
-//                iconBust.hidden = true
-//            }
-            
+            if spot?.bust == true {
+                bustView.hidden = false
+                bustViewHeight.constant = 50
+            } else {
+                bustView.hidden = true
+                bustViewHeight.constant = 0
+            }
             
             if spot?.notes == "" {
                 
@@ -333,6 +336,14 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             let editController = segue.destinationViewController as! EditSpotViewController
             let spot = self.spot
             editController.spot = spot
+            
+        }
+        
+        if segue.identifier == "mapDetail" {
+            
+            let mapController = segue.destinationViewController as! MapDetailController
+            let spot = self.spot
+            mapController.spot = spot
             
         }
         

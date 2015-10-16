@@ -267,9 +267,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        if segue.identifier == "editSpot" {
-            print("GOBACK")
-        }
+        
         
         
     }
