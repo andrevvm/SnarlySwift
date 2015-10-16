@@ -112,9 +112,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     area = pm!.country!
                 }
                 
-                let city:NSString = pm!.locality!
+                var city: NSString
+                
+                if pm!.locality != nil {
+                    city = pm!.locality!
+                } else {
+                    city = pm!.administrativeArea!
+                }
                 
                 completion(answer: "\(city), \(area)")
+                
+                
             } else {
                 print("Problems with the data received from geocoder.")
                 completion(answer: "")

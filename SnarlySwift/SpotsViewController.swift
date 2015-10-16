@@ -49,6 +49,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     @IBOutlet var NewSpotGradient: UIImageView!
     @IBOutlet var NavBar: UINavigationBar!
     @IBOutlet var emptyTxt: UILabel!
+    @IBOutlet var loadingView: UIView!
     
     var locationManager = CLLocationManager()
     
@@ -92,20 +93,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         imag.delegate = self
         imag.mediaTypes = [kUTTypeImage as String]
         
-//        if #available(iOS 8.0, *) {
-//            imag.modalPresentationStyle = UIModalPresentationStyle.Popover
-//            
-//            let libraryImg: UIImage = UIImage(named: "btn-expand")!
-//            let btn: UIBarButtonItem = UIBarButtonItem(image: libraryImg, style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
-//            
-//            let popper = imag.popoverPresentationController
-//            // returns a UIPopoverPresentationController
-//            popper?.barButtonItem = btn
-//            
-//        } else {
-//            // Fallback on earlier versions
-//        }
-        
         if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
             imag.sourceType = UIImagePickerControllerSourceType.Camera;
             imag.allowsEditing = false
@@ -121,14 +108,16 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         let resizedImage = editSpotsView.RBResizeImage(tempImage)
         let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
         
-        
+        self.loadingView.hidden = false
         
         self.dismissViewControllerAnimated(true, completion: {
+            
             if (picker.sourceType == .PhotoLibrary) {
                 self.createSpotFromLibrary(info, imageData: imageData)
             } else if (picker.sourceType == .Camera) {
                 self.createSpotFromCamera(imageData)
             }
+            
         })
         
     }
@@ -325,6 +314,9 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         SnarlyUtils().curLoc = appDelegate.location
         SpotList().updateDistance(self)
+        
+        self.syncNewSpots()
+        self.syncOutdatedSpots();
     }
     
     func refresh(sender:AnyObject)
@@ -334,10 +326,13 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     override func viewDidDisappear(animated: Bool) {
         
+        loadingView.hidden = true
+        
         if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0") == false){
             firstLaunch = false
             self.reloadData()
         }
+        
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
