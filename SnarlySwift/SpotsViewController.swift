@@ -264,7 +264,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         self.fetchSpots()
         //self.checkSpots()
-        self.setSpots()
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
@@ -317,6 +316,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         self.syncNewSpots()
         self.syncOutdatedSpots();
+        
     }
     
     func refresh(sender:AnyObject)
@@ -363,13 +363,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             try fetchedResultController.performFetch()
         } catch {
         }
-    }
-
-    
-    func setSpots() {
-        
-        
-        
     }
 
     
@@ -439,10 +432,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
 
     }
     
-        
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        self.setSpots()
-    }
     
     @available(iOS 8.0, *)
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {

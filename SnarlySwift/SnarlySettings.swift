@@ -75,9 +75,13 @@ class SnarlySettings: ViewController {
     
     @IBAction func logOut() {
         
-        PFUser.logOutInBackground()
-        
         userSettings.hidden = true
+        
+        PFUser.logOutInBackgroundWithBlock { (error: NSError?) -> Void in
+            
+            self.userSettings.hidden = false
+            
+        }
         
     }
     
