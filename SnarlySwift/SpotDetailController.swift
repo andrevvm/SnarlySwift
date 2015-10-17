@@ -257,8 +257,9 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             
             deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
                 
-                self.performSegueWithIdentifier("deleteSpot", sender: nil)
                 self.deleteSpot()
+                self.performSegueWithIdentifier("deleteSpot", sender: nil)
+                
                 
             }))
             
@@ -268,8 +269,9 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             
         } else {
             
-            self.performSegueWithIdentifier("deleteSpot", sender: nil)
             self.deleteSpot()
+            self.performSegueWithIdentifier("deleteSpot", sender: nil)
+            
             
         }
         
@@ -320,13 +322,8 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     
     func deleteSpot() {
         
-        self.spot!.active = false
         SnarlySpotSync().delete(self.spot!, managedObject: self.managedObject!)
-        
-        do {
-            try self.managedObjectContext?.save()
-        } catch _ {
-        }
+
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

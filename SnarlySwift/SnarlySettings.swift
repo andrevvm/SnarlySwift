@@ -79,7 +79,14 @@ class SnarlySettings: ViewController {
         
         PFUser.logOutInBackgroundWithBlock { (error: NSError?) -> Void in
             
-            self.userSettings.hidden = false
+            if (error != nil) {
+                
+                self.userSettings.hidden = false
+                let logOutAlert:UIAlertView = UIAlertView(title: "Unable to logout", message: "Check your internet connection and try again", delegate: self, cancelButtonTitle: "OK")
+                logOutAlert.show()
+                
+            }
+            
             
         }
         
@@ -171,6 +178,24 @@ class SnarlySettings: ViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+//        if let id = segue.identifier {
+//            switch id {
+//                
+//            case "unwindToSaved":
+//                SpotList().type = "saved"
+//            case "unwindToFriends":
+//                SpotList().type = "friends"
+//            default:
+//                SpotList().type = "saved"
+//                
+//            }
+//        }
+        
+        
     }
     
 

@@ -15,53 +15,23 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
-    var type = "saved"
-    
-    override init() {
-        
-        super.init()
-        
-        switch type {
-            case "saved":
-                self.fetchSavedSpots()
-            default: break
-        }
-        
-    }
-    
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
-    var fetchedResultController: NSFetchedResultsController = NSFetchedResultsController()
+    var fetchedResultController: NSFetchedResultsController!
     
-    func getFetchedResultController() -> NSFetchedResultsController {
-        fetchedResultController = NSFetchedResultsController(fetchRequest: spotFetchRequest(), managedObjectContext: managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
-        return fetchedResultController
-    }
-    
-    func spotFetchRequest() -> NSFetchRequest {
-        let fetchRequest = NSFetchRequest(entityName: "Spots")
-        let resultPredicate = NSPredicate(format: "active == YES")
-        let sortDescriptor1 = NSSortDescriptor(key: "distance", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor1]
-        fetchRequest.predicate = resultPredicate
+    override init() {
+        super.init()
         
-        return fetchRequest
-    }
-    
-    func fetchSavedSpots() {
-        fetchedResultController = getFetchedResultController()
-        fetchedResultController.delegate = self
-        do {
-            try fetchedResultController.performFetch()
-        } catch {
-        }
+        fetchedResultController = SpotsViewController().fetchedResultController
+        
     }
     
     func countObjects(section: Int) -> Int {
-        
-        switch type {
+        print(fetchedResultController.sections)
+        switch appDelegate.listType {
             case "saved":
-                if let fetchedSections: AnyObject = fetchedResultController.sections as AnyObject? {
+                if let fetchedSections: AnyObject = self.fetchedResultController.sections as AnyObject? {
+                    print("Sections \(fetchedSections)")
                     return fetchedSections[section].numberOfObjects
                 } else {
                     return 0
@@ -75,14 +45,59 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     }
     
     func retrieveSpot(indexPath: NSIndexPath) -> AnyObject {
-        switch type {
+        switch appDelegate.listType {
             case "saved":
-                let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+                let spot = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! Spots
                 return spot
             default:
                 return false
         }
         
+        
+    }
+    
+    func deleteSpot(indexPath: NSIndexPath) {
+        
+        let managedObject:NSManagedObject = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+        let selectedSpot = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        
+        selectedSpot.active = false
+        SnarlySpotSync().delete(selectedSpot, managedObject: managedObject)
+        
+        
+        do {
+            try self.managedObjectContext?.save()
+        } catch _ {
+        }
+
+    }
+    
+    func configureCell(cell: SpotCell, atIndexPath indexPath: NSIndexPath) -> SpotCell {
+        
+        print("Config")
+        
+        let spot = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        
+        let bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
+        
+        if spot.bust {
+            bustIcon.hidden = false
+        } else {
+            bustIcon.hidden = true
+        }
+        
+        
+        cell.spotLabel.text = spot.title
+        cell.spotPhoto.image = UIImage(data: spot.photo as NSData)
+        
+        cell.distanceLabel.text = SnarlyUtils().getDistanceString(spot) as String
+        
+        cell.cityLabel.text = spot.loc_disp
+        
+        //cell.spotMask.layer.cornerRadius = 3
+        cell.spotMask.clipsToBounds = true
+        
+        return cell
         
     }
     

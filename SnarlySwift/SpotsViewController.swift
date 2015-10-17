@@ -15,7 +15,6 @@ import MobileCoreServices
 import Parse
 import ParseUI
 
-
 class SpotsViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate {
     
     var myData: Array<AnyObject> = []
@@ -36,6 +35,19 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         fetchRequest.predicate = resultPredicate
         
         return fetchRequest
+    }
+    
+    func fetchSavedSpots() {
+        print("fetch em")
+        
+        fetchedResultController = getFetchedResultController()
+        fetchedResultController.delegate = self
+        do {
+            try fetchedResultController.performFetch()
+        } catch {
+        }
+        
+        print(fetchedResultController.sections)
     }
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -68,7 +80,17 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     }
     
-    @IBAction func hideMenu(sender: UIStoryboardSegue){
+    @IBAction func unwindToSaved(sender: UIStoryboardSegue){
+        
+        appDelegate.listType = "saved"
+        
+    }
+    
+    @IBAction func unwindToFriends(sender: UIStoryboardSegue){
+        
+        appDelegate.listType = "friends"
+        
+        print("unwind")
         
     }
     
@@ -194,13 +216,15 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
+        self.reloadData()
     }
     
     override func viewWillAppear(animated: Bool) {
         
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
-        self.reloadData()
+        self.setViewTitle()
+        
         self.navigationController?.navigationBarHidden = false
         
     }
@@ -225,6 +249,10 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        appDelegate.listType = "saved"
+        
+        self.fetchSavedSpots()
+        
         SpotList().retrieveFriendsSpots()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showFriendsSpots:"), name:"retrievedFriendsSpots", object: nil);
         
@@ -239,40 +267,12 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             NSUserDefaults.standardUserDefaults().synchronize();
         }
         
-        //let userID = UIDevice.currentDevice().identifierForVendor!.UUIDString
-        
-        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.1")){
-            
-//            self.addData("MACBA", url: "http://galaxypro.s3.amazonaws.com/spot-media/315/315-macba-skate-barcelona-spain.jpg", lat: 41.3831913, lon: 2.1668668)
-//            self.addData("Kulturforum", url: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Berlin_Kulturforum_2002a.jpg", lat: 52.5100104, lon: 13.3698381)
-//
-//            self.addData("3rd & Army", url: "http://www.whyelfiles.com/wf-navigator/wp-content/uploads/2013/02/IMG_7060.jpg", lat: 37.7480432, lon: -122.3890937)
-//
-//            self.addData("Landhausplatz", url: "http://www.landezine.com/wp-content/uploads/2011/09/Landhausplatz-02-photo-guenter-wett.jpg", lat: 47.2640377, lon: 11.3961701)
-//
-//            self.addData("Nansensgade", url: "http://quartersnacks.com/wp-content/uploads/2015/01/basketballcourt2.jpg", lat: 55.6835447, lon: 12.5651273)
-//
-//            self.addData("Spot der Visionaire", url: "http://www.artschoolvets.com/blog/motherfuckindaviddeery/files/2010/07/DSC06594.jpg", lat: 52.496649, lon: 13.449445)
-//
-//            self.addData("Blubba", url: "http://quartersnacks.com/wp-content/uploads/2010/05/P5180017.jpg", lat: 40.7141164, lon: -74.0034033)
-            
-            setActive()
-            
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.1")
-            NSUserDefaults.standardUserDefaults().synchronize();
-        }
-        
-        self.fetchSpots()
-        //self.checkSpots()
-        
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
         let edgeInsets = UIEdgeInsetsMake(0, 0, 80, 0)
         self.tableView.contentInset = edgeInsets
         
-        //self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
-        appDelegate.setLocationVars(locationManager.location)
+        //appDelegate.setLocationVars(locationManager.location)
         
         self.refreshControl = UIRefreshControl()
         self.refreshControl.backgroundColor = UIColor.clearColor()
@@ -310,12 +310,8 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
 //        }
         
         self.tableView.rowHeight = 200.0
-        
-        SnarlyUtils().curLoc = appDelegate.location
+
         SpotList().updateDistance(self)
-        
-        self.syncNewSpots()
-        self.syncOutdatedSpots();
         
     }
     
@@ -355,17 +351,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         // Dispose of any resources that can be recreated.
     }
     
-    func fetchSpots() {
-        print("fetch")
-        fetchedResultController = getFetchedResultController()
-        fetchedResultController.delegate = self
-        do {
-            try fetchedResultController.performFetch()
-        } catch {
-        }
-    }
-
-    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         
         return 1
@@ -383,53 +368,17 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         }
         
         return objCount
+        
     }
     
     func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
         
-        self.configureCell(cell, atIndexPath: indexPath)
+        SpotList().configureCell(cell, atIndexPath: indexPath)
         
         return cell
         
-    }
-    
-    func configureCell(cell: SpotCell,
-        atIndexPath indexPath: NSIndexPath) {
-            
-            if(firstLaunch == true && indexPath.row == 0) {
-                cell.sampleOverlay.hidden = false
-            } else {
-                cell.sampleOverlay.hidden = true
-            }
-            
-            
-            let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
-            
-            cell.contentView.viewWithTag(15) as! UIImageView
-            
-            
-            
-            let bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
-            
-            if spot.bust {
-                bustIcon.hidden = false
-            } else {
-                bustIcon.hidden = true
-            }
-            
-            
-            cell.spotLabel.text = spot.title
-            cell.spotPhoto.image = UIImage(data: spot.photo as NSData)
-            
-            cell.distanceLabel.text = SnarlyUtils().getDistanceString(spot) as String
-            
-            cell.cityLabel.text = spot.loc_disp
-            
-            //cell.spotMask.layer.cornerRadius = 3
-            cell.spotMask.clipsToBounds = true
-
     }
     
     
@@ -508,10 +457,10 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let managedObject:NSManagedObject = fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        let selectedSpot = managedObject as! Spots
+        let selectedSpot = SpotList().retrieveSpot(indexPath)
         
         performSegueWithIdentifier("spotDetail", sender: selectedSpot)
+        
     }
     
 
@@ -526,17 +475,8 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     }
     
     func deleteSpot(indexPath: NSIndexPath) {
-        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        let selectedSpot = managedObject as! Spots
         
-        selectedSpot.active = false
-        SnarlySpotSync().delete(selectedSpot, managedObject: managedObject)
-        
-        
-        do {
-            try self.managedObjectContext?.save()
-        } catch _ {
-        }
+        SpotList().deleteSpot(indexPath)
         
         // remove the deleted item from the `UITableView`
         self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
@@ -571,28 +511,28 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     @IBAction func populateData() {
         
-        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
-        
-        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
-        
-        let image = UIImage(named: "sample-spot")
-        let imageData = NSData(data: UIImageJPEGRepresentation(image!, 0.8)!)
-        
-        spot.title = "The Wedge hubba"
-        spot.notes = ""
-        spot.photo = imageData
-        spot.distance = 0
-        spot.bust = false
-        spot.synced = true
-        
-        spot.loc_lat = 33.466661
-        spot.loc_lon = -111.915254
-        spot.loc_disp = "Scottsdale, AZ"
-            
-        do {
-            try managedObjectContext?.save()
-        } catch _ {
-        }
+//        let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
+//        
+//        let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: managedObjectContext)
+//        
+//        let image = UIImage(named: "sample-spot")
+//        let imageData = NSData(data: UIImageJPEGRepresentation(image!, 0.8)!)
+//        
+//        spot.title = "The Wedge hubba"
+//        spot.notes = ""
+//        spot.photo = imageData
+//        spot.distance = 0
+//        spot.bust = false
+//        spot.synced = true
+//        
+//        spot.loc_lat = 33.466661
+//        spot.loc_lon = -111.915254
+//        spot.loc_disp = "Scottsdale, AZ"
+//            
+//        do {
+//            try managedObjectContext?.save()
+//        } catch _ {
+//        }
         
     }
     
@@ -636,91 +576,6 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         tableView.reloadData()
     }
-    
-    func syncNewSpots() {
-        
-        let fetchRequest = NSFetchRequest(entityName: "Spots")
-        
-        let resultPredicate1 = NSPredicate(format: "synced == NO")
-        let resultPredicate2 = NSPredicate(format: "uuid == nil")
-        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2])
-        fetchRequest.predicate = predicate
-        
-        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
-        fetchRequest.entity = entitySpot
-        
-        // Execute the fetch request
-        var error : NSError?
-        var fetchedObjects: [AnyObject]?
-        do {
-            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
-        } catch let error1 as NSError {
-            error = error1
-            fetchedObjects = nil
-        }
-        
-        // Change the attributer name of
-        // each managed object to the self.name
-        if let spots = fetchedObjects {
-            if error == nil {
-                for spot in spots {
-                    
-                    let spot = spot as! Spots
-                    
-                    SnarlySpotSync().save(spot)
-                    
-                    
-                }
-                
-                
-            }
-        }
-        
-    }
-    
-    func syncOutdatedSpots() {
-        
-        let fetchRequest = NSFetchRequest(entityName: "Spots")
-        
-        let resultPredicate1 = NSPredicate(format: "synced == NO")
-        let resultPredicate2 = NSPredicate(format: "uuid != nil")
-        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2])
-        fetchRequest.predicate = predicate
-        
-        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
-        fetchRequest.entity = entitySpot
-        
-        // Execute the fetch request
-        var error : NSError?
-        var fetchedObjects: [AnyObject]?
-        do {
-            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
-        } catch let error1 as NSError {
-            error = error1
-            fetchedObjects = nil
-        }
-        
-        // Change the attributer name of
-        // each managed object to the self.name
-        if let spots = fetchedObjects {
-            if error == nil {
-                for spot in spots {
-                    
-                    let spot = spot as! Spots
-                    
-                    SnarlySpotSync().update(spot, objectID: spot.uuid!)
-                    
-                    
-                }
-                
-                
-            }
-        }
-        
-    }
-    
-    
-
         
     func setActive() {
         
@@ -772,6 +627,25 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
                 
             }
         }
+        
+    }
+    
+    func setViewTitle() {
+        
+        let viewTitle: String
+        
+        switch appDelegate.listType {
+            case "saved":
+                viewTitle = "Saved spots"
+            case "friends":
+                viewTitle = "Friend's spots"
+            case "nearby":
+                viewTitle = "Nearby spots"
+            default:
+                viewTitle = "Saved spots"
+        }
+        
+        self.title = viewTitle
         
     }
 

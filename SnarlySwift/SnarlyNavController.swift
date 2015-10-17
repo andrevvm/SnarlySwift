@@ -25,24 +25,27 @@ class SnarlyNavController: UINavigationController {
         
         var segue: UIStoryboardSegue? = super.segueForUnwindingToViewController(toViewController, fromViewController: fromViewController, identifier: identifier)
         
-        if let id = identifier {
-            
-            if id == "idHideMenu" {
-                segue = MenuSegueUnwind(identifier: id, source: fromViewController, destination: toViewController)
-                return segue!
+        if let sourceTitle = segue?.sourceViewController.title {
+        
+            switch sourceTitle {
+                
+                case "Menu","Settings":
+                    segue = MenuSegueUnwind(identifier: identifier, source: fromViewController, destination: toViewController)
+                    return segue!
+                default:
+                    break
+                
             }
             
         }
-        else {
+
             
-            if #available(iOS 9.0, *) {
-                super.unwindForSegue(segue!, towardsViewController: toViewController)
-            } else {
-                segue = super.segueForUnwindingToViewController(toViewController, fromViewController: fromViewController, identifier: identifier)!
-            }
-            
-            
+        if #available(iOS 9.0, *) {
+            super.unwindForSegue(segue!, towardsViewController: toViewController)
+        } else {
+            segue = super.segueForUnwindingToViewController(toViewController, fromViewController: fromViewController, identifier: identifier)!
         }
+        
         return segue!
     }
 

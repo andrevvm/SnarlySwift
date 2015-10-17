@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E60092E41BD2849500F132A9 /* SpotObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60092E31BD2849500F132A9 /* SpotObject.swift */; settings = {ASSET_TAGS = (); }; };
 		E60583B91BB5FA5F00974885 /* SnarlyMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = E60583B81BB5FA5F00974885 /* SnarlyMenu.swift */; settings = {ASSET_TAGS = (); }; };
 		E6074C121BC728E000543060 /* SnarlyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6074C111BC728E000543060 /* SnarlyUtils.swift */; settings = {ASSET_TAGS = (); }; };
 		E6121B80198FC5E400E72142 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B7F198FC5E400E72142 /* AppDelegate.swift */; };
@@ -69,6 +70,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E60092E31BD2849500F132A9 /* SpotObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotObject.swift; sourceTree = "<group>"; };
 		E60583B81BB5FA5F00974885 /* SnarlyMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlyMenu.swift; sourceTree = "<group>"; };
 		E6074C111BC728E000543060 /* SnarlyUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlyUtils.swift; sourceTree = "<group>"; };
 		E6121B7A198FC5E400E72142 /* SnarlySwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnarlySwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -208,6 +210,7 @@
 				E6121B89198FC5E500E72142 /* Images.xcassets */,
 				E6121B81198FC5E500E72142 /* SnarlySwift.xcdatamodeld */,
 				E62A6AFE1992463E00118206 /* Spots.swift */,
+				E60092E31BD2849500F132A9 /* SpotObject.swift */,
 				E6121B7D198FC5E400E72142 /* Supporting Files */,
 				E6121BA3198FD34400E72142 /* SpotsViewController.swift */,
 				E62A6AF519923C4A00118206 /* SpotDetailController.swift */,
@@ -402,6 +405,7 @@
 				E6FB45A01BC99DD7006F20F0 /* SnarlyUser.swift in Sources */,
 				E6CB9A261BC6D2E200A7B2BF /* SnarlySettings.swift in Sources */,
 				E60583B91BB5FA5F00974885 /* SnarlyMenu.swift in Sources */,
+				E60092E41BD2849500F132A9 /* SpotObject.swift in Sources */,
 				E6C6061B1991182000338777 /* SpotCell.swift in Sources */,
 				E649B4F41BD1526600DE66A0 /* MapDetailController.swift in Sources */,
 				E6074C121BC728E000543060 /* SnarlyUtils.swift in Sources */,

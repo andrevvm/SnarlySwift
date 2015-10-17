@@ -25,9 +25,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var curLon: Double?
     var curLat: Double?
     var settingLocation: Bool = false
+    var listType = "saved"
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        
         
         // Enable Local Datastore
         Parse.enableLocalDatastore()
@@ -57,11 +57,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         setLocationVars(location)
         
         setupAppearance()
-    
-    
-        //return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         
-        return true
+        SnarlySpotSync().syncNewSpots()
+        SnarlySpotSync().syncOutdatedSpots();
+    
+        return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+    
     }
     
     func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject) -> Bool {

@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import ParseUI
 
 let ImageHeight: CGFloat = 330.0
 let OffsetSpeed: CGFloat = 20.0
 
-class SpotCell: UITableViewCell {
+class SpotCell: PFTableViewCell {
     @IBOutlet var spotLabel: UILabel!
     @IBOutlet var spotPhoto: UIImageView!
     @IBOutlet var spotMask: UIView!
