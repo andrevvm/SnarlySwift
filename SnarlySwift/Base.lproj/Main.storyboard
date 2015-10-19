@@ -35,10 +35,10 @@
         </mutableArray>
     </customFonts>
     <scenes>
-        <!--Snarly Nav Controller-->
+        <!--Navigation Controller-->
         <scene sceneID="O9k-gW-Chd">
             <objects>
-                <navigationController id="Fbz-iM-z2X" customClass="SnarlyNavController" customModule="SnarlySwift" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController id="Fbz-iM-z2X" sceneMemberID="viewController">
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="186-AR-TJo">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -176,7 +176,7 @@
                                             </mask>
                                         </variation>
                                         <connections>
-                                            <segue destination="M51-sS-R8g" kind="unwind" unwindAction="unwindToFriends:" id="R43-7y-xYk"/>
+                                            <segue destination="M51-sS-R8g" kind="unwind" identifier="backToFriends" unwindAction="unwindToFriends:" id="R43-7y-xYk"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HR0-29-mIQ">
@@ -222,7 +222,7 @@
                                             </mask>
                                         </variation>
                                         <connections>
-                                            <segue destination="M51-sS-R8g" kind="unwind" unwindAction="unwindToSaved:" id="ENU-IT-sZB"/>
+                                            <segue destination="M51-sS-R8g" kind="unwind" identifier="backToSaved" unwindAction="unwindToSaved:" id="ENU-IT-sZB"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m6R-1a-laG">
@@ -535,7 +535,7 @@
                     <navigationItem key="navigationItem" id="w8C-MB-IYC">
                         <barButtonItem key="leftBarButtonItem" image="btn-cancel" id="PDV-i1-4tA">
                             <connections>
-                                <segue destination="M51-sS-R8g" kind="unwind" unwindAction="unwindToSpots:" id="mbu-ed-CfS"/>
+                                <segue destination="M51-sS-R8g" kind="unwind" identifier="backToSpots" unwindAction="unwindToSpots:" id="8aj-Kh-G8m"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -592,7 +592,8 @@
                                         <exclude reference="NV5-DS-2sZ"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact">
+                                <variation key="widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="53" y="192" width="294" height="144"/>
                                     <mask key="constraints">
                                         <include reference="N1N-4W-Gho"/>
                                         <include reference="NV5-DS-2sZ"/>
@@ -612,7 +613,8 @@
                                         <exclude reference="QdR-5F-NVD"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact">
+                                <variation key="widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="50" y="268" width="300" height="48"/>
                                     <mask key="constraints">
                                         <include reference="6ev-cn-BB4"/>
                                         <include reference="QdR-5F-NVD"/>
@@ -634,7 +636,8 @@
                                         <exclude reference="XyL-If-oPD"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact">
+                                <variation key="widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="89" y="217" width="221" height="34"/>
                                     <mask key="constraints">
                                         <include reference="Uir-MQ-ZSd"/>
                                         <include reference="XyL-If-oPD"/>
@@ -848,7 +851,8 @@
                                         <exclude reference="zxK-BS-gJm"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact">
+                                <variation key="widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="0.0" y="64" width="400" height="536"/>
                                     <mask key="subviews">
                                         <include reference="sjB-SN-FLj"/>
                                         <include reference="4TD-ga-WwI"/>
@@ -972,7 +976,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="btn-save" id="MSK-gD-KbP">
                             <connections>
-                                <segue destination="N8n-iA-gYT" kind="unwind" identifier="idHideMenu" unwindAction="hideMenu:" id="Tcs-xk-YAx"/>
+                                <segue destination="N8n-iA-gYT" kind="unwind" identifier="backToSpots" unwindAction="unwindToSpots:" id="Ya1-8Q-Irz"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -1604,7 +1608,7 @@
                     <navigationItem key="navigationItem" id="klG-MK-dQw">
                         <barButtonItem key="leftBarButtonItem" image="btn-menu" id="sVA-b0-1Gy">
                             <connections>
-                                <segue destination="Ziz-PD-r09" kind="custom" identifier="showMenu" customClass="MenuSegue" customModule="SnarlySwift" customModuleProvider="target" id="NW7-rk-9fu"/>
+                                <segue destination="DT9-oT-no9" kind="show" identifier="showMenu" id="7Or-Cj-7U0"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -3099,24 +3103,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xaG-9i-b8Y" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="645" y="1034"/>
-        </scene>
-        <!--Snarly Nav Controller-->
-        <scene sceneID="LXA-8J-ccC">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ziz-PD-r09" customClass="SnarlyNavController" customModule="SnarlySwift" customModuleProvider="target" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ZkG-af-uEb">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="DT9-oT-no9" kind="relationship" relationship="rootViewController" id="lAD-Af-ZMv"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="vWb-JG-Ivg" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-960" y="-324"/>
         </scene>
     </scenes>
     <resources>

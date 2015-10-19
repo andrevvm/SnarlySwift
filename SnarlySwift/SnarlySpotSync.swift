@@ -51,17 +51,8 @@ class SnarlySpotSync {
         
         let objectId: String
         
-        spot.active = false
-        
-        if(spot.uuid == nil) {
-            self.managedObjectContext?.deleteObject(managedObject)
+        if(spot.uuid != nil) {
             
-            do {
-                try self.managedObjectContext?.save()
-            } catch _ {
-                
-            }
-        } else {
             objectId = spot.uuid!
             
             let query = PFQuery(className:"Spots")
@@ -72,26 +63,22 @@ class SnarlySpotSync {
                 } else if let PFSpot = PFSpot {
                     
                     PFSpot["active"] = false
-                    PFSpot.saveInBackgroundWithBlock { (succeeded: Bool, error: NSError?) -> Void in
-                        
-                        if succeeded {
-                            
-                            self.managedObjectContext?.deleteObject(managedObject)
-                            
-                            do {
-                                try self.managedObjectContext?.save()
-                            } catch _ {
-                            }
-                            
-                        } else {
-                            self.spotNotSynced(spot)
-                        }
-                        
-                    }
+                    
+                    PFSpot.saveEventually()
+                    
                 }
             }
             
         }
+        
+        self.managedObjectContext?.deleteObject(managedObject)
+        
+        do {
+            try self.managedObjectContext?.save()
+        } catch _ {
+            
+        }
+        
     }
     
     func spotNotSynced(spot: Spots) {
@@ -119,7 +106,7 @@ class SnarlySpotSync {
         
         PFSpot["notes"] = spot.notes
         
-        PFSpot["active"] = spot.active
+        PFSpot["active"] = true
         
         if(spot.title == nil) {
             spot.title = ""
@@ -178,7 +165,8 @@ class SnarlySpotSync {
         
         let resultPredicate1 = NSPredicate(format: "synced == NO")
         let resultPredicate2 = NSPredicate(format: "uuid == nil")
-        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2])
+        let resultPredicate3 = NSPredicate(format: "active == YES")
+        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2, resultPredicate3])
         fetchRequest.predicate = predicate
         
         let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
@@ -219,7 +207,8 @@ class SnarlySpotSync {
         
         let resultPredicate1 = NSPredicate(format: "synced == NO")
         let resultPredicate2 = NSPredicate(format: "uuid != nil")
-        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2])
+        let resultPredicate3 = NSPredicate(format: "active == YES")
+        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2, resultPredicate3])
         fetchRequest.predicate = predicate
         
         let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)

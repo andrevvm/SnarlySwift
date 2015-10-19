@@ -12,6 +12,7 @@ import Foundation
 import Parse
 
 class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerDelegate {
+    static let sharedInstance = SpotList()
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
@@ -22,8 +23,35 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     override init() {
         super.init()
         
-        fetchedResultController = SpotsViewController().fetchedResultController
+        self.fetchSavedSpots()
+    }
+    
+    func getFetchedResultController() -> NSFetchedResultsController {
+        fetchedResultController = NSFetchedResultsController(fetchRequest: spotFetchRequest(), managedObjectContext: managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
+        return fetchedResultController
+    }
+    
+    func spotFetchRequest() -> NSFetchRequest {
+        let fetchRequest = NSFetchRequest(entityName: "Spots")
+        let resultPredicate = NSPredicate(format: "active == YES")
+        let sortDescriptor1 = NSSortDescriptor(key: "distance", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor1]
+        fetchRequest.predicate = resultPredicate
         
+        return fetchRequest
+    }
+    
+    func fetchSavedSpots() {
+        print("fetch em")
+        
+        fetchedResultController = getFetchedResultController()
+        fetchedResultController.delegate = self
+        do {
+            try fetchedResultController.performFetch()
+        } catch {
+        }
+        
+        print(fetchedResultController.sections)
     }
     
     func countObjects(section: Int) -> Int {
@@ -47,7 +75,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     func retrieveSpot(indexPath: NSIndexPath) -> AnyObject {
         switch appDelegate.listType {
             case "saved":
-                let spot = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+                let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
                 return spot
             default:
                 return false
@@ -58,12 +86,11 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     
     func deleteSpot(indexPath: NSIndexPath) {
         
-        let managedObject:NSManagedObject = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        let selectedSpot = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+        let selectedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
         
         selectedSpot.active = false
         SnarlySpotSync().delete(selectedSpot, managedObject: managedObject)
-        
         
         do {
             try self.managedObjectContext?.save()
@@ -74,9 +101,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     
     func configureCell(cell: SpotCell, atIndexPath indexPath: NSIndexPath) -> SpotCell {
         
-        print("Config")
-        
-        let spot = SpotsViewController().fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
         
         let bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
         

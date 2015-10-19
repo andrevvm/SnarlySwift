@@ -105,15 +105,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 
                 let pm = placemarks?.first
                 
-                var area:NSString = ""
+                var area:String?
                 
                 if pm!.ISOcountryCode == "US" {
                     area = pm!.administrativeArea!
                 } else {
-                    area = pm!.country!
+                    
+                    if let setArea = pm!.country {
+                        area = setArea
+                    } else {
+                        area = "Unknown"
+                    }
+                    
                 }
                 
-                var city: NSString
+                var city:String?
                 
                 if pm!.locality != nil {
                     city = pm!.locality!
@@ -121,7 +127,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     city = pm!.administrativeArea!
                 }
                 
-                completion(answer: "\(city), \(area)")
+                completion(answer: "\(city!), \(area!)")
                 
                 
             } else {

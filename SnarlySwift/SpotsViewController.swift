@@ -15,45 +15,19 @@ import MobileCoreServices
 import Parse
 import ParseUI
 
-class SpotsViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate {
-    
-    var myData: Array<AnyObject> = []
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-    
-    var fetchedResultController: NSFetchedResultsController = NSFetchedResultsController()
-    
-    func getFetchedResultController() -> NSFetchedResultsController {
-        fetchedResultController = NSFetchedResultsController(fetchRequest: spotFetchRequest(), managedObjectContext: managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
-        return fetchedResultController
-    }
-    
-    func spotFetchRequest() -> NSFetchRequest {
-        let fetchRequest = NSFetchRequest(entityName: "Spots")
-        let resultPredicate = NSPredicate(format: "active == YES")
-        let sortDescriptor1 = NSSortDescriptor(key: "distance", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor1]
-        fetchRequest.predicate = resultPredicate
-        
-        return fetchRequest
-    }
-    
-    func fetchSavedSpots() {
-        print("fetch em")
-        
-        fetchedResultController = getFetchedResultController()
-        fetchedResultController.delegate = self
-        do {
-            try fetchedResultController.performFetch()
-        } catch {
-        }
-        
-        print(fetchedResultController.sections)
-    }
+class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, UIViewControllerTransitioningDelegate, UINavigationControllerDelegate {
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    
+    let spotList = SpotList()
+    
     var location: CLLocation?
     
     let editSpotsView = EditSpotViewController()
+    
+    let menuAnimationController = MenuAnimationController()
+    let defaultNavigationController = UINavigationController()
     
     @IBOutlet var EmptyBg: UIImageView!
     @IBOutlet var tableView: UITableView!
@@ -90,15 +64,17 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         appDelegate.listType = "friends"
         
-        print("unwind")
-        
     }
     
     @IBAction func capture(sender : AnyObject) {
         
-        self.initCamera()
-        self.presentViewController(imag, animated: true, completion: nil)
-            
+        if appDelegate.location != nil {
+            self.initCamera()
+            self.presentViewController(imag, animated: true, completion: nil)
+        } else {
+            cameraError()
+        }
+        
     }
     
     @IBAction func library(sender : UIGestureRecognizer) {
@@ -164,13 +140,21 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             
         } else {
                 
-            var locationAlert: UIAlertView
-            
-            locationAlert = UIAlertView(title: "Location unknown!", message: "You can't create a new spot without a location", delegate: self, cancelButtonTitle: "OK")
-            
-            locationAlert.show()
+            cameraError()
             
         }
+        
+    }
+    
+    func cameraError() {
+        
+        var locationAlert: UIAlertView
+        
+        locationAlert = UIAlertView(title: "Location unknown!", message: "Press & hold the add button to try adding a photo from your library instead.", delegate: self, cancelButtonTitle: "OK")
+        
+        locationAlert.show()
+        
+        self.loadingView.hidden = true
         
     }
     
@@ -201,10 +185,12 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
                     return
                 } else {
                     locationAlert.show()
+                    self.loadingView.hidden = true
                 }
             } else {
                 
                 locationAlert.show()
+                self.loadingView.hidden = true
             
             }
             },
@@ -216,10 +202,12 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
-        self.reloadData()
+        
     }
     
     override func viewWillAppear(animated: Bool) {
+        
+        self.reloadData()
         
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
@@ -236,6 +224,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
                 parallax(parallaxCell)
             }
         }
+        
     }
     
     
@@ -251,9 +240,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         appDelegate.listType = "saved"
         
-        self.fetchSavedSpots()
-        
-        SpotList().retrieveFriendsSpots()
+        spotList.retrieveFriendsSpots()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showFriendsSpots:"), name:"retrievedFriendsSpots", object: nil);
         
         initCamera()
@@ -311,13 +298,18 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         self.tableView.rowHeight = 200.0
 
-        SpotList().updateDistance(self)
+        spotList.updateDistance(self)
         
+    }
+    
+    func navigationController(navigationController: UINavigationController, animationControllerForOperation operation: UINavigationControllerOperation, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        menuAnimationController.reverse = operation == .Pop
+        return menuAnimationController
     }
     
     func refresh(sender:AnyObject)
     {
-        SpotList().updateDistance(self)
+        spotList.updateDistance(self)
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -359,7 +351,9 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        let objCount = SpotList().countObjects(section)
+        spotList.fetchSavedSpots()
+        
+        let objCount = spotList.countObjects(section)
         
         if objCount > 0 {
             self.hasSpots()
@@ -375,7 +369,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
         
-        SpotList().configureCell(cell, atIndexPath: indexPath)
+        spotList.configureCell(cell, atIndexPath: indexPath)
         
         return cell
         
@@ -387,7 +381,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
         let shareAction = UITableViewRowAction(style: .Normal, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
             
-        let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        let spot = self.spotList.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
             
         let img:UIImage = UIImage(data: spot.photo as NSData!)!
         
@@ -421,7 +415,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     let editAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
         tableView.editing = false
-        let spot:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+        let spot:NSManagedObject = self.spotList.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         self.performSegueWithIdentifier("editSpot", sender: spot)
     }
     
@@ -457,7 +451,7 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let selectedSpot = SpotList().retrieveSpot(indexPath)
+        let selectedSpot = spotList.retrieveSpot(indexPath)
         
         performSegueWithIdentifier("spotDetail", sender: selectedSpot)
         
@@ -476,10 +470,10 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
     
     func deleteSpot(indexPath: NSIndexPath) {
         
-        SpotList().deleteSpot(indexPath)
-        
+        spotList.deleteSpot(indexPath)
         // remove the deleted item from the `UITableView`
         self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        
     }
 
     
@@ -685,6 +679,12 @@ class SpotsViewController: UIViewController, UINavigationControllerDelegate, UII
             let spot = sender as? Spots
             editController.spot = spot
             
+        }
+        
+        if segue.identifier == "showMenu" {
+            navigationController?.delegate = self
+        } else {
+            navigationController?.delegate = defaultNavigationController.delegate
         }
 
         

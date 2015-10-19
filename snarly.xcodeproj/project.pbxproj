@@ -18,15 +18,13 @@
 		E6121B96198FC5E500E72142 /* SnarlySwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121B95198FC5E500E72142 /* SnarlySwiftTests.swift */; };
 		E6121BA1198FCC0000E72142 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6121BA0198FCC0000E72142 /* MapKit.framework */; };
 		E6121BA4198FD34400E72142 /* SpotsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6121BA3198FD34400E72142 /* SpotsViewController.swift */; };
+		E618EF4A1BD54F8C00EDEDD4 /* MenuAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E618EF491BD54F8B00EDEDD4 /* MenuAnimationController.swift */; settings = {ASSET_TAGS = (); }; };
 		E61CC7651B87EBEE001DC70C /* apercu-bold-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E61CC7631B87EBEE001DC70C /* apercu-bold-webfont.ttf */; };
 		E61CC7661B87EBEE001DC70C /* apercu-regular-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E61CC7641B87EBEE001DC70C /* apercu-regular-webfont.ttf */; };
 		E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AF519923C4A00118206 /* SpotDetailController.swift */; };
 		E62A6AFF1992463E00118206 /* Spots.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62A6AFE1992463E00118206 /* Spots.swift */; };
 		E649628A1BC71B4800D7250F /* SpotList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64962891BC71B4800D7250F /* SpotList.swift */; settings = {ASSET_TAGS = (); }; };
 		E649B4F41BD1526600DE66A0 /* MapDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E649B4F31BD1526600DE66A0 /* MapDetailController.swift */; settings = {ASSET_TAGS = (); }; };
-		E667A1A41BC4517F001890F4 /* SnarlyNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */; settings = {ASSET_TAGS = (); }; };
-		E668585C1BC43ABD00857DD4 /* MenuSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E668585B1BC43ABD00857DD4 /* MenuSegue.swift */; settings = {ASSET_TAGS = (); }; };
-		E668585E1BC43F7A00857DD4 /* MenuSegueUnwind.swift in Sources */ = {isa = PBXBuildFile; fileRef = E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */; settings = {ASSET_TAGS = (); }; };
 		E66C7BFF1BADCE7700E1444B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7BFE1BADCE7700E1444B /* libz.tbd */; };
 		E66C7C011BADCE8400E1444B /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E66C7C001BADCE8400E1444B /* libsqlite3.tbd */; };
 		E66C7C041BAEF85E00E1444B /* SnarlySpotSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66C7C031BAEF85E00E1444B /* SnarlySpotSync.swift */; settings = {ASSET_TAGS = (); }; };
@@ -86,6 +84,7 @@
 		E6121B9F198FCBF600E72142 /* SnarlySwift.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = SnarlySwift.entitlements; sourceTree = "<group>"; };
 		E6121BA0198FCC0000E72142 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		E6121BA3198FD34400E72142 /* SpotsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotsViewController.swift; sourceTree = "<group>"; };
+		E618EF491BD54F8B00EDEDD4 /* MenuAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuAnimationController.swift; sourceTree = "<group>"; };
 		E61CC7631B87EBEE001DC70C /* apercu-bold-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "apercu-bold-webfont.ttf"; sourceTree = "<group>"; };
 		E61CC7641B87EBEE001DC70C /* apercu-regular-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "apercu-regular-webfont.ttf"; sourceTree = "<group>"; };
 		E62A6AF519923C4A00118206 /* SpotDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotDetailController.swift; sourceTree = "<group>"; };
@@ -93,9 +92,6 @@
 		E63C25941B865C1600BD773F /* SnarlySwift 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 5.xcdatamodel"; sourceTree = "<group>"; };
 		E64962891BC71B4800D7250F /* SpotList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotList.swift; sourceTree = "<group>"; };
 		E649B4F31BD1526600DE66A0 /* MapDetailController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapDetailController.swift; sourceTree = "<group>"; };
-		E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlyNavController.swift; sourceTree = "<group>"; };
-		E668585B1BC43ABD00857DD4 /* MenuSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuSegue.swift; sourceTree = "<group>"; };
-		E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuSegueUnwind.swift; sourceTree = "<group>"; };
 		E66C7BFE1BADCE7700E1444B /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		E66C7C001BADCE8400E1444B /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		E66C7C021BADD69800E1444B /* SnarlySwift 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 6.xcdatamodel"; sourceTree = "<group>"; };
@@ -204,9 +200,7 @@
 				E6121B9F198FCBF600E72142 /* SnarlySwift.entitlements */,
 				E6121B7F198FC5E400E72142 /* AppDelegate.swift */,
 				E6121B84198FC5E500E72142 /* ViewController.swift */,
-				E668585B1BC43ABD00857DD4 /* MenuSegue.swift */,
-				E667A1A31BC4517F001890F4 /* SnarlyNavController.swift */,
-				E668585D1BC43F7A00857DD4 /* MenuSegueUnwind.swift */,
+				E618EF491BD54F8B00EDEDD4 /* MenuAnimationController.swift */,
 				E6121B89198FC5E500E72142 /* Images.xcassets */,
 				E6121B81198FC5E500E72142 /* SnarlySwift.xcdatamodeld */,
 				E62A6AFE1992463E00118206 /* Spots.swift */,
@@ -404,20 +398,18 @@
 				E6121B85198FC5E500E72142 /* ViewController.swift in Sources */,
 				E6FB45A01BC99DD7006F20F0 /* SnarlyUser.swift in Sources */,
 				E6CB9A261BC6D2E200A7B2BF /* SnarlySettings.swift in Sources */,
+				E618EF4A1BD54F8C00EDEDD4 /* MenuAnimationController.swift in Sources */,
 				E60583B91BB5FA5F00974885 /* SnarlyMenu.swift in Sources */,
 				E60092E41BD2849500F132A9 /* SpotObject.swift in Sources */,
 				E6C6061B1991182000338777 /* SpotCell.swift in Sources */,
 				E649B4F41BD1526600DE66A0 /* MapDetailController.swift in Sources */,
 				E6074C121BC728E000543060 /* SnarlyUtils.swift in Sources */,
-				E667A1A41BC4517F001890F4 /* SnarlyNavController.swift in Sources */,
 				E62A6AF619923C4A00118206 /* SpotDetailController.swift in Sources */,
 				E6121B83198FC5E500E72142 /* SnarlySwift.xcdatamodeld in Sources */,
 				E6121B80198FC5E400E72142 /* AppDelegate.swift in Sources */,
 				E66C7C041BAEF85E00E1444B /* SnarlySpotSync.swift in Sources */,
 				E649628A1BC71B4800D7250F /* SpotList.swift in Sources */,
-				E668585C1BC43ABD00857DD4 /* MenuSegue.swift in Sources */,
 				E62A6AFF1992463E00118206 /* Spots.swift in Sources */,
-				E668585E1BC43F7A00857DD4 /* MenuSegueUnwind.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
