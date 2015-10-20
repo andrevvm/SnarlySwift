@@ -268,6 +268,9 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         
+        if segue.identifier == "toSpots" || segue.identifier == "backToSpots" || segue.identifier == "editSpot" || segue.identifier == "newSpot" {
+            //appDelegate.listType = "saved"
+        }
         
         
     }

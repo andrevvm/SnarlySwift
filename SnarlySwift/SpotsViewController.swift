@@ -37,6 +37,12 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     @IBOutlet var emptyTxt: UILabel!
     @IBOutlet var loadingView: UIView!
     
+    @IBOutlet var navHome: UIButton!
+    @IBOutlet var navFriends: UIButton!
+    @IBOutlet var navNearby: UIButton!
+    @IBOutlet var navSettings: UIButton!
+    var setButton: UIButton!
+    
     var locationManager = CLLocationManager()
     
     var curLat:Double = 0
@@ -63,6 +69,55 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     @IBAction func unwindToFriends(sender: UIStoryboardSegue){
         
         appDelegate.listType = "friends"
+        
+    }
+    
+    @IBAction func selectNav(sender: UIButton){
+        
+        changeNav(sender)
+        
+    }
+    
+    func changeNav(btn: UIButton) {
+        
+        setButton = btn
+        
+        navHome.imageView?.image = UIImage(named: "nav-saved")
+        navFriends.imageView?.image = UIImage(named: "nav-friends")
+        navNearby.imageView?.image = UIImage(named: "nav-nearby")
+        navSettings.imageView?.image = UIImage(named: "nav-settings")
+        
+        let btnName = btn.restorationIdentifier
+        
+        print(btnName!)
+        
+        btn.imageView?.image = UIImage(named: "nav-\(btnName!)-active")
+        self.changeView(btn)
+        
+    }
+    
+    func updateNav() {
+        
+        navHome.imageView?.image = UIImage(named: "nav-saved")
+        navFriends.imageView?.image = UIImage(named: "nav-friends")
+        navNearby.imageView?.image = UIImage(named: "nav-nearby")
+        navSettings.imageView?.image = UIImage(named: "nav-settings")
+        
+        
+        
+    }
+    
+    func changeView(btn: UIButton) {
+        
+        appDelegate.listType = btn.restorationIdentifier!
+        self.reloadData()
+        self.setViewTitle()
+        
+    }
+    
+    func comeHome() {
+        
+        changeNav(navHome)
         
     }
     
@@ -203,6 +258,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
         
+        self.changeNav(setButton)
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -238,6 +295,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setButton = navHome
         appDelegate.listType = "saved"
         
         spotList.retrieveFriendsSpots()
@@ -256,7 +314,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        let edgeInsets = UIEdgeInsetsMake(0, 0, 80, 0)
+        let edgeInsets = UIEdgeInsetsMake(0, 0, 75, 0)
         self.tableView.contentInset = edgeInsets
         
         //appDelegate.setLocationVars(locationManager.location)
@@ -264,6 +322,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         self.refreshControl = UIRefreshControl()
         self.refreshControl.backgroundColor = UIColor.clearColor()
         self.refreshControl.tintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
+        //self.refreshControl.tintColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1.0)
         
         let attr = [NSForegroundColorAttributeName:UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)]
         self.refreshControl.attributedTitle = NSAttributedString(string: "Refresh location", attributes:attr)
@@ -630,13 +689,13 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         switch appDelegate.listType {
             case "saved":
-                viewTitle = "Saved spots"
+                viewTitle = "Your spots"
             case "friends":
                 viewTitle = "Friend's spots"
             case "nearby":
                 viewTitle = "Nearby spots"
             default:
-                viewTitle = "Saved spots"
+                viewTitle = "Your spots"
         }
         
         self.title = viewTitle
