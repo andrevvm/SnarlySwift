@@ -61,7 +61,7 @@
                         <viewControllerLayoutGuide type="bottom" id="cUm-6r-xfi"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="ZX3-zJ-v2q">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Msp-II-qwn">
@@ -555,7 +555,7 @@
                         <viewControllerLayoutGuide type="bottom" id="HG5-rP-8D2"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="MlI-Ji-rCe">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" image="empty-bg-no-logo" translatesAutoresizingMaskIntoConstraints="NO" id="ypt-3z-Q1r">
@@ -592,8 +592,7 @@
                                         <exclude reference="NV5-DS-2sZ"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="53" y="192" width="294" height="144"/>
+                                <variation key="widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="N1N-4W-Gho"/>
                                         <include reference="NV5-DS-2sZ"/>
@@ -613,8 +612,7 @@
                                         <exclude reference="QdR-5F-NVD"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="50" y="268" width="300" height="48"/>
+                                <variation key="widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="6ev-cn-BB4"/>
                                         <include reference="QdR-5F-NVD"/>
@@ -636,8 +634,7 @@
                                         <exclude reference="XyL-If-oPD"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="89" y="217" width="221" height="34"/>
+                                <variation key="widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="Uir-MQ-ZSd"/>
                                         <include reference="XyL-If-oPD"/>
@@ -851,8 +848,7 @@
                                         <exclude reference="zxK-BS-gJm"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="64" width="400" height="536"/>
+                                <variation key="widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="sjB-SN-FLj"/>
                                         <include reference="4TD-ga-WwI"/>
@@ -1409,11 +1405,13 @@
                                     <outletCollection property="gestureRecognizers" destination="700-S2-LlH" appends="YES" id="4hJ-ck-9RX"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Press &amp; hold to add from photos" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wZ2-zW-Rge">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Long press to add from photo library" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wZ2-zW-Rge">
                                 <rect key="frame" x="-42" y="-21" width="42" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="823-KT-SVS"/>
-                                    <constraint firstAttribute="width" constant="160" id="hjR-9z-9ae"/>
+                                    <constraint firstAttribute="width" constant="160" id="hjR-9z-9ae">
+                                        <variation key="widthClass=compact" constant="140"/>
+                                    </constraint>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="Apercu-Bold" family="Apercu" pointSize="14"/>
                                 <color key="textColor" red="0.99989169836044312" green="1" blue="0.99988096952438354" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -2180,7 +2178,7 @@
                                                     <constraint firstAttribute="height" constant="1" id="u4z-Za-LEK"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                                 <variation key="default">
                                                     <mask key="constraints">
@@ -2223,7 +2221,7 @@
                                                             <constraint firstAttribute="height" constant="1" id="kV6-ea-NkS"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                         <variation key="default">
                                                             <mask key="constraints">
@@ -2239,7 +2237,7 @@
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="It's a bust" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="muP-lg-dQ1">
                                                         <rect key="frame" x="-42" y="-21" width="42" height="21"/>
                                                         <fontDescription key="fontDescription" name="Apercu" family="Apercu" pointSize="14"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                         <variation key="widthClass=compact" misplaced="YES">
                                                             <rect key="frame" x="32" y="15" width="62" height="16.5"/>
