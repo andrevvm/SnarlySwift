@@ -36,6 +36,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     @IBOutlet var NavBar: UINavigationBar!
     @IBOutlet var emptyTxt: UILabel!
     @IBOutlet var loadingView: UIView!
+    @IBOutlet var comingSoonView: UIView!
+    @IBOutlet var comingSoonLabel: UILabel!
     
     @IBOutlet var navHome: UIButton!
     @IBOutlet var navFriends: UIButton!
@@ -55,6 +57,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     var refreshControl:UIRefreshControl!
     
     var firstLaunch = false
+    
+    let paragraphStyle = NSMutableParagraphStyle()
+    
     
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
     
@@ -162,6 +167,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
         
         self.loadingView.hidden = false
+        self.changeNav(navHome)
         
         self.dismissViewControllerAnimated(true, completion: {
             
@@ -329,6 +335,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.addSubview(refreshControl)
+        
+        paragraphStyle.lineSpacing = 4
+        paragraphStyle.alignment = NSTextAlignment.Center
         
 //        let user = PFUser()
 //        user.username = userID
@@ -690,10 +699,21 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         switch appDelegate.listType {
             case "saved":
                 viewTitle = "Your spots"
+                comingSoonView.hidden = true
             case "friends":
                 viewTitle = "Friend's spots"
+                comingSoonView.hidden = false
+                let text = "\(viewTitle) are coming soon. Login with Facebook to invite some."
+                let attrString = NSMutableAttributedString(string: text)
+                attrString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+                self.comingSoonLabel.attributedText = attrString
             case "nearby":
                 viewTitle = "Nearby spots"
+                comingSoonView.hidden = false
+                let text = "\(viewTitle) are coming soon. Login with Facebook while you wait."
+                let attrString = NSMutableAttributedString(string: text)
+                attrString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+                self.comingSoonLabel.attributedText = attrString
             default:
                 viewTitle = "Your spots"
         }
