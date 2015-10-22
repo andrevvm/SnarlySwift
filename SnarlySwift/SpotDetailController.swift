@@ -11,7 +11,7 @@ import MapKit
 import CoreData
 
 class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewDelegate {
-    var spot: Spots? = nil
+    var spot: SpotObject? = nil
     var managedObject: NSManagedObject? = nil
     
     @IBOutlet var spotPhoto: UIImageView!
@@ -100,7 +100,23 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         if spot != nil {
             self.title = spot?.title
             
-            spotPhoto.image = UIImage(data: spot?.photo as NSData!)
+            if let photo = spot?.photo {
+                spotPhoto.image = UIImage(data: photo as NSData!)
+            } else {
+                if spot!.object != nil {
+                    spot!.object["photo"].getDataInBackgroundWithBlock({
+                        
+                        (imageData: NSData?, error: NSError?) -> Void in
+                        
+                        self.spotPhoto.image = UIImage(data: imageData!)
+                        
+                    })
+                } else {
+                    spotPhoto.image = UIImage(named: "EmptySpot")
+                }
+                
+            }
+            
             
             if spot?.bust == true {
                 bustView.hidden = false
@@ -257,7 +273,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             
             deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
                 
-                self.deleteSpot()
+                //self.deleteSpot()
                 self.performSegueWithIdentifier("deleteSpot", sender: nil)
                 
                 
@@ -269,7 +285,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             
         } else {
             
-            self.deleteSpot()
+            //self.deleteSpot()
             self.performSegueWithIdentifier("deleteSpot", sender: nil)
             
             
@@ -320,31 +336,31 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             return pinView
     }
     
-    func deleteSpot() {
-        
-        SnarlySpotSync().delete(self.spot!, managedObject: self.managedObject!)
-
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
-        if segue.identifier == "editSpot" {
-            
-            let editController = segue.destinationViewController as! EditSpotViewController
-            let spot = self.spot
-            editController.spot = spot
-            
-        }
-        
-        if segue.identifier == "mapDetail" {
-            
-            let mapController = segue.destinationViewController as! MapDetailController
-            let spot = self.spot
-            mapController.spot = spot
-            
-        }
-        
-    }
+//    func deleteSpot() {
+//        
+//        SnarlySpotSync().delete(self.spot!, managedObject: self.managedObject!)
+//
+//    }
+//    
+//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+//        
+//        if segue.identifier == "editSpot" {
+//            
+//            let editController = segue.destinationViewController as! EditSpotViewController
+//            let spot = self.spot
+//            editController.spot = spot
+//            
+//        }
+//        
+//        if segue.identifier == "mapDetail" {
+//            
+//            let mapController = segue.destinationViewController as! MapDetailController
+//            let spot = self.spot
+//            mapController.spot = spot
+//            
+//        }
+//        
+//    }
     
     
 }

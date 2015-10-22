@@ -12,8 +12,12 @@ import Parse
 import ParseFacebookUtilsV4
 import FBSDKCoreKit
 import FBSDKLoginKit
+import FBSDKShareKit
 
-class SnarlyUser: SnarlySettings {
+
+class SnarlyUser {
+    static let sharedInstance = SnarlyUser()
+    var isFacebookLinked: Bool!
 
     func loginWithFacebook() {
         let permissions: NSArray = [ "public_profile", "user_friends", "user_location", "email" ]
@@ -24,8 +28,11 @@ class SnarlyUser: SnarlySettings {
             print(user, error)
             
             if let user = user {
+                
                 if user.isNew {
-                    print("User signed up and logged in through Facebook!")
+                    
+                    SnarlySpotSync().syncUserSpots()
+                    
                 } else {
                     
                     let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me?fields=id,name,location,first_name,last_name,email", parameters: nil)
@@ -97,6 +104,49 @@ class SnarlyUser: SnarlySettings {
                 
             }
         }
+        
+    }
+    
+    func inviteDialog(sender: UIViewController!) {
+        let dialog:FBSDKAppInviteDialog = FBSDKAppInviteDialog()
+        
+        if(dialog.canShow()){
+            
+            let content: FBSDKAppInviteContent = FBSDKAppInviteContent()
+            
+            content.appLinkURL = NSURL(string: "https://fb.me/1029625583756110")
+            content.appInvitePreviewImageURL = NSURL(string: "http://getsnarly.com/images/fb_icon.png")
+            
+            dialog.content = content
+            dialog.fromViewController = sender
+            print(dialog)
+            
+            dialog.show()
+            do {
+                try dialog.validate()
+            } catch {
+                print(error)
+            }
+            
+            
+        } else {
+            print("cannot show dialog")
+        }
+    }
+    
+    func isFBLoggedIn() -> Bool {
+        
+        if (PFUser.currentUser() != nil) {
+        
+            isFacebookLinked = (PFUser.currentUser()?.isLinkedWithAuthType("facebook"))!
+            
+        } else {
+            
+            isFacebookLinked = false
+            
+        }
+        
+        return isFacebookLinked
         
     }
     

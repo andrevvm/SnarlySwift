@@ -19,6 +19,7 @@ class SpotCell: PFTableViewCell {
     @IBOutlet var sampleOverlay: UIImageView!
     @IBOutlet var cityLabel: UILabel!
     @IBOutlet var distanceLabel: UILabel!
+    @IBOutlet var userOverlay: UIImageView!
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

@@ -25,12 +25,14 @@ class SnarlySettings: ViewController {
     @IBOutlet var profilePic: UIImageView!
     @IBOutlet var profileName: UILabel!
     
+    let snarlyUser = SnarlyUser()
+    
     var isLoggedIn:Bool = false
     var isFacebookLinked:Bool = false
     
     @IBAction func facebookConnect() {
         
-        SnarlyUser().loginWithFacebook()
+        snarlyUser.loginWithFacebook()
         userSettings.hidden = false
         profilePic.image = nil
         
@@ -38,30 +40,7 @@ class SnarlySettings: ViewController {
     
     @IBAction func inviteUsers() {
         
-        let dialog:FBSDKAppInviteDialog = FBSDKAppInviteDialog()
-        
-        if(dialog.canShow()){
-    
-            let content: FBSDKAppInviteContent = FBSDKAppInviteContent()
-
-            content.appLinkURL = NSURL(string: "https://fb.me/1029625583756110")
-            content.appInvitePreviewImageURL = NSURL(string: "http://getsnarly.com/images/fb_icon.png")
-            
-            dialog.content = content
-            dialog.fromViewController = self
-            print(dialog)
-            
-            dialog.show()
-            do {
-                try dialog.validate()
-            } catch {
-                print(error)
-            }
-            
-            
-        } else {
-            print("cannot show dialog")
-        }
+        snarlyUser.inviteDialog(self)
         
     }
     
@@ -85,6 +64,8 @@ class SnarlySettings: ViewController {
                 let logOutAlert:UIAlertView = UIAlertView(title: "Unable to logout", message: "Check your internet connection and try again", delegate: self, cancelButtonTitle: "OK")
                 logOutAlert.show()
                 
+            } else {
+                NSNotificationCenter.defaultCenter().postNotificationName("loggedOut", object: nil)
             }
             
             

@@ -31,6 +31,7 @@
 		E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */; };
 		E6C6061B1991182000338777 /* SpotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C6061A1991182000338777 /* SpotCell.swift */; };
 		E6CB9A261BC6D2E200A7B2BF /* SnarlySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CB9A251BC6D2E200A7B2BF /* SnarlySettings.swift */; settings = {ASSET_TAGS = (); }; };
+		E6CC28AC1BD800C7003DECA4 /* FacebookUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CC28AB1BD800C7003DECA4 /* FacebookUtils.swift */; settings = {ASSET_TAGS = (); }; };
 		E6FB45A01BC99DD7006F20F0 /* SnarlyUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6FB459F1BC99DD7006F20F0 /* SnarlyUser.swift */; settings = {ASSET_TAGS = (); }; };
 		E6FB45EE1BC9ADB1006F20F0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6FB45ED1BC9ADB1006F20F0 /* AudioToolbox.framework */; };
 		E6FB45F01BC9ADBA006F20F0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6FB45EF1BC9ADBA006F20F0 /* CFNetwork.framework */; };
@@ -102,6 +103,7 @@
 		E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditSpotViewController.swift; sourceTree = "<group>"; };
 		E6C6061A1991182000338777 /* SpotCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotCell.swift; sourceTree = "<group>"; };
 		E6CB9A251BC6D2E200A7B2BF /* SnarlySettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlySettings.swift; sourceTree = "<group>"; };
+		E6CC28AB1BD800C7003DECA4 /* FacebookUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookUtils.swift; sourceTree = "<group>"; };
 		E6FB459F1BC99DD7006F20F0 /* SnarlyUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlyUser.swift; sourceTree = "<group>"; };
 		E6FB45ED1BC9ADB1006F20F0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E6FB45EF1BC9ADBA006F20F0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -217,6 +219,7 @@
 				E60583B81BB5FA5F00974885 /* SnarlyMenu.swift */,
 				E6FB459F1BC99DD7006F20F0 /* SnarlyUser.swift */,
 				E6CB9A251BC6D2E200A7B2BF /* SnarlySettings.swift */,
+				E6CC28AB1BD800C7003DECA4 /* FacebookUtils.swift */,
 				E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */,
 			);
 			path = SnarlySwift;
@@ -394,6 +397,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6121BA4198FD34400E72142 /* SpotsViewController.swift in Sources */,
+				E6CC28AC1BD800C7003DECA4 /* FacebookUtils.swift in Sources */,
 				E6B5F3D0198FFBCB00FAE0DA /* EditSpotViewController.swift in Sources */,
 				E6121B85198FC5E500E72142 /* ViewController.swift in Sources */,
 				E6FB45A01BC99DD7006F20F0 /* SnarlyUser.swift in Sources */,

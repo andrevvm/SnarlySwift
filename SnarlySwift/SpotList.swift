@@ -20,10 +20,13 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     
     var fetchedResultController: NSFetchedResultsController!
     
+    var friendsSpots: [PFObject]?
+    
     override init() {
         super.init()
         
         self.fetchSavedSpots()
+        
     }
     
     func getFetchedResultController() -> NSFetchedResultsController {
@@ -42,7 +45,6 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     }
     
     func fetchSavedSpots() {
-        print("fetch em")
         
         fetchedResultController = getFetchedResultController()
         fetchedResultController.delegate = self
@@ -63,7 +65,16 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                     return fetchedSections[section].numberOfObjects
                 } else {
                     return 0
-            }
+                }
+            case "friends":
+                if friendsSpots != nil {
+                    return (friendsSpots?.count)!
+                } else {
+                    return 0
+                }
+                
+            
+            
             default:
                 return 0
             
@@ -72,52 +83,80 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         
     }
     
-    func retrieveSpot(indexPath: NSIndexPath) -> AnyObject {
+    func retrieveSpot(indexPath: NSIndexPath) -> SpotObject {
+        var spot: SpotObject!
         switch appDelegate.listType {
-            case "saved":
-                let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
-                return spot
-            default:
-                return false
+        case "saved":
+            let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+            spot = SpotObject().setManagedObject(fetchedSpot)
+        case "friends":
+            let fetchedSpot = self.friendsSpots!
+            spot = SpotObject().setParseObject(fetchedSpot[indexPath.row])
+        default:
+            let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+            spot = SpotObject().setManagedObject(fetchedSpot)
         }
         
+        return spot
         
     }
     
     func deleteSpot(indexPath: NSIndexPath) {
         
-        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        let selectedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
         
-        selectedSpot.active = false
-        SnarlySpotSync().delete(selectedSpot, managedObject: managedObject)
-        
-        do {
-            try self.managedObjectContext?.save()
-        } catch _ {
-        }
+        fetchedSpot.active = false
+        SnarlySpotSync().delete(fetchedSpot)
 
     }
     
-    func configureCell(cell: SpotCell, atIndexPath indexPath: NSIndexPath) -> SpotCell {
+    func configureCell(cell: SpotCell, atIndexPath indexPath: NSIndexPath, loadedFriendsList: [PFObject], loadedFriendsPhotos: [NSData] ) -> SpotCell {
         
-        let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        //let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+        var spot: SpotObject
+        switch appDelegate.listType {
+            case "saved":
+                let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+                spot = SpotObject().setManagedObject(fetchedSpot)
+                cell.userOverlay.hidden = true
+            case "friends":
+                cell.userOverlay.hidden = false
+                if(loadedFriendsList.isEmpty) {
+                    let fetchedSpots = self.friendsSpots!
+                    spot = SpotObject().setParseObject(fetchedSpots[indexPath.row])
+                } else {
+                    spot = SpotObject().setParseObject(loadedFriendsList[indexPath.row])
+                    if(loadedFriendsPhotos.count > indexPath.row) {
+                        spot.photo = loadedFriendsPhotos[indexPath.row]
+                    }
+                    
+                }
+            
+            
+            default:
+                let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
+                spot = SpotObject().setManagedObject(fetchedSpot)
+        }
         
         let bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
         
-        if spot.bust {
+        if (spot.bust == true) {
             bustIcon.hidden = false
         } else {
             bustIcon.hidden = true
         }
         
+        cell.spotLabel.text = spot.title!
         
-        cell.spotLabel.text = spot.title
-        cell.spotPhoto.image = UIImage(data: spot.photo as NSData)
+        let imageData = spot.photo as NSData
+        cell.spotPhoto.image = UIImage(data: imageData)
         
         cell.distanceLabel.text = SnarlyUtils().getDistanceString(spot) as String
         
-        cell.cityLabel.text = spot.loc_disp
+        if spot.loc_disp == nil {
+            spot.loc_disp = ""
+        }
+        cell.cityLabel.text = spot.loc_disp!
         
         //cell.spotMask.layer.cornerRadius = 3
         cell.spotMask.clipsToBounds = true
@@ -126,10 +165,25 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         
     }
     
+    func showCellPhoto(sender: NSNotification) {
+        
+        print("cell loaded \(sender)")
+        
+        let object = sender.object as! [AnyObject]
+        
+        let cell = object[0] as! SpotCell
+        let spot = object[1] as! SpotObject
+        let imageData = spot.photo as NSData
+        cell.spotPhoto.image = UIImage(data: imageData)
+        
+    }
+    
     func retrieveFriendsSpots() {
         
         let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me/friends?fields=id", parameters: nil)
         request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
+            
+            
             
             if error == nil {
 
@@ -154,10 +208,17 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                         spotsQuery.whereKey("active", equalTo: true)
                         spotsQuery.whereKey("user", containedIn: results!)
                         spotsQuery.orderByDescending("createdAt")
+                        if(self.appDelegate.location != nil) {
+                            //let point = PFGeoPoint(location: self.appDelegate.location)
+                            //spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 500)
+                        }
+                        
                         spotsQuery.findObjectsInBackgroundWithBlock {
                             (results: [PFObject]?, error: NSError?) -> Void in
                             
                             if error == nil {
+                                
+                                self.friendsSpots = results
                                 
                                 NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: results)
                                 

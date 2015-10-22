@@ -253,11 +253,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         imagePreview.image=resizedImage
         self.dismissViewControllerAnimated(true, completion: nil)
     }
-
-    
-    func syncSpot(spot: Spots) {
-        
-    }
     
     
     override func didReceiveMemoryWarning() {
@@ -269,7 +264,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         
         if segue.identifier == "toSpots" || segue.identifier == "backToSpots" || segue.identifier == "editSpot" || segue.identifier == "newSpot" {
-            //appDelegate.listType = "saved"
+            appDelegate.listType = "saved"
+        }
+        
+        if segue.identifier == "newSpot" {
+            let spotsController = segue.destinationViewController as! SpotsViewController
+            spotsController.tableView.setContentOffset(CGPointZero, animated:false)
         }
         
         

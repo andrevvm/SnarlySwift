@@ -47,7 +47,7 @@ class SnarlySpotSync {
         }
     }
     
-    func delete(spot: Spots, managedObject: NSManagedObject) {
+    func delete(spot: Spots) {
         
         let objectId: String
         
@@ -59,6 +59,7 @@ class SnarlySpotSync {
             query.getObjectInBackgroundWithId(objectId) {
                 (PFSpot: PFObject?, error: NSError?) -> Void in
                 if error != nil {
+                    spot.active = false
                     self.spotNotSynced(spot)
                 } else if let PFSpot = PFSpot {
                     
@@ -66,18 +67,27 @@ class SnarlySpotSync {
                     
                     PFSpot.saveEventually()
                     
+                    self.managedObjectContext?.deleteObject(spot)
+                    
+                    do {
+                        try self.managedObjectContext?.save()
+                    } catch _ {
+                        
+                    }
+                    
                 }
             }
             
+        } else {
+            self.managedObjectContext?.deleteObject(spot)
         }
-        
-        self.managedObjectContext?.deleteObject(managedObject)
         
         do {
             try self.managedObjectContext?.save()
         } catch _ {
             
         }
+        
         
     }
     
@@ -209,6 +219,46 @@ class SnarlySpotSync {
         let resultPredicate2 = NSPredicate(format: "uuid != nil")
         let resultPredicate3 = NSPredicate(format: "active == YES")
         let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1, resultPredicate2, resultPredicate3])
+        fetchRequest.predicate = predicate
+        
+        let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entitySpot
+        
+        // Execute the fetch request
+        var error : NSError?
+        var fetchedObjects: [AnyObject]?
+        do {
+            fetchedObjects = try self.managedObjectContext!.executeFetchRequest(fetchRequest)
+        } catch let error1 as NSError {
+            error = error1
+            fetchedObjects = nil
+        }
+        
+        // Change the attributer name of
+        // each managed object to the self.name
+        if let spots = fetchedObjects {
+            if error == nil {
+                for spot in spots {
+                    
+                    let spot = spot as! Spots
+                    
+                    SnarlySpotSync().update(spot, objectID: spot.uuid!)
+                    
+                    
+                }
+                
+                
+            }
+        }
+        
+    }
+    
+    func syncUserSpots() {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Spots")
+        
+        let resultPredicate1 = NSPredicate(format: "uuid != nil")
+        let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1])
         fetchRequest.predicate = predicate
         
         let entitySpot = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)

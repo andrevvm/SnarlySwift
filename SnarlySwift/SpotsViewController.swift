@@ -21,10 +21,15 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
     let spotList = SpotList()
+    let snarlyUser = SnarlyUser()
+    
+    var friendsSpots = [PFObject]()
+    var friendsPhotos = [NSData]()
     
     var location: CLLocation?
     
     let editSpotsView = EditSpotViewController()
+    
     
     let menuAnimationController = MenuAnimationController()
     let defaultNavigationController = UINavigationController()
@@ -38,6 +43,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     @IBOutlet var loadingView: UIView!
     @IBOutlet var comingSoonView: UIView!
     @IBOutlet var comingSoonLabel: UILabel!
+    @IBOutlet var faceBookBtn: UIButton!
     
     @IBOutlet var navHome: UIButton!
     @IBOutlet var navFriends: UIButton!
@@ -85,30 +91,27 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func changeNav(btn: UIButton) {
         
+        if tableView.editing {
+            return
+        }
+        
         setButton = btn
         
-        navHome.imageView?.image = UIImage(named: "nav-saved")
-        navFriends.imageView?.image = UIImage(named: "nav-friends")
-        navNearby.imageView?.image = UIImage(named: "nav-nearby")
-        navSettings.imageView?.image = UIImage(named: "nav-settings")
+        updateNav()
         
         let btnName = btn.restorationIdentifier
         
-        print(btnName!)
-        
-        btn.imageView?.image = UIImage(named: "nav-\(btnName!)-active")
+        btn.setImage(UIImage(named: "nav-\(btnName!)-active"), forState: .Normal)
         self.changeView(btn)
         
     }
     
     func updateNav() {
         
-        navHome.imageView?.image = UIImage(named: "nav-saved")
-        navFriends.imageView?.image = UIImage(named: "nav-friends")
-        navNearby.imageView?.image = UIImage(named: "nav-nearby")
-        navSettings.imageView?.image = UIImage(named: "nav-settings")
-        
-        
+        navHome.setImage(UIImage(named: "nav-saved"), forState: .Normal)
+        navFriends.setImage(UIImage(named: "nav-friends"), forState: .Normal)
+        navNearby.setImage(UIImage(named: "nav-nearby"), forState: .Normal)
+        navSettings.setImage(UIImage(named: "nav-settings"), forState: .Normal)
         
     }
     
@@ -116,7 +119,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         appDelegate.listType = btn.restorationIdentifier!
         self.reloadData()
-        self.setViewTitle()
+        self.setView()
         
     }
     
@@ -270,13 +273,13 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     override func viewWillAppear(animated: Bool) {
         
-        self.reloadData()
-        
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
-        self.setViewTitle()
+        self.setView()
         
         self.navigationController?.navigationBarHidden = false
+        
+        self.reloadData()
         
     }
     
@@ -293,8 +296,22 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func parallax(cell: SpotCell) {
         
-        let yOffset = ((tableView.contentOffset.y - cell.frame.origin.y) / ImageHeight) * OffsetSpeed
+        let cellY = cell.frame.origin.y
+        let tableOffsetY = tableView.contentOffset.y
+        
+        let yOffset = ((tableOffsetY - cellY) / ImageHeight) * OffsetSpeed
         cell.spotPhoto.frame.origin.y = yOffset - 65
+        
+        print(cellY, tableOffsetY, cell.userOverlay.frame.origin.y, self.tableView.rowHeight)
+        
+        if(cellY <= (tableOffsetY - self.tableView.rowHeight + 45)) {
+            cell.userOverlay.frame.origin.y = self.tableView.rowHeight - 50
+        } else if(cellY <= tableOffsetY - 5) {
+            cell.userOverlay.frame.origin.y = (tableOffsetY - cellY) - 5
+        } else {
+            cell.userOverlay.frame.origin.y = 0
+        }
+        
 
     }
     
@@ -304,8 +321,11 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         setButton = navHome
         appDelegate.listType = "saved"
         
-        spotList.retrieveFriendsSpots()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showFriendsSpots:"), name:"retrievedFriendsSpots", object: nil);
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("updateCellPhoto:"), name:"retrievedSpotPhoto", object: nil);
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("userLoggedOut:"), name:"loggedOut", object: nil);
         
         initCamera()
         
@@ -320,7 +340,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        let edgeInsets = UIEdgeInsetsMake(0, 0, 75, 0)
+        let edgeInsets = UIEdgeInsetsMake(0, 0, 55, 0)
         self.tableView.contentInset = edgeInsets
         
         //appDelegate.setLocationVars(locationManager.location)
@@ -363,8 +383,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
 //                }
 //            }
 //        }
-        
-        self.tableView.rowHeight = 200.0
 
         spotList.updateDistance(self)
         
@@ -419,8 +437,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        spotList.fetchSavedSpots()
-        
         let objCount = spotList.countObjects(section)
         
         if objCount > 0 {
@@ -437,10 +453,38 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
         
-        spotList.configureCell(cell, atIndexPath: indexPath)
+        spotList.configureCell(cell, atIndexPath: indexPath, loadedFriendsList: friendsSpots, loadedFriendsPhotos: friendsPhotos)
+        
+        parallax(cell)
         
         return cell
         
+    }
+    
+    func updateCellPhoto(sender: NSNotification) {
+    
+        let int = sender.object as! Int
+        
+        let indexPath = NSIndexPath(forRow: int, inSection: 0)
+        
+        if let visibleCells = tableView!.visibleCells as? [SpotCell] {
+            for (index, updateCell) in visibleCells.enumerate() {
+                if(index == int) {
+                    print("update!!")
+                    let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! SpotCell
+                    cell.spotPhoto.image = UIImage(data: friendsPhotos[int])
+                    self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
+                }
+            }
+        }
+        
+    
+    }
+    
+    func userLoggedOut() {
+        setView()
+        friendsSpots.removeAll()
+        friendsPhotos.removeAll()
     }
     
     
@@ -475,41 +519,46 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             
             self.presentViewController(activityVC, animated: true, completion: nil)
             
+            }
+            
+        }
+        
+        shareAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-share")!)
+        
+        let editAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
+            tableView.editing = false
+            let spot:NSManagedObject = self.spotList.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
+            self.performSegueWithIdentifier("editSpot", sender: spot)
+        }
+        
+        editAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-edit")!)
+        
+        let deleteAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
+            tableView.editing = false
+            
+            let deleteAlert = UIAlertController(title: "Delete spot?", message: "You won't be able to recover this spot until the next time you go there!", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
+                return false
+            }))
+            
+            deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
+                self.deleteSpot(indexPath)
+                
+            }))
+            
+            self.presentViewController(deleteAlert, animated: true, completion: nil)
+            
         }
             
-    }
+        deleteAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-delete")!)
+        
+        if appDelegate.listType == "saved" {
+            return [editAction, deleteAction, shareAction]
+        } else {
+            return [shareAction]
+        }
     
-    shareAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-share")!)
-    
-    let editAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
-        tableView.editing = false
-        let spot:NSManagedObject = self.spotList.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
-        self.performSegueWithIdentifier("editSpot", sender: spot)
-    }
-    
-    editAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-edit")!)
-    
-    let deleteAction = UITableViewRowAction(style: .Default, title: "      ") { (action, indexPath) -> Void in
-        tableView.editing = false
-        
-        let deleteAlert = UIAlertController(title: "Delete spot?", message: "You won't be able to recover this spot until the next time you go there!", preferredStyle: UIAlertControllerStyle.Alert)
-        
-        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { (action: UIAlertAction!) in
-            return false
-        }))
-        
-        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
-            self.deleteSpot(indexPath)
-            
-        }))
-        
-        self.presentViewController(deleteAlert, animated: true, completion: nil)
-        
-    }
-        
-    deleteAction.backgroundColor = UIColor(patternImage: UIImage(named: "btn-edit-delete")!)
-    
-    return [editAction, deleteAction, shareAction]
     }
     
     func tableView(tableView: UITableView!, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -563,11 +612,33 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func showFriendsSpots(sender: NSNotification) {
         
-        let spots = sender.object as! [PFObject]
+        loadingView.hidden = true
         
-        for spot in spots {
-            print(spot["title"])
+        friendsSpots = sender.object as! [PFObject]
+        
+        if friendsSpots.count == 0 {
+            comingSoonView.hidden = false
         }
+        
+        for (index, spot) in friendsSpots.enumerate() {
+            
+            let image = UIImage(named: "EmptySpot")
+            let holder = UIImagePNGRepresentation(image!)
+            self.friendsPhotos.append(holder!)
+            
+            spot["photo"].getDataInBackgroundWithBlock({
+                
+                (imageData: NSData?, error: NSError?) -> Void in
+                
+                self.friendsPhotos[index] = imageData!
+                NSNotificationCenter.defaultCenter().postNotificationName("retrievedSpotPhoto", object: index)
+                
+                
+                
+            })
+        }
+        
+        self.reloadData()
         
     }
     
@@ -637,6 +708,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         }
         
         tableView.reloadData()
+        
     }
         
     func setActive() {
@@ -692,25 +764,59 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
     }
     
-    func setViewTitle() {
+    func setView() {
         
         let viewTitle: String
+        
+        self.tableView.setContentOffset(CGPointZero, animated:false)
         
         switch appDelegate.listType {
             case "saved":
                 viewTitle = "Your spots"
+                self.tableView.rowHeight = 220.0
                 comingSoonView.hidden = true
+                spotList.fetchSavedSpots()
             case "friends":
                 viewTitle = "Friend's spots"
-                comingSoonView.hidden = false
-                let text = "\(viewTitle) are coming soon. Login with Facebook to invite some."
-                let attrString = NSMutableAttributedString(string: text)
+                self.tableView.rowHeight = 270.0
+                comingSoonView.hidden = true
+                
+                self.loadingView.hidden = false
+                var msgText: String
+                
+                if snarlyUser.isFBLoggedIn() {
+                    if(friendsSpots.isEmpty) {
+                        spotList.retrieveFriendsSpots()
+                    } else {
+                        loadingView.hidden = true
+                    }
+                    
+                    msgText = "Your friends don't have any spots yet. Invite some more on Facebook."
+                    faceBookBtn.setImage(UIImage(named: "btn-invite"), forState: .Normal)
+                } else {
+                    loadingView.hidden = true
+                    comingSoonView.hidden = false
+                    msgText = "Login with Facebook to see friend's spots."
+                    faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
+                    
+                }
+                
+                let attrString = NSMutableAttributedString(string: msgText)
                 attrString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
                 self.comingSoonLabel.attributedText = attrString
+            
             case "nearby":
                 viewTitle = "Nearby spots"
                 comingSoonView.hidden = false
-                let text = "\(viewTitle) are coming soon. Login with Facebook while you wait."
+                var text: String
+                if snarlyUser.isFBLoggedIn() {
+                    text = "\(viewTitle) are coming soon, invite some friends in the meantime."
+                    faceBookBtn.setImage(UIImage(named: "btn-empty-invite"), forState: .Normal)
+                } else {
+                    text = "\(viewTitle) are coming soon. Login with Facebook while you wait."
+                    faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
+                }
+                
                 let attrString = NSMutableAttributedString(string: text)
                 attrString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
                 self.comingSoonLabel.attributedText = attrString
@@ -719,6 +825,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         }
         
         self.title = viewTitle
+        self.tableView.reloadData()
         
     }
 
@@ -738,8 +845,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         if segue.identifier == "spotDetail" {
             
             let spotController:SpotDetailController = segue.destinationViewController as! SpotDetailController
-            spotController.managedObject = sender as? NSManagedObject
-            spotController.spot = sender as? Spots
+            spotController.spot = sender as? SpotObject
 
         }
         
