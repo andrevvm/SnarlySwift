@@ -23,8 +23,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     let spotList = SpotList()
     let snarlyUser = SnarlyUser()
     
-    var friendsSpots = [PFObject]()
-    var friendsPhotos = [NSData]()
+    var loadedSpots = [PFObject]()
+    var loadedPhotos = [NSData]()
     
     var location: CLLocation?
     
@@ -69,18 +69,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
     
-    }
-    
-    @IBAction func unwindToSaved(sender: UIStoryboardSegue){
-        
-        appDelegate.listType = "saved"
-        
-    }
-    
-    @IBAction func unwindToFriends(sender: UIStoryboardSegue){
-        
-        appDelegate.listType = "friends"
-        
     }
     
     @IBAction func selectNav(sender: UIButton){
@@ -302,8 +290,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         let yOffset = ((tableOffsetY - cellY) / ImageHeight) * OffsetSpeed
         cell.spotPhoto.frame.origin.y = yOffset - 65
         
-        print(cellY, tableOffsetY, cell.userOverlay.frame.origin.y, self.tableView.rowHeight)
-        
         if(cellY <= (tableOffsetY - self.tableView.rowHeight + 45)) {
             cell.userOverlay.frame.origin.y = self.tableView.rowHeight - 50
         } else if(cellY <= tableOffsetY - 5) {
@@ -321,7 +307,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         setButton = navHome
         appDelegate.listType = "saved"
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showFriendsSpots:"), name:"retrievedFriendsSpots", object: nil);
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showLoadedSpots:"), name:"retrievedFriendsSpots", object: nil);
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showLoadedSpots:"), name:"retrievedNearbySpots", object: nil);
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("updateCellPhoto:"), name:"retrievedSpotPhoto", object: nil);
         
@@ -453,7 +441,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
         
-        spotList.configureCell(cell, atIndexPath: indexPath, loadedFriendsList: friendsSpots, loadedFriendsPhotos: friendsPhotos)
+        spotList.configureCell(cell, atIndexPath: indexPath, loadedList: loadedSpots, loadedPhotos: loadedPhotos)
+        
+        print(loadedSpots)
         
         parallax(cell)
         
@@ -470,9 +460,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         if let visibleCells = tableView!.visibleCells as? [SpotCell] {
             for (index, updateCell) in visibleCells.enumerate() {
                 if(index == int) {
-                    print("update!!")
                     let cell = self.tableView.cellForRowAtIndexPath(indexPath) as! SpotCell
-                    cell.spotPhoto.image = UIImage(data: friendsPhotos[int])
+                    cell.spotPhoto.image = UIImage(data: loadedPhotos[int])
                     self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
                 }
             }
@@ -481,10 +470,13 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     }
     
-    func userLoggedOut() {
+    func userLoggedOut(sender: NSNotification) {
+        
+        self.loadedSpots.removeAll()
+        self.loadedPhotos.removeAll()
+        
         setView()
-        friendsSpots.removeAll()
-        friendsPhotos.removeAll()
+        
     }
     
     
@@ -589,6 +581,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         spotList.deleteSpot(indexPath)
         // remove the deleted item from the `UITableView`
+        
         self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         
     }
@@ -610,27 +603,27 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         emptyTxt.hidden = true
     }
     
-    func showFriendsSpots(sender: NSNotification) {
+    func showLoadedSpots(sender: NSNotification) {
         
         loadingView.hidden = true
         
-        friendsSpots = sender.object as! [PFObject]
+        loadedSpots = sender.object as! [PFObject]
         
-        if friendsSpots.count == 0 {
+        if loadedSpots.count == 0 {
             comingSoonView.hidden = false
         }
         
-        for (index, spot) in friendsSpots.enumerate() {
+        for (index, spot) in loadedSpots.enumerate() {
             
             let image = UIImage(named: "EmptySpot")
             let holder = UIImagePNGRepresentation(image!)
-            self.friendsPhotos.append(holder!)
+            self.loadedPhotos.append(holder!)
             
             spot["photo"].getDataInBackgroundWithBlock({
                 
                 (imageData: NSData?, error: NSError?) -> Void in
                 
-                self.friendsPhotos[index] = imageData!
+                self.loadedPhotos[index] = imageData!
                 NSNotificationCenter.defaultCenter().postNotificationName("retrievedSpotPhoto", object: index)
                 
                 
@@ -785,7 +778,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 var msgText: String
                 
                 if snarlyUser.isFBLoggedIn() {
-                    if(friendsSpots.isEmpty) {
+                    if(loadedSpots.isEmpty) {
                         spotList.retrieveFriendsSpots()
                     } else {
                         loadingView.hidden = true
@@ -798,7 +791,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                     comingSoonView.hidden = false
                     msgText = "Login with Facebook to see friend's spots."
                     faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
-                    
                 }
                 
                 let attrString = NSMutableAttributedString(string: msgText)
@@ -807,25 +799,39 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             
             case "nearby":
                 viewTitle = "Nearby spots"
-                comingSoonView.hidden = false
-                var text: String
-                if snarlyUser.isFBLoggedIn() {
-                    text = "\(viewTitle) are coming soon, invite some friends in the meantime."
-                    faceBookBtn.setImage(UIImage(named: "btn-empty-invite"), forState: .Normal)
-                } else {
-                    text = "\(viewTitle) are coming soon. Login with Facebook while you wait."
-                    faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
-                }
+                self.tableView.rowHeight = 270.0
+                comingSoonView.hidden = true
+            
+                self.loadingView.hidden = false
+                var msgText: String
                 
-                let attrString = NSMutableAttributedString(string: text)
+                if snarlyUser.isFBLoggedIn() {
+                    if(loadedSpots.isEmpty) {
+                        spotList.retrieveNearbySpots()
+                    } else {
+                        loadingView.hidden = true
+                    }
+                    
+                    msgText = "Sorry, there are no spots within 500 miles of you."
+                    faceBookBtn.setImage(UIImage(named: "btn-invite"), forState: .Normal)
+                } else {
+                    loadingView.hidden = true
+                    comingSoonView.hidden = false
+                    msgText = "Login with Facebook to see nearby spots."
+                    faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
+                    
+                }
+            
+                let attrString = NSMutableAttributedString(string: msgText)
                 attrString.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
                 self.comingSoonLabel.attributedText = attrString
+            
             default:
                 viewTitle = "Your spots"
         }
         
         self.title = viewTitle
-        self.tableView.reloadData()
+        self.reloadData()
         
     }
 
