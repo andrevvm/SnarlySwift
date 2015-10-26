@@ -30,8 +30,10 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var bustView: UIView!
     @IBOutlet var bustViewHeight: NSLayoutConstraint!
+    @IBOutlet var userOverlay: UIImageView!
     
     @IBOutlet var photoHeight: NSLayoutConstraint!
+    @IBOutlet var mapHeight: NSLayoutConstraint!
     
     @IBOutlet var menuEditButton: UIButton!
     @IBOutlet var menuShareButton: UIButton!
@@ -105,6 +107,13 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         self.setMenu()
         
         self.positionPhoto()
+        
+        switch appDelegate.listType {
+            case "friends":
+                userOverlay.hidden = false
+            default:
+                userOverlay.hidden = true
+        }
 
         //self.navigationController?.navigationBarHidden = false
         if spot != nil {
@@ -196,6 +205,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     func positionPhoto() {
         let offset = scrollView.contentOffset.y
         photoHeight.constant = (320 - offset)
+        
+//        if offset > 0 && offset < 80 {
+//            mapHeight.constant = (125 + offset / 2)
+//        }
+
+        
     }
     
     override func viewDidLoad() {

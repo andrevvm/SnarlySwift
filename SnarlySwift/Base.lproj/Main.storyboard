@@ -1065,8 +1065,7 @@
                                                                     <exclude reference="ACQ-tv-Mbg"/>
                                                                 </mask>
                                                             </variation>
-                                                            <variation key="widthClass=compact" misplaced="YES">
-                                                                <rect key="frame" x="11" y="157" width="53" height="25"/>
+                                                            <variation key="widthClass=compact">
                                                                 <mask key="constraints">
                                                                     <include reference="ACQ-tv-Mbg"/>
                                                                 </mask>
@@ -1085,8 +1084,7 @@
                                                                     <exclude reference="BMM-Cz-lRN"/>
                                                                 </mask>
                                                             </variation>
-                                                            <variation key="widthClass=compact" misplaced="YES">
-                                                                <rect key="frame" x="12" y="185" width="21.5" height="14"/>
+                                                            <variation key="widthClass=compact">
                                                                 <mask key="constraints">
                                                                     <exclude reference="BMM-Cz-lRN"/>
                                                                 </mask>
@@ -1102,7 +1100,7 @@
                                                             </variation>
                                                         </label>
                                                     </subviews>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="backgroundColor" red="0.1764705882" green="0.16078431369999999" blue="0.16078431369999999" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="bottom" secondItem="ihg-2D-zsZ" secondAttribute="bottom" id="1r1-Fb-Jvg"/>
                                                         <constraint firstItem="66d-UZ-cyJ" firstAttribute="top" secondItem="xEc-Y0-NbY" secondAttribute="top" id="6dS-cE-Ukt">
@@ -1110,6 +1108,9 @@
                                                         </constraint>
                                                         <constraint firstItem="ihg-2D-zsZ" firstAttribute="top" secondItem="7Of-l5-Tnk" secondAttribute="top" id="7ET-Uh-KUC"/>
                                                         <constraint firstItem="7Of-l5-Tnk" firstAttribute="leading" secondItem="ihg-2D-zsZ" secondAttribute="leading" id="7O5-MH-sXn"/>
+                                                        <constraint firstAttribute="trailing" secondItem="7Of-l5-Tnk" secondAttribute="trailing" constant="256" id="80t-Jb-mGw">
+                                                            <variation key="widthClass=compact" constant="30"/>
+                                                        </constraint>
                                                         <constraint firstItem="ihg-2D-zsZ" firstAttribute="top" secondItem="7Of-l5-Tnk" secondAttribute="bottom" constant="2" id="88T-Zv-sRr">
                                                             <variation key="widthClass=compact" constant="4"/>
                                                         </constraint>
@@ -1194,6 +1195,7 @@
                                                             <exclude reference="9xQ-Dt-Buo"/>
                                                             <exclude reference="oFA-zX-Sd0"/>
                                                             <exclude reference="7O5-MH-sXn"/>
+                                                            <exclude reference="80t-Jb-mGw"/>
                                                             <exclude reference="9RE-cP-yt5"/>
                                                             <exclude reference="PTE-Lw-pZy"/>
                                                             <exclude reference="bSb-Dw-vKm"/>
@@ -1246,6 +1248,7 @@
                                                             <include reference="9xQ-Dt-Buo"/>
                                                             <include reference="oFA-zX-Sd0"/>
                                                             <exclude reference="7O5-MH-sXn"/>
+                                                            <include reference="80t-Jb-mGw"/>
                                                             <exclude reference="9RE-cP-yt5"/>
                                                             <exclude reference="PTE-Lw-pZy"/>
                                                             <include reference="bSb-Dw-vKm"/>
@@ -1307,6 +1310,7 @@
                                                     </variation>
                                                 </imageView>
                                             </subviews>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailingMargin" secondItem="xEc-Y0-NbY" secondAttribute="trailing" constant="70" id="0Si-gN-cOH">
                                                     <variation key="widthClass=compact" constant="-10"/>
@@ -2508,8 +2512,7 @@
                                                         <exclude reference="EVe-xG-mEg"/>
                                                     </mask>
                                                 </variation>
-                                                <variation key="widthClass=compact" misplaced="YES">
-                                                    <rect key="frame" x="32" y="16" width="353" height="16.5"/>
+                                                <variation key="widthClass=compact">
                                                     <mask key="constraints">
                                                         <exclude reference="EVe-xG-mEg"/>
                                                     </mask>
@@ -2539,9 +2542,6 @@
                                                 <fontDescription key="fontDescription" name="Apercu" family="Apercu" pointSize="14"/>
                                                 <color key="textColor" red="0.2901606559753418" green="0.29021650552749634" blue="0.29015710949897766" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
-                                                <variation key="widthClass=compact" misplaced="YES">
-                                                    <rect key="frame" x="32" y="64" width="353" height="16.5"/>
-                                                </variation>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ye6-tB-iFw" userLabel="Divider1">
                                                 <rect key="frame" x="-42" y="-21" width="42" height="21"/>
@@ -2557,8 +2557,7 @@
                                                         <exclude reference="u4z-Za-LEK"/>
                                                     </mask>
                                                 </variation>
-                                                <variation key="widthClass=compact" misplaced="YES">
-                                                    <rect key="frame" x="0.0" y="47" width="400" height="1"/>
+                                                <variation key="widthClass=compact">
                                                     <mask key="constraints">
                                                         <include reference="u4z-Za-LEK"/>
                                                     </mask>
@@ -2611,9 +2610,6 @@
                                                         <fontDescription key="fontDescription" name="Apercu" family="Apercu" pointSize="14"/>
                                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
-                                                        <variation key="widthClass=compact" misplaced="YES">
-                                                            <rect key="frame" x="32" y="15" width="62" height="16.5"/>
-                                                        </variation>
                                                     </label>
                                                     <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" image="icon-bust-list" translatesAutoresizingMaskIntoConstraints="NO" id="AaG-d6-B6y">
                                                         <rect key="frame" x="0.0" y="-21" width="21" height="21"/>
@@ -2673,8 +2669,7 @@
                                                         <exclude reference="yxo-Ip-tKe"/>
                                                     </mask>
                                                 </variation>
-                                                <variation key="widthClass=compact" misplaced="YES">
-                                                    <rect key="frame" x="0.0" y="95" width="400" height="50"/>
+                                                <variation key="widthClass=compact">
                                                     <mask key="subviews">
                                                         <include reference="qff-16-HZr"/>
                                                         <include reference="muP-lg-dQ1"/>
@@ -2785,8 +2780,7 @@
                                                 <exclude reference="gwd-0L-c0Q"/>
                                             </mask>
                                         </variation>
-                                        <variation key="widthClass=compact" misplaced="YES">
-                                            <rect key="frame" x="0.0" y="445" width="400" height="177.5"/>
+                                        <variation key="widthClass=compact">
                                             <mask key="subviews">
                                                 <include reference="pmt-Lx-4ay"/>
                                                 <include reference="BQe-qo-1W2"/>
@@ -3355,6 +3349,7 @@
                     <connections>
                         <outlet property="bustView" destination="xRn-cI-ZCk" id="KO9-bl-f6k"/>
                         <outlet property="bustViewHeight" destination="SDh-hQ-Gq9" id="IfT-KC-1L1"/>
+                        <outlet property="mapHeight" destination="9aH-qj-Obx" id="xMc-HN-Hs7"/>
                         <outlet property="mapView" destination="2pU-2p-Lb1" id="VLQ-es-Maw"/>
                         <outlet property="menuDeleteButton" destination="sBY-lQ-aF4" id="kzO-tf-y2v"/>
                         <outlet property="menuEditButton" destination="Jn8-e4-0g3" id="ULI-dy-1uY"/>
@@ -3366,6 +3361,7 @@
                         <outlet property="spotLocation" destination="pmt-Lx-4ay" id="MgQ-UN-ius"/>
                         <outlet property="spotNotes" destination="xab-8N-25k" id="77Y-LW-V87"/>
                         <outlet property="spotPhoto" destination="XTg-XE-pKt" id="2EK-8N-Hc4"/>
+                        <outlet property="userOverlay" destination="YC0-gd-tUN" id="DPU-ba-5Ba"/>
                         <segue destination="DiA-zv-VOp" kind="presentation" identifier="editSpot" modalTransitionStyle="flipHorizontal" id="hPY-ik-0iO"/>
                         <segue destination="1YG-NT-8o4" kind="unwind" identifier="deleteSpot" unwindAction="unwindToSpots:" id="LrN-yx-4It"/>
                     </connections>
@@ -3387,7 +3383,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" pitchEnabled="NO" showsUserLocation="YES" showsPointsOfInterest="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jQy-xk-BUQ">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" pitchEnabled="NO" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jQy-xk-BUQ">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="211" id="3XT-F5-CVE"/>
@@ -3522,6 +3518,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="fx1-WK-Oqx"/>
-        <segue reference="plb-2R-AK9"/>
+        <segue reference="hPY-ik-0iO"/>
     </inferredMetricsTieBreakers>
 </document>

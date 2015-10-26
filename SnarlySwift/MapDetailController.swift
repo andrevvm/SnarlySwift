@@ -26,14 +26,15 @@ class MapDetailController: UIViewController {
             let spotLong: CLLocationDegrees = loc_lon
             let spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
             let spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 1200, 1200)
-            let spotName = spot?.title
             
             self.mapView.setRegion(spotRegion, animated: true)
             ///Red Pin
             let spotPin = MKPointAnnotation()
             spotPin.coordinate = spotLoc
-            spotPin.title = spotName
+            let distance = SnarlyUtils().getDistanceString(spot!) as String
+            spotPin.title = "\(distance)"
             self.mapView.addAnnotation(spotPin)
+            mapView.selectAnnotation(spotPin, animated: true)
             
             //mapButton.addTarget(self, action: "openMap:", forControlEvents: UIControlEvents.TouchUpInside)
         } else {
