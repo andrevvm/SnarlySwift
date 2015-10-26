@@ -11,7 +11,11 @@ import MapKit
 import CoreData
 
 class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewDelegate {
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    
     var spot: SpotObject? = nil
+    var spotManaged: Spots?
     var managedObject: NSManagedObject? = nil
     
     @IBOutlet var spotPhoto: UIImageView!
@@ -81,6 +85,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     }
     
     func initMenuButtons() {
+        
+        if appDelegate.listType != "saved" {
+            menuEditButton.hidden = true
+            menuDeleteButton.hidden = true
+        }
+        
         menuEditButton.addTarget(self, action: "menuEditSpot:", forControlEvents: UIControlEvents.TouchUpInside)
         menuShareButton.addTarget(self, action: "shareSpot:", forControlEvents: UIControlEvents.TouchUpInside)
         menuDeleteButton.addTarget(self, action: "menuDeleteSpot:", forControlEvents: UIControlEvents.TouchUpInside)
@@ -103,16 +113,20 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             if let photo = spot?.photo {
                 spotPhoto.image = UIImage(data: photo as NSData!)
             } else {
-                if spot!.object != nil {
-                    spot!.object["photo"].getDataInBackgroundWithBlock({
+                if spot!.object["photo"] != nil {
+                    spot!.object["photo"]!.getDataInBackgroundWithBlock({
                         
                         (imageData: NSData?, error: NSError?) -> Void in
                         
                         self.spotPhoto.image = UIImage(data: imageData!)
                         
+                        UIView.animateWithDuration(0.3, animations: {
+                            self.spotPhoto.alpha = 1
+                        })
+                        
                     })
                 } else {
-                    spotPhoto.image = UIImage(named: "EmptySpot")
+                    self.spotPhoto.alpha = 0
                 }
                 
             }
@@ -336,31 +350,31 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             return pinView
     }
     
-//    func deleteSpot() {
-//        
-//        SnarlySpotSync().delete(self.spot!, managedObject: self.managedObject!)
-//
-//    }
-//    
-//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-//        
-//        if segue.identifier == "editSpot" {
-//            
-//            let editController = segue.destinationViewController as! EditSpotViewController
-//            let spot = self.spot
-//            editController.spot = spot
-//            
-//        }
-//        
-//        if segue.identifier == "mapDetail" {
-//            
-//            let mapController = segue.destinationViewController as! MapDetailController
-//            let spot = self.spot
-//            mapController.spot = spot
-//            
-//        }
-//        
-//    }
+    func deleteSpot() {
+        
+        SnarlySpotSync().delete(self.spotManaged!)
+
+    }
+
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if segue.identifier == "editSpot" {
+            
+            let editController = segue.destinationViewController as! EditSpotViewController
+            let spot = self.spotManaged
+            editController.spot = spot
+            
+        }
+        
+        if segue.identifier == "mapDetail" {
+            
+            let mapController = segue.destinationViewController as! MapDetailController
+            let spot = self.spot
+            mapController.spot = spot
+            
+        }
+        
+    }
     
     
 }

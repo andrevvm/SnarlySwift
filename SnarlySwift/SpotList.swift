@@ -20,13 +20,23 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     
     var fetchedResultController: NSFetchedResultsController!
     
-    var friendsSpots: [PFObject]?
-    var nearbySpots: [PFObject]?
+    var friendsSpots: [PFObject]? = [PFObject]()
+    var nearbySpots: [PFObject]? = [PFObject]()
+    
+    var backgroundTaskIdentifier: UIBackgroundTaskIdentifier?
+    var friendsTimer: NSTimer? = nil
+    var nearbyTimer: NSTimer? = nil
+    var friendsFresh: Bool?
+    var nearbyFresh: Bool?
     
     override init() {
         super.init()
         
         //self.fetchSavedSpots()
+        
+        backgroundTaskIdentifier = UIApplication.sharedApplication().beginBackgroundTaskWithExpirationHandler({
+            UIApplication.sharedApplication().endBackgroundTask(self.backgroundTaskIdentifier!)
+        })
         
     }
     
@@ -67,18 +77,10 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                     return 0
                 }
             case "friends":
-                if friendsSpots != nil {
-                    return (friendsSpots?.count)!
-                } else {
-                    return 0
-                }
+                return (friendsSpots?.count)!
                 
             case "nearby":
-                if nearbySpots != nil {
-                    return (nearbySpots?.count)!
-                } else {
-                    return 0
-                }
+                return (nearbySpots?.count)!
             
             default:
                 return 0
@@ -131,39 +133,38 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         //let spot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
         var spot: SpotObject
         switch appDelegate.listType {
-            case "saved":
-                let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
-                spot = SpotObject().setManagedObject(fetchedSpot)
-                cell.userOverlay.hidden = true
+            
             case "friends":
                 cell.userOverlay.hidden = false
-                if(loadedList.isEmpty) {
+                cell.photoTop.constant = 45
+                if(loadedList.isEmpty && self.friendsSpots!.count > 0) {
                     let fetchedSpots = self.friendsSpots!
                     spot = SpotObject().setParseObject(fetchedSpots[indexPath.row])
                 } else {
                     spot = SpotObject().setParseObject(loadedList[indexPath.row])
-                    if(loadedPhotos.count > indexPath.row) {
-                        spot.photo = loadedPhotos[indexPath.row]
-                    }
-                    
+                }
+                if(loadedPhotos.count > indexPath.row) {
+                    spot.photo = loadedPhotos[indexPath.row]
                 }
             case "nearby":
-                cell.userOverlay.hidden = false
-                if(loadedList.isEmpty) {
+                cell.userOverlay.hidden = true
+                cell.photoTop.constant = 5
+                if(loadedList.isEmpty && self.nearbySpots!.count > 0) {
                     let fetchedSpots = self.nearbySpots!
                     spot = SpotObject().setParseObject(fetchedSpots[indexPath.row])
                 } else {
                     spot = SpotObject().setParseObject(loadedList[indexPath.row])
-                    if(loadedPhotos.count > indexPath.row) {
-                        spot.photo = loadedPhotos[indexPath.row]
-                    }
-                    
                 }
-            
+                if(loadedPhotos.count > indexPath.row) {
+                    spot.photo = loadedPhotos[indexPath.row]
+                }
             
             default:
                 let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
                 spot = SpotObject().setManagedObject(fetchedSpot)
+                cell.userOverlay.hidden = true
+                cell.photoTop.constant = 5
+            
         }
         
         let bustIcon = cell.contentView.viewWithTag(10) as! UIImageView
@@ -181,7 +182,6 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
             cell.spotPhoto.image = UIImage(data: imageData)
         }
         
-        
         cell.distanceLabel.text = SnarlyUtils().getDistanceString(spot) as String
         
         if spot.loc_disp == nil {
@@ -197,6 +197,17 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     }
     
     func retrieveFriendsSpots() {
+        
+        if (self.friendsSpots!.count > 0 && friendsFresh == true) {
+            NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: self.friendsSpots)
+            return
+        }
+        
+        if friendsTimer == nil {
+            friendsTimer = NSTimer.scheduledTimerWithTimeInterval(600, target: self, selector: "refreshViewTimer:", userInfo: "friends", repeats: true)
+        }
+        
+        friendsFresh = true
         
         let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me/friends?fields=id", parameters: nil)
         request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
@@ -237,7 +248,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                                 NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: results)
                                 
                             } else {
-                                
+                                NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: results)
                             }
                         }
                         
@@ -253,13 +264,26 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     }
     
     func retrieveNearbySpots() {
+        
+        if self.nearbySpots!.count > 0 && nearbyFresh == true {
+            NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: self.nearbySpots)
+            return
+        }
+        
+        if nearbyTimer == nil {
+            nearbyTimer = NSTimer.scheduledTimerWithTimeInterval(600, target: self, selector: "refreshViewTimer:", userInfo: "nearby", repeats: true)
+        }
+        
+        nearbyFresh = true
+        
         let spotsQuery = PFQuery(className: "Spots")
         spotsQuery.whereKey("active", equalTo: true)
         spotsQuery.orderByDescending("createdAt")
         if(self.appDelegate.location != nil) {
             let point = PFGeoPoint(location: self.appDelegate.location)
-            spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 500)
+            //spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 500)
             let user = PFUser.currentUser()
+            spotsQuery.whereKeyExists("user")
             spotsQuery.whereKey("user", notEqualTo: user!)
         }
         
@@ -273,9 +297,24 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                 NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: results)
                 
             } else {
-                
+                NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: results)
             }
         }
+    }
+    
+    func refreshViewTimer(timer: NSTimer) {
+        
+        let type = timer.userInfo as! String
+        
+        switch type {
+        case "friends":
+            friendsFresh = false
+        case "nearby":
+            nearbyFresh = false
+        default:
+            break
+        }
+        
     }
 
     

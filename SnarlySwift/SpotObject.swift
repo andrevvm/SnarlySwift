@@ -24,7 +24,7 @@ class SpotObject: NSObject {
     var synced: Bool!
     var title: String?
     var uuid: String?
-    var object: PFObject!
+    var object: AnyObject!
     var user: PFUser!
     
     func setManagedObject(spot: Spots) -> SpotObject {
@@ -41,7 +41,7 @@ class SpotObject: NSObject {
         synced = spot.synced
         title = spot.title
         uuid = spot.uuid
-        object = nil
+        object = spot
         user = PFUser.currentUser()
         
         return self

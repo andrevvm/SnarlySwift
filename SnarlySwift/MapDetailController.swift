@@ -13,7 +13,7 @@ class MapDetailController: UIViewController {
     
     @IBOutlet var mapView: MKMapView!
     
-    var spot:Spots?
+    var spot:SpotObject?
 
     override func viewDidLoad() {
         super.viewDidLoad()

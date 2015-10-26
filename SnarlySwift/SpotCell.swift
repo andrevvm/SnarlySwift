@@ -20,6 +20,7 @@ class SpotCell: PFTableViewCell {
     @IBOutlet var cityLabel: UILabel!
     @IBOutlet var distanceLabel: UILabel!
     @IBOutlet var userOverlay: UIImageView!
+    @IBOutlet var photoTop: NSLayoutConstraint!
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
