@@ -12,6 +12,7 @@ import CoreData
 import CoreLocation
 import AssetsLibrary
 import ImageIO
+import Parse
 
 class CompressedImage: UIImageView {
     var compressedImageData: NSData?
@@ -72,13 +73,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         txtSpotNotes.attributedPlaceholder = NSAttributedString(string:"Notes",
             attributes:[NSForegroundColorAttributeName: UIColor(red: 0.658, green: 0.607, blue: 0.611, alpha: 1.0)])
         
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(Bool())
-        
-        self.navigationController?.navigationBarHidden = false
-        
         if(newSpot != nil) {
             tempImage = UIImage(data: newSpot?.photo as NSData!)
             imagePreview.image = tempImage
@@ -98,6 +92,14 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         } else {
             navigationBar.topItem!.title = "New Spot"
         }
+
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(Bool())
+        
+        self.navigationController?.navigationBarHidden = false
         
         saveButton.enabled = true
     }
@@ -116,7 +118,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             spot.notes = txtSpotNotes.text!
             spot.photo = imageData
             spot.distance = 0
-            spot.loc_disp = appDelegate.locationString
+            spot.loc_disp = ""
             spot.loc_lat = newSpot!.loc_lat
             spot.loc_lon = newSpot!.loc_lon
             spot.active = true
@@ -157,7 +159,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 
             } catch _ {
             }
-            performSegueWithIdentifier("editSpot", sender: self)
+            performSegueWithIdentifier("editSpot", sender: spot!)
             
         }
         
@@ -262,14 +264,29 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
+        segue.sourceViewController.view.endEditing(true)
+        
+        if segue.identifier == "exit" {
+            return
+        }
+        
+        if segue.destinationViewController.isMemberOfClass(SpotDetailController) && sender?.isMemberOfClass(Spots) == true {
+            print(segue.destinationViewController.isMemberOfClass(SpotDetailController))
+            let vc = segue.destinationViewController as! SpotDetailController
+            let spotObj = SpotObject().setManagedObject(sender as! Spots)
+            vc.spot = spotObj
+        }
         
         if segue.identifier == "toSpots" || segue.identifier == "backToSpots" || segue.identifier == "editSpot" || segue.identifier == "newSpot" {
             appDelegate.listType = "saved"
         }
         
-        if segue.identifier == "newSpot" {
-            let spotsController = segue.destinationViewController as! SpotsViewController
-            spotsController.tableView.setContentOffset(CGPointZero, animated:false)
+        if segue.destinationViewController.isMemberOfClass(SpotsViewController) {
+            if segue.identifier == "newSpot" {
+                let spotsController = segue.destinationViewController as! SpotsViewController
+                spotsController.tableView.setContentOffset(CGPointZero, animated:false)
+            }
+
         }
         
         

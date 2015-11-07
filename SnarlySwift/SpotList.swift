@@ -29,6 +29,8 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     var friendsFresh: Bool?
     var nearbyFresh: Bool?
     
+    let snarlyUser = SnarlyUser()
+    
     override init() {
         super.init()
         
@@ -77,10 +79,19 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                     return 0
                 }
             case "friends":
-                return (friendsSpots?.count)!
+                if snarlyUser.isFBLoggedIn() {
+                    return (friendsSpots?.count)!
+                } else {
+                    return 0
+                }
+            
                 
             case "nearby":
-                return (nearbySpots?.count)!
+                if snarlyUser.isFBLoggedIn() {
+                    return (nearbySpots?.count)!
+                } else {
+                    return 0
+                }
             
             default:
                 return 0
@@ -113,7 +124,6 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     
     func deleteSpot(indexPath: NSIndexPath) {
         
-        let managedObject:NSManagedObject = self.fetchedResultController.objectAtIndexPath(indexPath) as! NSManagedObject
         let fetchedSpot = self.fetchedResultController.objectAtIndexPath(indexPath) as! Spots
         
         fetchedSpot.active = false
@@ -196,7 +206,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         
     }
     
-    func retrieveFriendsSpots() {
+    func retrieveFriendsSpots(page: Int) {
         
         if (self.friendsSpots!.count > 0 && friendsFresh == true) {
             NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: self.friendsSpots)
@@ -228,7 +238,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                 }
                 
                 let userQuery = PFUser.query()?.whereKey("facebookId", containedIn: facebookIds)
-
+                
                 userQuery!.findObjectsInBackgroundWithBlock {
                     (results: [PFObject]?, error: NSError?) -> Void in
                     if error == nil {
@@ -237,15 +247,22 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                         spotsQuery.whereKey("active", equalTo: true)
                         spotsQuery.whereKey("user", containedIn: results!)
                         spotsQuery.orderByDescending("createdAt")
+                        spotsQuery.limit = 5
+                        spotsQuery.skip = page * spotsQuery.limit
                         
                         spotsQuery.findObjectsInBackgroundWithBlock {
                             (results: [PFObject]?, error: NSError?) -> Void in
                             
                             if error == nil {
                                 
-                                self.friendsSpots = results
+                                for spot in results! {
+                                    self.friendsSpots?.append(spot)
+                                }
                                 
-                                NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: results)
+                                self.friendsSpots!.count
+                                
+                                
+                                NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: self.friendsSpots)
                                 
                             } else {
                                 NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: results)
@@ -263,7 +280,8 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         
     }
     
-    func retrieveNearbySpots() {
+    func retrieveNearbySpots(page: Int) {
+        
         
         if self.nearbySpots!.count > 0 && nearbyFresh == true {
             NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: self.nearbySpots)
@@ -278,13 +296,15 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         
         let spotsQuery = PFQuery(className: "Spots")
         spotsQuery.whereKey("active", equalTo: true)
-        spotsQuery.orderByDescending("createdAt")
+        //spotsQuery.orderByDescending("createdAt")
         if(self.appDelegate.location != nil) {
             let point = PFGeoPoint(location: self.appDelegate.location)
-            //spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 500)
             let user = PFUser.currentUser()
-            spotsQuery.whereKeyExists("user")
             spotsQuery.whereKey("user", notEqualTo: user!)
+            spotsQuery.whereKeyExists("user")
+            spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 100)
+            spotsQuery.limit = 5
+            spotsQuery.skip = page * spotsQuery.limit
         }
         
         spotsQuery.findObjectsInBackgroundWithBlock {

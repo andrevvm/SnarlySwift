@@ -12,8 +12,26 @@ import MapKit
 class MapDetailController: UIViewController {
     
     @IBOutlet var mapView: MKMapView!
+    @IBOutlet var mapButton: UIButton!
     
     var spot:SpotObject?
+    var spotLoc: CLLocationCoordinate2D!
+    var spotRegion: MKCoordinateRegion!
+    var spotName: String!
+    
+    func openMap(sender:UIButton) {
+        let options = [
+            MKLaunchOptionsMapCenterKey: NSValue(MKCoordinate: spotRegion.center),
+            MKLaunchOptionsMapSpanKey: NSValue(MKCoordinateSpan: spotRegion.span)
+        ]
+        let placemark = MKPlacemark(coordinate: spotLoc, addressDictionary: nil)
+        let mapItem = MKMapItem(placemark: placemark)
+        if spotName != "" {
+            mapItem.name = spotName
+        }
+
+        mapItem.openInMapsWithLaunchOptions(options)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +42,10 @@ class MapDetailController: UIViewController {
             
             let spotLati: CLLocationDegrees = loc_lat
             let spotLong: CLLocationDegrees = loc_lon
-            let spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
-            let spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 1200, 1200)
+            spotLoc = CLLocationCoordinate2DMake(spotLati, spotLong)
+            spotRegion = MKCoordinateRegionMakeWithDistance(spotLoc, 1200, 1200)
+            
+            spotName = spot?.title
             
             self.mapView.setRegion(spotRegion, animated: true)
             ///Red Pin
@@ -34,9 +54,9 @@ class MapDetailController: UIViewController {
             let distance = SnarlyUtils().getDistanceString(spot!) as String
             spotPin.title = "\(distance)"
             self.mapView.addAnnotation(spotPin)
-            mapView.selectAnnotation(spotPin, animated: true)
+            mapView.selectAnnotation(spotPin, animated: false)
             
-            //mapButton.addTarget(self, action: "openMap:", forControlEvents: UIControlEvents.TouchUpInside)
+            mapButton.addTarget(self, action: "openMap:", forControlEvents: UIControlEvents.TouchUpInside)
         } else {
             // no location
         }

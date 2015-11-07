@@ -60,7 +60,13 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         } else {
             self.hideMenu()
         }
+        
     }
+    
+    func menuToggleMenu(sender:AnyObject) {
+        self.toggleMenu()
+    }
+    
     
     func showMenu() {
         UIView.animateWithDuration(0.3, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
@@ -89,13 +95,15 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     func initMenuButtons() {
         
         if appDelegate.listType != "saved" {
-            menuEditButton.hidden = true
-            menuDeleteButton.hidden = true
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon-share"), style: .Plain, target: self, action: "shareSpot:")
+        } else {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btn-options"), style: .Plain, target: self, action: "menuToggleMenu:")
+            menuEditButton.addTarget(self, action: "menuEditSpot:", forControlEvents: UIControlEvents.TouchUpInside)
+            menuShareButton.addTarget(self, action: "shareSpot:", forControlEvents: UIControlEvents.TouchUpInside)
+            menuDeleteButton.addTarget(self, action: "menuDeleteSpot:", forControlEvents: UIControlEvents.TouchUpInside)
         }
         
-        menuEditButton.addTarget(self, action: "menuEditSpot:", forControlEvents: UIControlEvents.TouchUpInside)
-        menuShareButton.addTarget(self, action: "shareSpot:", forControlEvents: UIControlEvents.TouchUpInside)
-        menuDeleteButton.addTarget(self, action: "menuDeleteSpot:", forControlEvents: UIControlEvents.TouchUpInside)
+        
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -185,9 +193,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
                 let spotPin = MKPointAnnotation()
                 spotPin.coordinate = spotLoc
                 spotPin.title = spot?.title
-                self.mapView.addAnnotation(spotPin)
                 
-                //mapButton.addTarget(self, action: "openMap:", forControlEvents: UIControlEvents.TouchUpInside)
+                let distance = SnarlyUtils().getDistanceString(spot!) as String
+                spotPin.title = "\(distance)"
+                self.mapView.addAnnotation(spotPin)
+                mapView.selectAnnotation(spotPin, animated: true)
+                
             }
             
             
@@ -205,11 +216,6 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     func positionPhoto() {
         let offset = scrollView.contentOffset.y
         photoHeight.constant = (320 - offset)
-        
-//        if offset > 0 && offset < 80 {
-//            mapHeight.constant = (125 + offset / 2)
-//        }
-
         
     }
     
@@ -249,7 +255,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         mapItem.openInMapsWithLaunchOptions(options)
     }
     
-    func shareSpot(sender:UIButton) {
+    func shareSpot(sender:AnyObject) {
         
         let img: UIImage = spotPhoto.image!
         
@@ -280,7 +286,9 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
 
         }
         
-        self.toggleMenu()
+        if menu {
+            self.toggleMenu()
+        }
         
     }
     
@@ -302,7 +310,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             
             deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Default, handler: { (action: UIAlertAction) in
                 
-                //self.deleteSpot()
+                self.deleteSpot()
                 self.performSegueWithIdentifier("deleteSpot", sender: nil)
                 
                 
@@ -314,7 +322,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             
         } else {
             
-            //self.deleteSpot()
+            self.deleteSpot()
             self.performSegueWithIdentifier("deleteSpot", sender: nil)
             
             
@@ -322,24 +330,6 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         
     }
 
-    
-//    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        tableView.rowHeight = 50
-//        return 1
-//    }
-//    
-//    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCellWithIdentifier("NotesCell", forIndexPath: indexPath) 
-//        cell.textLabel!.text = spot?.notes
-//        cell.textLabel!.lineBreakMode = .ByWordWrapping
-//        cell.textLabel!.numberOfLines = 0;
-//        cell.textLabel!.textAlignment = .Center;
-//        cell.textLabel!.font = UIFont(name: "Apercu", size: 12)
-//        cell.textLabel!.backgroundColor = UIColor.whiteColor()
-//        cell.backgroundColor = UIColor.whiteColor()
-//        
-//        return cell
-//    }
     
     func mapView(mapView: MKMapView!,
         viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
@@ -367,7 +357,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     
     func deleteSpot() {
         
-        SnarlySpotSync().delete(self.spotManaged!)
+        SnarlySpotSync().delete(self.spot?.object as! Spots)
 
     }
 
@@ -376,7 +366,7 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         if segue.identifier == "editSpot" {
             
             let editController = segue.destinationViewController as! EditSpotViewController
-            let spot = self.spotManaged
+            let spot = self.spot?.object as! Spots
             editController.spot = spot
             
         }

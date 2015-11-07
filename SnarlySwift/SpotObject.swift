@@ -25,7 +25,7 @@ class SpotObject: NSObject {
     var title: String?
     var uuid: String?
     var object: AnyObject!
-    var user: PFUser!
+    var user: PFUser?
     
     func setManagedObject(spot: Spots) -> SpotObject {
         
@@ -54,15 +54,18 @@ class SpotObject: NSObject {
         bust = spot["bust"] as! Bool
         date = spot.createdAt
         distance = 0
-        loc_disp = spot["loc_disp"] as! String
+        loc_disp = spot["loc_disp"] as? String
         loc_lat = spot["location"].latitude as Double
         loc_lon = spot["location"].longitude as Double
         notes = spot["notes"] as! String
         synced = true
-        title = spot["title"] as! String
+        title = spot["title"] as? String
         uuid = spot.objectId
         object = spot
-        user = spot["user"] as! PFUser
+        if let spotUser = spot["user"] {
+            self.user = spotUser as? PFUser
+        }
+        
     
         return self
     

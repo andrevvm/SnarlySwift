@@ -72,7 +72,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        location = locations.last
+
+        location = manager.location
         if location != nil {
             setLocationVars(location)
         }
@@ -153,6 +154,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont(name: "Apercu-Bold", size: 16)!, NSForegroundColorAttributeName : UIColor.whiteColor()]
 
         UINavigationBar.appearance().tintColor = UIColor.whiteColor()
+        
+        UIBarButtonItem.appearance().setTitleTextAttributes([NSFontAttributeName : UIFont(name: "Apercu-Bold", size: 16)!], forState: UIControlState.Normal)
         
     }
     

@@ -34,6 +34,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     let editSpotsView = EditSpotViewController()
     
+    var isLoading = false
+    
     
     let menuAnimationController = MenuAnimationController()
     let defaultNavigationController = UINavigationController()
@@ -72,9 +74,23 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     var backgroundTaskIdentifier: UIBackgroundTaskIdentifier?
     
+    var page = 0
+    
     
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
     
+    }
+    
+    @IBAction func facebookBtnAction() {
+        
+        if snarlyUser.isFBLoggedIn() {
+            snarlyUser.inviteDialog(self)
+        } else {
+            self.comingSoonView.hidden = true
+            self.loadingView.hidden = false
+            snarlyUser.loginWithFacebook()
+        }
+        
     }
     
     @IBAction func selectNav(sender: UIButton){
@@ -289,6 +305,28 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             }
         }
         
+        let scrollViewHeight = scrollView.frame.size.height;
+        let scrollContentSizeHeight = scrollView.contentSize.height;
+        let scrollOffset = scrollView.contentOffset.y;
+        
+        if (scrollOffset + scrollViewHeight >= scrollContentSizeHeight && isLoading == false) {
+            print("load bitch")
+            isLoading = true
+            page += 1
+            switch appDelegate.listType {
+                case "nearby":
+                    spotList.nearbyFresh = false
+                    spotList.retrieveNearbySpots(page)
+
+                case "friends":
+                    spotList.friendsFresh = false
+                    spotList.retrieveFriendsSpots(page)
+
+                default:
+                    return
+            }
+        }
+        
     }
     
     
@@ -312,10 +350,19 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     }
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.startUpdatingLocation()
+        
+        location = locationManager.location
         
         setButton = navHome
         appDelegate.listType = "saved"
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("userLoggedInOut:"), name:"loggedInWithFacebook", object: nil);
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("showFriendsSpots:"), name:"retrievedFriendsSpots", object: nil);
         
@@ -323,7 +370,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("updateCellPhoto:"), name:"retrievedSpotPhoto", object: nil);
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("userLoggedOut:"), name:"loggedOut", object: nil);
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("userLoggedInOut:"), name:"loggedOut", object: nil);
         
         initCamera()
         
@@ -348,7 +395,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         self.refreshControl.tintColor = UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)
         //self.refreshControl.tintColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1.0)
         
-        let attr = [NSForegroundColorAttributeName:UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)]
+        //let attr = [NSForegroundColorAttributeName:UIColor(red: 0.956, green: 0.207, blue: 0.254, alpha: 1.0)]
         //self.refreshControl.attributedTitle = NSAttributedString(string: "Refresh location", attributes:attr)
         
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
@@ -412,7 +459,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        let location = locations.last
+        location = locations.last
+        
+        print(location)
         
         curLoc = location!
         curLat = location!.coordinate.latitude
@@ -478,7 +527,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     }
     
-    func userLoggedOut(sender: NSNotification) {
+    func userLoggedInOut(sender: NSNotification) {
         
         setView()
         
@@ -575,7 +624,12 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         switch editingStyle {
         case .Delete:
-            self.deleteSpot(indexPath)
+            if appDelegate.listType == "saved" {
+                self.deleteSpot(indexPath)
+            } else {
+                return
+            }
+            
         default:
             return
             
@@ -610,8 +664,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func showFriendsSpots(sender: NSNotification) {
         
-        print("show friends spots")
-        
         loadedFriends = sender.object as! [PFObject]
         
         showLoadedSpots(loadedFriends)
@@ -621,8 +673,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func showNearbySpots(sender: NSNotification) {
         
-        print("show nearby spots")
-        
         loadedNearby = sender.object as! [PFObject]
         
         showLoadedSpots(loadedNearby)
@@ -630,6 +680,10 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     }
     
     func showLoadedSpots(list: [PFObject]) {
+        
+        print(list)
+        
+        isLoading = false
         
         loadingView.hidden = true
         
@@ -655,6 +709,10 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             default:
                 break
             
+        }
+        
+        if loadedSpots.count == 0 {
+            self.comingSoonView.hidden = false
         }
         
         if self.loadedPhotos.isEmpty || self.loadedPhotos.count != self.loadedSpots.count {
@@ -840,6 +898,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         let viewTitle: String
         
+        print("set view")
+        
         switch appDelegate.listType {
             case "saved":
                 viewTitle = "Your spots"
@@ -853,13 +913,14 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 var msgText: String
                 
                 if snarlyUser.isFBLoggedIn() {
-                    spotList.retrieveFriendsSpots()
+                    spotList.retrieveFriendsSpots(page)
                     
                     msgText = "Your friends don't have any spots yet. Invite some more on Facebook."
                     faceBookBtn.setImage(UIImage(named: "btn-invite"), forState: .Normal)
                 } else {
                     loadingView.hidden = true
                     comingSoonView.hidden = false
+                    
                     msgText = "Login with Facebook to see friend's spots."
                     faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
                 }
@@ -876,9 +937,17 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 var msgText: String
                 
                 if snarlyUser.isFBLoggedIn() {
-                    spotList.retrieveNearbySpots()
                     
-                    msgText = "Sorry, there are no spots within 500 miles of you."
+                    if appDelegate.location != nil {
+                        spotList.retrieveNearbySpots(page)
+                        msgText = "Sorry, there are no spots within 500 miles of you."
+                    } else {
+                        loadedNearby.removeAll()
+                        msgText = "We can't find your location right now."
+                        showLoadedSpots(loadedNearby)
+                    }
+                    
+                    
                     faceBookBtn.setImage(UIImage(named: "btn-invite"), forState: .Normal)
                 } else {
                     loadingView.hidden = true
@@ -896,6 +965,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 viewTitle = "Your spots"
         }
         
+        
+        
         self.title = viewTitle
         self.reloadData()
         
@@ -905,9 +976,11 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         switch appDelegate.listType {
         case "friends":
+            spotList.friendsFresh = false
             self.loadedFriends.removeAll()
             self.loadedFriendsPhotos.removeAll()
         case "nearby":
+            spotList.nearbyFresh = false
             self.loadedNearby.removeAll()
             self.loadedNearbyPhotos.removeAll()
         default:

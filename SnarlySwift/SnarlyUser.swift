@@ -90,7 +90,7 @@ class SnarlyUser {
                             
                             
                         } else {
-                            
+                            NSNotificationCenter.defaultCenter().postNotificationName("loggedOut", object: nil)
                             print("error url \(error)")
                             
                         }
@@ -99,7 +99,7 @@ class SnarlyUser {
                     
                 }
             } else {
-                
+                NSNotificationCenter.defaultCenter().postNotificationName("loggedOut", object: nil)
                 print("user \(user)")
                 
             }
