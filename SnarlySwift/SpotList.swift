@@ -247,7 +247,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                         spotsQuery.whereKey("active", equalTo: true)
                         spotsQuery.whereKey("user", containedIn: results!)
                         spotsQuery.orderByDescending("createdAt")
-                        spotsQuery.limit = 5
+                        spotsQuery.limit = 15
                         spotsQuery.skip = page * spotsQuery.limit
                         
                         spotsQuery.findObjectsInBackgroundWithBlock {
@@ -255,17 +255,19 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                             
                             if error == nil {
                                 
-                                for spot in results! {
-                                    self.friendsSpots?.append(spot)
+                                if page > 0 {
+                                    for spot in results! {
+                                        self.friendsSpots?.append(spot)
+                                    }
+                                } else {
+                                    self.friendsSpots = results
                                 }
-                                
-                                self.friendsSpots!.count
                                 
                                 
                                 NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: self.friendsSpots)
                                 
                             } else {
-                                NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: results)
+                                NSNotificationCenter.defaultCenter().postNotificationName("retrievedFriendsSpots", object: self.friendsSpots)
                             }
                         }
                         
@@ -302,8 +304,8 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
             let user = PFUser.currentUser()
             spotsQuery.whereKey("user", notEqualTo: user!)
             spotsQuery.whereKeyExists("user")
-            spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 100)
-            spotsQuery.limit = 5
+            spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 500)
+            spotsQuery.limit = 15
             spotsQuery.skip = page * spotsQuery.limit
         }
         
@@ -312,14 +314,34 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
             
             if error == nil {
                 
-                self.nearbySpots = results
+                if page > 0 {
+                    for spot in results! {
+                        self.nearbySpots?.append(spot)
+                    }
+                } else {
+                    self.nearbySpots = results
+                }
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: results)
+                NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: self.nearbySpots)
                 
             } else {
-                NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: results)
+                NSNotificationCenter.defaultCenter().postNotificationName("retrievedNearbySpots", object: self.nearbySpots)
             }
         }
+    }
+    
+    func retrieveSpotPhoto(index: Int, spot: PFObject) {
+        spot["photo"].getDataInBackgroundWithBlock({
+            
+            (imageData: NSData?, error: NSError?) -> Void in
+            
+            if let photo = imageData {
+                let photoData:[String:AnyObject] = ["image": photo, "index": index]
+                NSNotificationCenter.defaultCenter().postNotificationName("retrievedSpotPhoto", object: photoData)
+            }
+            
+            
+        })
     }
     
     func refreshViewTimer(timer: NSTimer) {

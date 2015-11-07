@@ -15,6 +15,13 @@ import MobileCoreServices
 import Parse
 import ParseUI
 
+extension UITableView {
+    func reloadData(completion: ()->()) {
+        UIView.animateWithDuration(0, animations: { self.reloadData() })
+            { _ in completion() }
+    }
+}
+
 class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UITableViewDelegate, CLLocationManagerDelegate, UIViewControllerTransitioningDelegate, UINavigationControllerDelegate {
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -29,6 +36,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     var loadedFriendsPhotos = [NSData]()
     var loadedNearby = [PFObject]()
     var loadedNearbyPhotos = [NSData]()
+    var friendsPage = 0
+    var nearbyPage = 0
     
     var location: CLLocation?
     
@@ -47,6 +56,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     @IBOutlet var NavBar: UINavigationBar!
     @IBOutlet var emptyTxt: UILabel!
     @IBOutlet var loadingView: UIView!
+    @IBOutlet var tableLoadingView: UIView!
+    @IBOutlet var tableLoadingViewBottom: NSLayoutConstraint!
     @IBOutlet var comingSoonView: UIView!
     @IBOutlet var comingSoonLabel: UILabel!
     @IBOutlet var faceBookBtn: UIButton!
@@ -73,8 +84,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     let paragraphStyle = NSMutableParagraphStyle()
     
     var backgroundTaskIdentifier: UIBackgroundTaskIdentifier?
-    
-    var page = 0
     
     
     @IBAction func unwindToSpots(segue: UIStoryboardSegue) {
@@ -134,7 +143,10 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     func changeView(btn: UIButton) {
         
         appDelegate.listType = btn.restorationIdentifier!
+        loadingView.hidden = true
+    
         //self.reloadData()
+        hideTableLoadingTimer()
         self.setView()
         
     }
@@ -185,8 +197,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         let resizedImage = editSpotsView.RBResizeImage(tempImage)
         let imageData = NSData(data: UIImageJPEGRepresentation(resizedImage, 0.35)!)
         
-        self.loadingView.hidden = false
         self.changeNav(navHome)
+        self.loadingView.hidden = false
         
         self.dismissViewControllerAnimated(true, completion: {
             
@@ -207,6 +219,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         newSpot.photo = imageData
         newSpot.loc_disp = appDelegate.locationString
+        print(appDelegate.locationString)
         newSpot.active = false
         
         let newLocation = appDelegate.location
@@ -260,6 +273,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                     newSpot.active = false
                     newSpot.loc_lat = latitude
                     newSpot.loc_lon = longitude
+                    newSpot.loc_disp = ""
                     
                     self.performSegueWithIdentifier("newSpot", sender: newSpot)
                     return
@@ -306,24 +320,31 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         }
         
         let scrollViewHeight = scrollView.frame.size.height;
-        let scrollContentSizeHeight = scrollView.contentSize.height;
+        let scrollContentSizeHeight = scrollView.contentSize.height + 105;
         let scrollOffset = scrollView.contentOffset.y;
         
-        if (scrollOffset + scrollViewHeight >= scrollContentSizeHeight && isLoading == false) {
-            print("load bitch")
-            isLoading = true
-            page += 1
+        if (scrollOffset <= 20) {
+            
+        } else if (scrollOffset + scrollViewHeight >= scrollContentSizeHeight && isLoading == false) {
+            
             switch appDelegate.listType {
                 case "nearby":
+                    nearbyPage += 1
                     spotList.nearbyFresh = false
-                    spotList.retrieveNearbySpots(page)
+                    spotList.retrieveNearbySpots(nearbyPage)
+                    
+                    showTableLoading()
 
                 case "friends":
+                    friendsPage += 1
                     spotList.friendsFresh = false
-                    spotList.retrieveFriendsSpots(page)
+                    spotList.retrieveFriendsSpots(friendsPage)
+                    showTableLoading()
 
                 default:
+                    hideTableLoadingTimer()
                     return
+        
             }
         }
         
@@ -347,6 +368,32 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         }
         
 
+    }
+    
+    func showTableLoading() {
+        isLoading = true
+        
+        UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.tableLoadingViewBottom.constant = -50
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                //complete
+        })
+    }
+    
+    func hideTableLoadingTimer() {
+        NSTimer.scheduledTimerWithTimeInterval(0.0, target: self, selector: "hideTableLoading:", userInfo: "tableLoading", repeats: false)
+    }
+    
+    func hideTableLoading(sender: NSTimer) {
+        isLoading = false
+
+        UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.tableLoadingViewBottom.constant = 0
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                //complete
+        })
     }
     
     override func viewDidLoad() {
@@ -385,8 +432,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        let edgeInsets = UIEdgeInsetsMake(0, 0, 55, 0)
-        self.tableView.contentInset = edgeInsets
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 55, 0)
         
         //appDelegate.setLocationVars(locationManager.location)
         
@@ -440,9 +486,10 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func refresh(sender:AnyObject)
     {
+        refreshView()
+        
         spotList.updateDistance(self)
         
-        refreshView()
         setView()
     }
     
@@ -460,8 +507,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         location = locations.last
-        
-        print(location)
         
         curLoc = location!
         curLat = location!.coordinate.latitude
@@ -512,14 +557,28 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     }
     
     func updateCellPhoto(sender: NSNotification) {
-    
-        let int = sender.object as! Int
         
-        let indexPath = NSIndexPath(forRow: int, inSection: 0)
+        let dict = sender.object as! NSDictionary
+        
+        let imageData = dict["image"] as! NSData
+        let index = dict["index"] as! Int
+        
+        switch(appDelegate.listType) {
+            case "friends":
+                self.loadedFriendsPhotos[index] = imageData
+            case "nearby":
+                self.loadedNearbyPhotos[index] = imageData
+            default:
+            break
+        }
+        
+        self.loadedPhotos[index] = imageData
+        
+        let indexPath = NSIndexPath(forRow: index, inSection: 0)
         
         if let cell = tableView!.cellForRowAtIndexPath(indexPath) as? SpotCell {
             
-            cell.spotPhoto.image = UIImage(data: loadedPhotos[int])
+            cell.spotPhoto.image = UIImage(data: loadedPhotos[index])
             self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
     
         }
@@ -681,15 +740,14 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func showLoadedSpots(list: [PFObject]) {
         
-        print(list)
-        
-        isLoading = false
+        hideTableLoadingTimer()
         
         loadingView.hidden = true
         
         loadedSpots = list
         
-        self.loadedPhotos.removeAll()
+        
+        //self.loadedPhotos.removeAll()
 
         let type = appDelegate.listType
         switch type {
@@ -715,62 +773,58 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             self.comingSoonView.hidden = false
         }
         
-        if self.loadedPhotos.isEmpty || self.loadedPhotos.count != self.loadedSpots.count {
-        
-            self.loadedPhotos.removeAll()
+        for (index, spot) in loadedSpots.enumerate() {
             
-            for (index, spot) in loadedSpots.enumerate() {
-                
-                addLoadedPhoto(index, spot: spot)
-                
-            }
+            addLoadedPhoto(index, spot: spot)
             
         }
         
         
-        
         self.reloadData()
+        
+        
         
     }
     
     func addLoadedPhoto(index: Int, spot: PFObject) {
         let type = appDelegate.listType
         let image = UIImage(named: "empty-spot")
-        let holder = UIImagePNGRepresentation(image!)
+        
+        var holder: NSData!
         
         switch(type) {
         case "friends":
-            self.loadedFriendsPhotos.append(holder!)
+            
+            if index < loadedFriendsPhotos.count {
+                holder = loadedFriendsPhotos[index]
+            } else {
+                holder = UIImagePNGRepresentation(image!)
+                self.loadedFriendsPhotos.append(holder!)
+                spotList.retrieveSpotPhoto(index, spot: spot)
+            }
+            
+            self.loadedPhotos = self.loadedFriendsPhotos
+            
+            
+            
+            
         case "nearby":
-            self.loadedNearbyPhotos.append(holder!)
+            if index < loadedNearbyPhotos.count {
+                holder = loadedNearbyPhotos[index]
+            } else {
+                holder = UIImagePNGRepresentation(image!)
+                self.loadedNearbyPhotos.append(holder!)
+                spotList.retrieveSpotPhoto(index, spot: spot)
+            }
+            
+            self.loadedPhotos = self.loadedNearbyPhotos
+            
         default:
             break
         }
         
-        self.loadedPhotos.append(holder!)
-        
-        spot["photo"].getDataInBackgroundWithBlock({
-            
-            (imageData: NSData?, error: NSError?) -> Void in
-            
-            switch(type) {
-            case "friends":
-                self.loadedFriendsPhotos[index] = imageData!
-            case "nearby":
-                self.loadedNearbyPhotos[index] = imageData!
-            default:
-                break
-            }
-            
-            self.loadedPhotos[index] = imageData!
-            
-            NSNotificationCenter.defaultCenter().postNotificationName("retrievedSpotPhoto", object: index)
-            
-            
-            
-        })
-        
     }
+
     
     @IBAction func populateData() {
         
@@ -837,7 +891,15 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             return
         }
         
-        tableView.reloadData()
+        tableView.reloadData {
+            if let visibleCells = self.tableView!.visibleCells as? [SpotCell] {
+                for parallaxCell in visibleCells {
+                    self.parallax(parallaxCell)
+                }
+            }
+        }
+        
+        
         
     }
         
@@ -906,14 +968,14 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 self.comingSoonView.hidden = true
                 spotList.fetchSavedSpots()
             case "friends":
-                viewTitle = "Friend's spots"
+                viewTitle = "Friends feed"
                 self.comingSoonView.hidden = true
                 
                 self.loadingView.hidden = false
                 var msgText: String
                 
                 if snarlyUser.isFBLoggedIn() {
-                    spotList.retrieveFriendsSpots(page)
+                    spotList.retrieveFriendsSpots(friendsPage)
                     
                     msgText = "Your friends don't have any spots yet. Invite some more on Facebook."
                     faceBookBtn.setImage(UIImage(named: "btn-invite"), forState: .Normal)
@@ -921,7 +983,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                     loadingView.hidden = true
                     comingSoonView.hidden = false
                     
-                    msgText = "Login with Facebook to see friend's spots."
+                    msgText = "Login with Facebook to see your friend's spots."
                     faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
                 }
                 
@@ -939,8 +1001,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 if snarlyUser.isFBLoggedIn() {
                     
                     if appDelegate.location != nil {
-                        spotList.retrieveNearbySpots(page)
-                        msgText = "Sorry, there are no spots within 500 miles of you."
+                        spotList.retrieveNearbySpots(nearbyPage)
+                        msgText = "Sorry, there's nothing within 500 miles of you."
                     } else {
                         loadedNearby.removeAll()
                         msgText = "We can't find your location right now."
@@ -952,7 +1014,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 } else {
                     loadingView.hidden = true
                     comingSoonView.hidden = false
-                    msgText = "Login with Facebook to see nearby spots."
+                    msgText = "Login with Facebook to see spots within 500 miles."
                     faceBookBtn.setImage(UIImage(named: "btn-login"), forState: .Normal)
                     
                 }
@@ -979,10 +1041,12 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             spotList.friendsFresh = false
             self.loadedFriends.removeAll()
             self.loadedFriendsPhotos.removeAll()
+            self.friendsPage = 0
         case "nearby":
             spotList.nearbyFresh = false
             self.loadedNearby.removeAll()
             self.loadedNearbyPhotos.removeAll()
+            self.nearbyPage = 0
         default:
             break
         }

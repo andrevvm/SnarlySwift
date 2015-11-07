@@ -118,7 +118,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             spot.notes = txtSpotNotes.text!
             spot.photo = imageData
             spot.distance = 0
-            spot.loc_disp = ""
+            spot.loc_disp = newSpot!.loc_disp
             spot.loc_lat = newSpot!.loc_lat
             spot.loc_lon = newSpot!.loc_lon
             spot.active = true
@@ -139,7 +139,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             
         } else {
             
-            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 0.6)!)
+            let imageData = NSData(data: UIImageJPEGRepresentation(imagePreview.image!, 1)!)
             
             spot!.title = txtSpotName.text
             spot!.notes = txtSpotNotes.text!
