@@ -28,6 +28,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
     var nearbyTimer: NSTimer? = nil
     var friendsFresh: Bool?
     var nearbyFresh: Bool?
+    var friendsList = [String: PFObject]()
     
     let snarlyUser = SnarlyUser()
     
@@ -146,6 +147,8 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
             
             case "friends":
                 cell.userOverlay.hidden = false
+                cell.userOverlay.backgroundColor = UIColor(white: 1, alpha: 0.94)
+                cell.userPhotoBorder.backgroundColor = UIColor(white: 0, alpha: 0.3)
                 cell.photoTop.constant = 45
                 if(loadedList.isEmpty && self.friendsSpots!.count > 0) {
                     let fetchedSpots = self.friendsSpots!
@@ -156,6 +159,35 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                 if(loadedPhotos.count > indexPath.row) {
                     spot.photo = loadedPhotos[indexPath.row]
                 }
+            
+                cell.userName.text = spot.display_name
+                let spotObj = spot.object as! PFObject
+                let spotDate = spotObj.createdAt
+                
+                cell.spotDate.text = spotDate!.relativeTime
+                
+                let photo = spot.user_photo
+                
+                cell.userPhoto.layer.cornerRadius = 15
+                cell.userPhotoBorder.layer.cornerRadius = 15
+                cell.userPhoto.clipsToBounds = true
+                
+                if let image = photo {
+                    do {
+                        let imageData = try image.getData()
+                        cell.userPhoto.image = UIImage(data: imageData )
+                        
+                    } catch {
+                        
+                    }
+                    
+                    
+                }
+
+            
+                
+            
+            
             case "nearby":
                 cell.userOverlay.hidden = true
                 cell.photoTop.constant = 5
@@ -174,6 +206,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                 spot = SpotObject().setManagedObject(fetchedSpot)
                 cell.userOverlay.hidden = true
                 cell.photoTop.constant = 5
+            
             
         }
         
@@ -243,6 +276,22 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                     (results: [PFObject]?, error: NSError?) -> Void in
                     if error == nil {
                         
+                        for user in results! {
+                            
+                            var displayName = ""
+                            
+                            if let lastName = user["last_name"] as? String {
+                                let firstName = user["first_name"]
+                                let lastNameString = lastName as String
+                                let lastLetter = lastNameString[0]
+                                displayName = "\(firstName as! String) \(lastLetter)."
+                            }
+                            
+                            user["display_name"] = displayName
+                            self.friendsList[user.objectId!] = user
+                            
+                        }
+                        
                         let spotsQuery = PFQuery(className: "Spots")
                         spotsQuery.whereKey("active", equalTo: true)
                         spotsQuery.whereKey("user", containedIn: results!)
@@ -255,12 +304,22 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                             
                             if error == nil {
                                 
-                                if page > 0 {
-                                    for spot in results! {
-                                        self.friendsSpots?.append(spot)
-                                    }
-                                } else {
-                                    self.friendsSpots = results
+                                if page == 0 {
+                                    self.friendsSpots?.removeAll()
+                                }
+                                
+                                if results!.count == 0 {
+                                    self.friendsFresh = false
+                                }
+                                
+                                for spot in results! {
+                                    let userId = spot["user"].objectId!
+                                    let user:PFObject = self.friendsList[userId!]!
+                                    
+                                    spot["display_name"] = user["display_name"]
+                                    spot["user_photo"] = user["photo"] as! PFFile
+                                    
+                                    self.friendsSpots?.append(spot)
                                 }
                                 
                                 
@@ -302,9 +361,17 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         if(self.appDelegate.location != nil) {
             let point = PFGeoPoint(location: self.appDelegate.location)
             let user = PFUser.currentUser()
-            spotsQuery.whereKey("user", notEqualTo: user!)
-            spotsQuery.whereKeyExists("user")
-            spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 500)
+
+            if (appDelegate.userIsAdmin == true && appDelegate.adminMode == true) {
+                spotsQuery.whereKeyDoesNotExist("approved")
+            } else {
+                spotsQuery.whereKey("approved", equalTo:true)
+                spotsQuery.whereKey("user", notEqualTo: user!)
+                spotsQuery.whereKeyExists("user")
+                spotsQuery.whereKey("isPrivate", notEqualTo:true)
+                spotsQuery.whereKey("location", nearGeoPoint: point, withinMiles: 500)
+            }
+            
             spotsQuery.limit = 15
             spotsQuery.skip = page * spotsQuery.limit
         }
@@ -314,11 +381,18 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
             
             if error == nil {
                 
+                
+                
                 if page > 0 {
                     for spot in results! {
                         self.nearbySpots?.append(spot)
                     }
                 } else {
+                    
+                    if results!.count == 0 {
+                        self.nearbyFresh = false
+                    }
+                    
                     self.nearbySpots = results
                 }
                 

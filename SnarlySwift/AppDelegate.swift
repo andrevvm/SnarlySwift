@@ -14,6 +14,62 @@ import FBSDKCoreKit
 import Parse
 import ParseFacebookUtilsV4
 
+extension NSDate {
+    
+    func yearsFrom(date:NSDate) -> Int {
+        return NSCalendar.currentCalendar().components(.Year, fromDate: date, toDate: self, options: NSCalendarOptions()).year
+    }
+    func monthsFrom(date:NSDate) -> Int {
+        return NSCalendar.currentCalendar().components(.Month, fromDate: date, toDate: self, options: NSCalendarOptions()).month
+    }
+    func weeksFrom(date:NSDate) -> Int {
+        return NSCalendar.currentCalendar().components(.WeekOfYear, fromDate: date, toDate: self, options: NSCalendarOptions()).weekOfYear
+    }
+    func daysFrom(date:NSDate) -> Int {
+        return NSCalendar.currentCalendar().components(.Day, fromDate: date, toDate: self, options: NSCalendarOptions()).day
+    }
+    func hoursFrom(date:NSDate) -> Int {
+        return NSCalendar.currentCalendar().components(.Hour, fromDate: date, toDate: self, options: NSCalendarOptions()).hour
+    }
+    func minutesFrom(date:NSDate) -> Int {
+        return NSCalendar.currentCalendar().components(.Minute, fromDate: date, toDate: self, options: NSCalendarOptions()).minute
+    }
+    func secondsFrom(date:NSDate) -> Int {
+        return NSCalendar.currentCalendar().components(.Second, fromDate: date, toDate: self, options: NSCalendarOptions()).second
+    }
+    var relativeTime: String {
+        let now = NSDate()
+        if now.yearsFrom(self)   > 0 {
+            return now.yearsFrom(self).description  + "y"
+        }
+        if now.weeksFrom(self)   > 0 {
+            return now.weeksFrom(self).description  + "w"
+        }
+        if now.daysFrom(self)    > 0 {
+            return now.daysFrom(self).description + "d"
+        }
+        if now.hoursFrom(self)   > 0 {
+            return "\(now.hoursFrom(self))hr"
+        }
+        if now.minutesFrom(self) > 0 {
+            return "\(now.minutesFrom(self))min"
+        }
+        if now.secondsFrom(self) > 0 {
+            return "\(now.secondsFrom(self))s"
+        }
+        return ""
+    }
+}
+
+extension String {
+    
+    subscript (i: Int) -> Character {
+        return self[self.startIndex.advancedBy(i)]
+    }
+    
+}
+
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
                             
@@ -26,6 +82,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var curLat: Double?
     var settingLocation: Bool = false
     var listType = "saved"
+    
+    var userIsAdmin: Bool = false
+    var adminMode: Bool = true
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         

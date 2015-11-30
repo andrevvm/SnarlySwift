@@ -41,12 +41,14 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     @IBOutlet var txtSpotName: UITextField!
     @IBOutlet var txtSpotNotes: UITextField!
     @IBOutlet var switchBust: UISwitch!
+    @IBOutlet var switchPrivate: UISwitch!
     @IBOutlet var imagePreview : CompressedImage!
     @IBOutlet var captureButton: UIButton!
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var editView: UIView!
     @IBOutlet var topConstraint: NSLayoutConstraint!
     @IBOutlet var bottomGuide: UILabel!
+    @IBOutlet var privacyControl: UISegmentedControl!
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
@@ -87,6 +89,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             } else {
                 switchBust.on = false
             }
+            if spot!.isPrivate {
+                switchPrivate.on = true
+            } else {
+                switchPrivate.on = false
+            }
+
             navigationBar.topItem!.title = "Edit Spot"
             
         } else {
@@ -117,7 +125,15 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             spot.title = txtSpotName.text
             spot.notes = txtSpotNotes.text!
             spot.photo = imageData
-            spot.distance = 0
+            let location = CLLocation(latitude: newSpot!.loc_lat as Double, longitude: newSpot!.loc_lon as Double)
+            if appDelegate.location != nil {
+                let distance = appDelegate.location!.distanceFromLocation(location) as CLLocationDistance
+                let distanceNum:Double = distance
+                spot.distance = distanceNum
+            } else {
+                spot.distance = 0
+            }
+            
             spot.loc_disp = newSpot!.loc_disp
             spot.loc_lat = newSpot!.loc_lat
             spot.loc_lon = newSpot!.loc_lon
@@ -128,13 +144,35 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
             } else {
                 spot.bust = false
             }
-                
-            do {
-                try managedObjectContext?.save()
-                SnarlySpotSync().save(spot)
-            } catch _ {
+            
+            if switchPrivate.on {
+                spot.isPrivate = true
+            } else {
+                spot.isPrivate = false
             }
-            performSegueWithIdentifier("newSpot", sender: self)
+            
+            if spot.loc_disp == "" {
+                appDelegate.getLocationString(spot.loc_lat as Double, loc_lon: spot.loc_lon as Double, completion: { (answer) -> Void in
+                    spot.loc_disp = answer
+                    
+                    do {
+                        try self.managedObjectContext?.save()
+                        SnarlySpotSync().save(spot)
+                    } catch _ {
+                    }
+                    
+                    self.performSegueWithIdentifier("newSpot", sender: self)
+                })
+            } else {
+                do {
+                    try managedObjectContext?.save()
+                    SnarlySpotSync().save(spot)
+                } catch _ {
+                }
+                performSegueWithIdentifier("newSpot", sender: self)
+            }
+                
+            
             
             
         } else {
@@ -149,6 +187,11 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 spot!.bust = true
             } else {
                 spot!.bust = false
+            }
+            if switchPrivate.on {
+                spot!.isPrivate = true
+            } else {
+                spot!.isPrivate = false
             }
             
             do {
@@ -271,7 +314,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         }
         
         if segue.destinationViewController.isMemberOfClass(SpotDetailController) && sender?.isMemberOfClass(Spots) == true {
-            print(segue.destinationViewController.isMemberOfClass(SpotDetailController))
             let vc = segue.destinationViewController as! SpotDetailController
             let spotObj = SpotObject().setManagedObject(sender as! Spots)
             vc.spot = spotObj

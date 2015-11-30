@@ -2,13 +2,13 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "sample-spot.jpg"
+      "filename" : "btn-top-invite.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "sample-spot@2x.png"
+      "filename" : "btn-top-invite@2x.png",
+      "scale" : "2x"
     },
     {
       "idiom" : "universal",

@@ -55,6 +55,10 @@ class SnarlyUtils: NSObject, CLLocationManagerDelegate, NSFetchedResultsControll
     
     func getDistanceString(spot:SpotObject) -> NSString {
         
+        if appDelegate.location == nil {
+            return ""
+        }
+        
         if spot.loc_lat == 0 && spot.loc_lon == 0 {
             return "???"
         }

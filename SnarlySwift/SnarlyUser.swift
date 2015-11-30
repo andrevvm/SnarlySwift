@@ -31,10 +31,13 @@ class SnarlyUser {
                 
                 if user.isNew {
                     
-                    SnarlySpotSync().syncUserSpots()
+//                    SnarlySpotSync().syncUserSpots()
+//                    print("logged in")
                     
                 } else {
                     
+                    SnarlySpotSync().syncUserSpots()
+
                     let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me?fields=id,name,location,first_name,last_name,email", parameters: nil)
                     request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
                         
@@ -119,7 +122,6 @@ class SnarlyUser {
             
             dialog.content = content
             dialog.fromViewController = sender
-            print(dialog)
             
             dialog.show()
             do {
@@ -132,6 +134,28 @@ class SnarlyUser {
         } else {
             print("cannot show dialog")
         }
+    }
+    
+    func setUserAdmin() {
+        
+        let query = PFQuery(className: "_Role")
+        query.whereKey("name", equalTo: "admin")
+        query.whereKey("users", equalTo: PFUser.currentUser()!)
+        
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        query.findObjectsInBackgroundWithBlock {
+            (results: [PFObject]?, error: NSError?) -> Void in
+            if (results != nil) {
+                if results!.count > 0 {
+                    appDelegate.userIsAdmin = true
+                }
+            } else {
+                appDelegate.userIsAdmin = false
+                
+            }
+        }
+        
     }
     
     func isFBLoggedIn() -> Bool {

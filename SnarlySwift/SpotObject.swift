@@ -24,8 +24,12 @@ class SpotObject: NSObject {
     var synced: Bool!
     var title: String?
     var uuid: String?
+    var userid: String?
     var object: AnyObject!
     var user: PFUser?
+    var display_name: String?
+    var user_photo: PFFile?
+    var isPrivate: Bool!
     
     func setManagedObject(spot: Spots) -> SpotObject {
         
@@ -41,8 +45,10 @@ class SpotObject: NSObject {
         synced = spot.synced
         title = spot.title
         uuid = spot.uuid
+        userid = spot.userid
         object = spot
         user = PFUser.currentUser()
+        isPrivate = spot.isPrivate
         
         return self
         
@@ -61,11 +67,18 @@ class SpotObject: NSObject {
         synced = true
         title = spot["title"] as? String
         uuid = spot.objectId
+        userid = spot["user"] as? String
         object = spot
+        isPrivate = spot["isPrivate"] as? Bool
         if let spotUser = spot["user"] {
             self.user = spotUser as? PFUser
         }
-        
+        if let userDisplay = spot["display_name"] {
+            self.display_name = userDisplay as? String
+        }
+        if let userPhoto = spot["user_photo"] {
+            self.user_photo = userPhoto as? PFFile
+        }
     
         return self
     

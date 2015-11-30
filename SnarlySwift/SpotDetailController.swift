@@ -116,12 +116,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
         
         self.positionPhoto()
         
-        switch appDelegate.listType {
-            case "friends":
-                userOverlay.hidden = false
-            default:
-                userOverlay.hidden = true
-        }
+//        switch appDelegate.listType {
+//            case "friends":
+//                userOverlay.hidden = false
+//            default:
+//                userOverlay.hidden = true
+//        }
 
         //self.navigationController?.navigationBarHidden = false
         if spot != nil {

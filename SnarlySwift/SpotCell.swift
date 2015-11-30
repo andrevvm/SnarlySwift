@@ -19,7 +19,11 @@ class SpotCell: PFTableViewCell {
     @IBOutlet var sampleOverlay: UIImageView!
     @IBOutlet var cityLabel: UILabel!
     @IBOutlet var distanceLabel: UILabel!
-    @IBOutlet var userOverlay: UIImageView!
+    @IBOutlet var userOverlay: UIView!
+    @IBOutlet var userName: UILabel!
+    @IBOutlet var userPhoto: UIImageView!
+    @IBOutlet var userPhotoBorder: UIView!
+    @IBOutlet var spotDate: UILabel!
     @IBOutlet var photoTop: NSLayoutConstraint!
     
     required init?(coder aDecoder: NSCoder) {
@@ -28,6 +32,7 @@ class SpotCell: PFTableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String!) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
     }
         
     

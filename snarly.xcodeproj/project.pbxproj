@@ -98,6 +98,8 @@
 		E66C7C021BADD69800E1444B /* SnarlySwift 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 6.xcdatamodel"; sourceTree = "<group>"; };
 		E66C7C031BAEF85E00E1444B /* SnarlySpotSync.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnarlySpotSync.swift; sourceTree = "<group>"; };
 		E67D63E51990ECDF0086DCB1 /* SnarlySwift-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SnarlySwift-Bridging-Header.h"; sourceTree = "<group>"; };
+		E68263B91BFD279000468F04 /* SnarlySwift 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 7.xcdatamodel"; sourceTree = "<group>"; };
+		E68263BA1BFD31C500468F04 /* SnarlySwift 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 8.xcdatamodel"; sourceTree = "<group>"; };
 		E6A3CAA61B357C0200C77B4B /* SnarlySwift 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 3.xcdatamodel"; sourceTree = "<group>"; };
 		E6A3CAA71B35905500C77B4B /* SnarlySwift 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "SnarlySwift 4.xcdatamodel"; sourceTree = "<group>"; };
 		E6B5F3CF198FFBCB00FAE0DA /* EditSpotViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditSpotViewController.swift; sourceTree = "<group>"; };
@@ -645,6 +647,8 @@
 		E6121B81198FC5E500E72142 /* SnarlySwift.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				E68263BA1BFD31C500468F04 /* SnarlySwift 8.xcdatamodel */,
+				E68263B91BFD279000468F04 /* SnarlySwift 7.xcdatamodel */,
 				E66C7C021BADD69800E1444B /* SnarlySwift 6.xcdatamodel */,
 				E63C25941B865C1600BD773F /* SnarlySwift 5.xcdatamodel */,
 				E6A3CAA71B35905500C77B4B /* SnarlySwift 4.xcdatamodel */,
@@ -652,7 +656,7 @@
 				E6FF51EA1B2B1B9300486421 /* SnarlySwift 2.xcdatamodel */,
 				E6121B82198FC5E500E72142 /* SnarlySwift.xcdatamodel */,
 			);
-			currentVersion = E66C7C021BADD69800E1444B /* SnarlySwift 6.xcdatamodel */;
+			currentVersion = E68263BA1BFD31C500468F04 /* SnarlySwift 8.xcdatamodel */;
 			path = SnarlySwift.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

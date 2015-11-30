@@ -103,6 +103,16 @@ class SnarlySpotSync {
         }
     }
     
+    func approveSpot(PFSpot: PFObject) {
+        PFSpot["approved"] = true
+        PFSpot.saveEventually()
+    }
+    
+    func denySpot(PFSpot: PFObject) {
+        PFSpot["approved"] = false
+        PFSpot.saveEventually()
+    }
+    
     func syncData(PFSpot: PFObject, spot: Spots, update: Bool) {
         let lat = spot.loc_lat as Double
         let lon = spot.loc_lon as Double
@@ -117,6 +127,8 @@ class SnarlySpotSync {
         PFSpot["notes"] = spot.notes
         
         PFSpot["active"] = true
+        
+        PFSpot["isPrivate"] = spot.isPrivate
         
         if(spot.title == nil) {
             spot.title = ""
@@ -257,7 +269,7 @@ class SnarlySpotSync {
         
         let fetchRequest = NSFetchRequest(entityName: "Spots")
         
-        let resultPredicate1 = NSPredicate(format: "uuid != nil")
+        let resultPredicate1 = NSPredicate(format: "active == true")
         let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1])
         fetchRequest.predicate = predicate
         
@@ -281,13 +293,65 @@ class SnarlySpotSync {
                 for spot in spots {
                     
                     let spot = spot as! Spots
-                    
-                    SnarlySpotSync().update(spot, objectID: spot.uuid!)
-                    
+                    if spot.uuid != nil {
+                        update(spot, objectID: spot.uuid!)
+                    } else {
+                        save(spot)
+                    }
                     
                 }
                 
                 
+            }
+        }
+        
+    }
+    
+    func importUserSpots() {
+        
+        if PFUser.currentUser() != nil {
+            let spotsQuery = PFQuery(className: "Spots")
+            spotsQuery.whereKey("active", equalTo: true)
+            spotsQuery.whereKey("user", equalTo: PFUser.currentUser()!)
+            spotsQuery.findObjectsInBackgroundWithBlock {
+                (results: [PFObject]?, error: NSError?) -> Void in
+                for result in results! {
+                    let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: self.managedObjectContext!)
+                    let spot = Spots(entity: entityDescripition!, insertIntoManagedObjectContext: self.managedObjectContext)
+                    
+                    let photo = result["photo"] as? PFFile
+                    let imageData:NSData?
+                    do {
+                        try imageData = photo!.getData()
+                        spot.photo = imageData!
+                    } catch {
+                        print("no photo")
+                    }
+                    
+                    spot.title = result["title"] as? String
+                    spot.notes = result["notes"] as! String
+                    spot.distance = 0
+                    spot.loc_disp = result["loc_disp"] as? String
+                    spot.loc_lat = result["location"].latitude as Double
+                    spot.loc_lon = result["location"].longitude as Double
+                    spot.active = true
+                    
+                    spot.bust = result["bust"] as! Bool
+                    if let isPrivate = result["isPrivate"] {
+                        spot.isPrivate = isPrivate as! Bool
+                    } else {
+                        spot.isPrivate = false
+                    }
+
+                    spot.uuid = result.objectId
+                    
+                    do {
+                        try self.managedObjectContext?.save()
+                    } catch _ {
+                        print("no spot")
+                    }
+
+                }
             }
         }
         

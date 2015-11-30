@@ -23,6 +23,8 @@ class Spots: NSManagedObject {
     @NSManaged var synced: Bool
     @NSManaged var title: String?
     @NSManaged var uuid: String?
+    @NSManaged var userid: String?
+    @NSManaged var isPrivate: Bool
     
     override func awakeFromInsert()  {
         super.awakeFromInsert()

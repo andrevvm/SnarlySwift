@@ -11,32 +11,40 @@ import Parse
 import ParseFacebookUtilsV4
 import FBSDKShareKit
 
-extension String {
-    
-    subscript (i: Int) -> Character {
-        return self[self.startIndex.advancedBy(i)]
-    }
-    
-}
-
 class SnarlySettings: ViewController {
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     @IBOutlet var userSettings: UIView!
     @IBOutlet var profilePic: UIImageView!
     @IBOutlet var profileName: UILabel!
+    @IBOutlet var adminView: UIView!
+    @IBOutlet var adminSwitch: UISwitch!
     
     let snarlyUser = SnarlyUser()
     
     var isLoggedIn:Bool = false
     var isFacebookLinked:Bool = false
+    var isFacebookLoading:Bool = false
+    
+    @IBAction func setAdminMode() {
+        if adminSwitch.on {
+            appDelegate.adminMode = true
+        } else {
+            appDelegate.adminMode = false
+        }
+    }
     
     @IBAction func facebookConnect() {
         
         snarlyUser.loginWithFacebook()
         userSettings.hidden = false
         profilePic.image = nil
+        profileName.text = ""
+        isFacebookLoading = true
         
     }
+    
     
     @IBAction func inviteUsers() {
         
@@ -75,23 +83,43 @@ class SnarlySettings: ViewController {
     
     override func viewWillAppear(animated: Bool) {
         
+        if(appDelegate.adminMode == true) {
+            adminSwitch.on = true
+        } else {
+            adminSwitch.on = false
+        }
+        
         profilePic.layer.cornerRadius = 50
         profilePic.clipsToBounds = true
         
         if (PFUser.currentUser() != nil) {
+            
+//            let roleACL = PFACL()
+//            roleACL.setReadAccess(true, forUser: PFUser.currentUser()!)
+//            roleACL.setWriteAccess(true, forUser: PFUser.currentUser()!)
+//            let role = PFRole(name: "admin", acl:roleACL)
+//            
+//            role.users.addObject(PFUser.currentUser()!)
+//
+//            role.saveInBackground()
             
             isLoggedIn = (PFUser.currentUser()?.isAuthenticated())!
             isFacebookLinked = (PFUser.currentUser()?.isLinkedWithAuthType("facebook"))!
             
         }
             
-        if (isLoggedIn == true || isFacebookLinked == true ) {
-            
+        if (isLoggedIn == true || isFacebookLinked == true) {
             loadUserView()
-            
-            
-        }  else {
+        }  else if isFacebookLoading == true {
+            userSettings.hidden = false
+        } else {
             userSettings.hidden = true
+        }
+        
+        if appDelegate.userIsAdmin == true && appDelegate.adminMode == true {
+            adminView.hidden = false
+        } else {
+            adminView.hidden = true
         }
 
     }
@@ -119,6 +147,8 @@ class SnarlySettings: ViewController {
     func userLoggedIn(sender: NSNotification) {
         
         let user = PFUser.currentUser()
+        
+        isFacebookLoading = false
         
         var nameString = ""
         

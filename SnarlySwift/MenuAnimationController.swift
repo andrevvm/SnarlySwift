@@ -14,7 +14,7 @@ class MenuAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     var reverse: Bool = false
     
     func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
-        return 0.25
+        return 0.5
     }
     
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
@@ -26,21 +26,25 @@ class MenuAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
         let fromView = fromViewController.view
         let direction: CGFloat = reverse ? 1 : -1
         
-        let viewFromTransform: CATransform3D = CATransform3DMakeTranslation(-direction * containerView!.frame.size.width/3, 0.0, 0.0)
-        let viewToTransform: CATransform3D = CATransform3DMakeTranslation(direction * containerView!.frame.size.width, 0.0, 0.0)
+        let viewFromTransform: CGAffineTransform = CGAffineTransformMakeTranslation(-direction * containerView!.frame.size.width/3, 0.0)
+        let viewToTransform: CGAffineTransform = CGAffineTransformMakeTranslation(direction * containerView!.frame.size.width, 0.0)
         
-        toView.layer.transform = viewToTransform
         containerView!.addSubview(toView)
+        toView.transform = viewToTransform
+        fromView.transform = CGAffineTransformMakeTranslation(0.0, 0.0)
         
-        UIView.animateWithDuration(transitionDuration(transitionContext), delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+        
+        UIView.animateWithDuration(transitionDuration(transitionContext), delay: 0.0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0.8, options: UIViewAnimationOptions.CurveEaseOut, animations: {
 
-            fromView.layer.transform = viewFromTransform
-            toView.layer.transform = CATransform3DIdentity
+            toView.transform = CGAffineTransformIdentity
+
+            fromView.transform = viewFromTransform
+            
             }, completion: {
                 finished in
                 containerView!.transform = CGAffineTransformIdentity
-                fromView.layer.transform = CATransform3DIdentity
-                toView.layer.transform = CATransform3DIdentity
+                fromView.transform = CGAffineTransformIdentity
+                toView.transform = CGAffineTransformIdentity
                 
                 if (transitionContext.transitionWasCancelled()) {
                     toView.removeFromSuperview()
