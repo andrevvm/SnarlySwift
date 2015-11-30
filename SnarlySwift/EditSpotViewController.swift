@@ -49,6 +49,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     @IBOutlet var topConstraint: NSLayoutConstraint!
     @IBOutlet var bottomGuide: UILabel!
     @IBOutlet var privacyControl: UISegmentedControl!
+    @IBOutlet var loadingView: UIView!
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
@@ -115,6 +116,9 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     @IBAction func saveSpot(sender: UIBarButtonItem) {
         
+        saveButton.enabled = false
+        loadingView.hidden = false
+        
         if(newSpot != nil) {
             
             let entityDescripition = NSEntityDescription.entityForName("Spots", inManagedObjectContext: managedObjectContext!)
@@ -151,29 +155,19 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
                 spot.isPrivate = false
             }
             
-            if spot.loc_disp == "" {
+            if SnarlyUser().isFBLoggedIn() {
+                spot.userid = PFUser.currentUser()?.objectId
+            }
+            
+            if spot.loc_disp == "" && Reachability.connectedToNetwork() {
                 appDelegate.getLocationString(spot.loc_lat as Double, loc_lon: spot.loc_lon as Double, completion: { (answer) -> Void in
                     spot.loc_disp = answer
                     
-                    do {
-                        try self.managedObjectContext?.save()
-                        SnarlySpotSync().save(spot)
-                    } catch _ {
-                    }
-                    
-                    self.performSegueWithIdentifier("newSpot", sender: self)
+                    self.finishSavingSpot(spot)
                 })
             } else {
-                do {
-                    try managedObjectContext?.save()
-                    SnarlySpotSync().save(spot)
-                } catch _ {
-                }
-                performSegueWithIdentifier("newSpot", sender: self)
+                self.finishSavingSpot(spot)
             }
-                
-            
-            
             
         } else {
             
@@ -208,6 +202,17 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         
         
+    }
+    
+    func finishSavingSpot(spot: Spots) {
+        do {
+            try managedObjectContext?.save()
+            SnarlySpotSync().save(spot)
+        } catch _ {
+        }
+        self.saveButton.enabled = true
+        self.loadingView.hidden = true
+        performSegueWithIdentifier("newSpot", sender: self)
     }
     
 

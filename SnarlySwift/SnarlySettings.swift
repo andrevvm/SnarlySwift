@@ -103,7 +103,7 @@ class SnarlySettings: ViewController {
 //
 //            role.saveInBackground()
             
-            isLoggedIn = (PFUser.currentUser()?.isAuthenticated())!
+            isLoggedIn = (PFUser.currentUser()?.authenticated)!
             isFacebookLinked = (PFUser.currentUser()?.isLinkedWithAuthType("facebook"))!
             
         }
@@ -127,9 +127,14 @@ class SnarlySettings: ViewController {
     @IBAction func loadUserView() {
         
         userSettings.hidden = false
+        if let currentUser = PFUser.currentUser() {
+            isLoggedIn = currentUser.authenticated
+            isFacebookLinked = currentUser.isLinkedWithAuthType("facebook")
+        } else {
+            isLoggedIn = false
+            isFacebookLinked = false
+        }
         
-        isLoggedIn = (PFUser.currentUser()?.isAuthenticated())!
-        isFacebookLinked = (PFUser.currentUser()?.isLinkedWithAuthType("facebook"))!
         
         if (isFacebookLinked) {
             

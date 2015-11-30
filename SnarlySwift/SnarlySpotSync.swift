@@ -137,18 +137,17 @@ class SnarlySpotSync {
         PFSpot["title"] = spot.title
         PFSpot["location"] = Point
         
-        let currentUser = PFUser.currentUser()
-        if currentUser != nil {
-            PFSpot["user"] = currentUser
-        } else {
-            // Show the signup or login screen
+        if let currentUser = PFUser.currentUser() {
+            if SnarlyUser().isFBLoggedIn() && (spot.userid == currentUser.objectId) {
+                PFSpot["user"] = currentUser
+            }
         }
         
         let filename = NSUUID().UUIDString
         
         let file = PFFile(name: "\(filename).jpg", data: spot.photo)
         
-        file.saveInBackgroundWithBlock { (succeeded: Bool, let error: NSError?) -> Void in
+        file!.saveInBackgroundWithBlock { (succeeded: Bool, let error: NSError?) -> Void in
             
             if succeeded {
                 
@@ -293,6 +292,16 @@ class SnarlySpotSync {
                 for spot in spots {
                     
                     let spot = spot as! Spots
+                    
+                    if spot.userid == nil {
+                        spot.userid = PFUser.currentUser()?.objectId
+                        do {
+                            try self.managedObjectContext?.save()
+                        } catch _ {
+                            
+                        }
+                    }
+                    
                     if spot.uuid != nil {
                         update(spot, objectID: spot.uuid!)
                     } else {

@@ -8,6 +8,7 @@
 
 import CoreData
 import CoreLocation
+import FBSDKCoreKit
 import Foundation
 import Parse
 

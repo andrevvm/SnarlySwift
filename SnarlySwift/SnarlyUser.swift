@@ -29,78 +29,69 @@ class SnarlyUser {
             
             if let user = user {
                 
-                if user.isNew {
+                SnarlySpotSync().syncUserSpots()
+                
+                let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me?fields=id,name,location,first_name,last_name,email", parameters: nil)
+                request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
                     
-//                    SnarlySpotSync().syncUserSpots()
-//                    print("logged in")
-                    
-                } else {
-                    
-                    SnarlySpotSync().syncUserSpots()
-
-                    let request: FBSDKGraphRequest = FBSDKGraphRequest.init(graphPath: "me?fields=id,name,location,first_name,last_name,email", parameters: nil)
-                    request.startWithCompletionHandler { (connection : FBSDKGraphRequestConnection!, result : AnyObject!, error : NSError!) -> Void in
+                    if error == nil {
                         
-                        if error == nil {
+                        let userData:NSDictionary = result as! NSDictionary
+                        
+                        let facebookID = userData.valueForKey("id") as! String
+                        let location = userData.valueForKey("location")
+                        var userLocation = location?.valueForKey("name")
+                        let first_name = userData.valueForKey("first_name") as! String
+                        let last_name = userData.valueForKey("last_name") as! String
+                        
+                        if userLocation == nil {
+                            userLocation = ""
+                        }
+                        
+                        let pictureURL: NSURL = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture?type=large")!
+                        
+                        let urlRequest: NSURLRequest = NSURLRequest(URL: pictureURL)
+                        NSURLConnection.sendAsynchronousRequest(urlRequest, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, connectionError) -> Void in
                             
-                            let userData:NSDictionary = result as! NSDictionary
-                            
-                            let facebookID = userData.valueForKey("id") as! String
-                            let location = userData.valueForKey("location")
-                            var userLocation = location?.valueForKey("name")
-                            let first_name = userData.valueForKey("first_name") as! String
-                            let last_name = userData.valueForKey("last_name") as! String
-                            
-                            if userLocation == nil {
-                                userLocation = ""
+                            if(connectionError == nil && data != nil) {
+                                
+                                user["first_name"] = first_name
+                                user["last_name"] = last_name
+                                user["location"] = userLocation
+                                user["email"] = userData.valueForKey("email")
+                                
+                                let file = PFFile(name: "\(first_name)\(last_name).jpg", data: data!)
+                                
+                                file!.saveInBackgroundWithBlock { (succeeded: Bool, let error: NSError?) -> Void in
+                                    
+                                    if succeeded {
+                                        
+                                        user["photo"] = file
+                                        NSNotificationCenter.defaultCenter().postNotificationName("loggedInWithFacebook", object: nil)
+        
+                                    }
+                                    
+                                    user.saveEventually()
+                                    
+                                }
+
+                                
+                            } else {
+                                print("picture url \(pictureURL)")
                             }
                             
-                            let pictureURL: NSURL = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture?type=large")!
+                        })
                         
-                            
-                            let urlRequest: NSURLRequest = NSURLRequest(URL: pictureURL)
-                            NSURLConnection.sendAsynchronousRequest(urlRequest, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, connectionError) -> Void in
-                                
-                                if(connectionError == nil && data != nil) {
-                                    
-                                    user["first_name"] = first_name
-                                    user["last_name"] = last_name
-                                    user["location"] = userLocation
-                                    user["email"] = userData.valueForKey("email")
-                                    
-                                    let file = PFFile(name: "\(first_name)\(last_name).jpg", data: data!)
-                                    
-                                    file.saveInBackgroundWithBlock { (succeeded: Bool, let error: NSError?) -> Void in
-                                        
-                                        if succeeded {
-                                            
-                                            user["photo"] = file
-                                            NSNotificationCenter.defaultCenter().postNotificationName("loggedInWithFacebook", object: nil)
-            
-                                        }
-                                        
-                                        user.saveEventually()
-                                        
-                                    }
-
-                                    
-                                } else {
-                                    print("picture url \(pictureURL)")
-                                }
-                                
-                            })
-                            
-                            
-                            
-                        } else {
-                            NSNotificationCenter.defaultCenter().postNotificationName("loggedOut", object: nil)
-                            print("error url \(error)")
-                            
-                        }
+                        
+                        
+                    } else {
+                        NSNotificationCenter.defaultCenter().postNotificationName("loggedOut", object: nil)
+                        print("error url \(error)")
                         
                     }
                     
                 }
+
             } else {
                 NSNotificationCenter.defaultCenter().postNotificationName("loggedOut", object: nil)
                 print("user \(user)")
@@ -121,7 +112,7 @@ class SnarlyUser {
             content.appInvitePreviewImageURL = NSURL(string: "http://getsnarly.com/images/fb_icon.png")
             
             dialog.content = content
-            dialog.fromViewController = sender
+            //dialog.fromViewController = sender
             
             dialog.show()
             do {

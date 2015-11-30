@@ -839,7 +839,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 
             
             default:
-                break
+                return
             
         }
         
