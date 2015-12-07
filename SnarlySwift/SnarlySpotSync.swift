@@ -268,7 +268,7 @@ class SnarlySpotSync {
         
         let fetchRequest = NSFetchRequest(entityName: "Spots")
         
-        let resultPredicate1 = NSPredicate(format: "active == true")
+        let resultPredicate1 = NSPredicate(format: "active == YES")
         let predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [resultPredicate1])
         fetchRequest.predicate = predicate
         

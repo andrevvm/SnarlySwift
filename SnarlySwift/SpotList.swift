@@ -219,7 +219,12 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
             bustIcon.hidden = true
         }
         
-        cell.spotLabel.text = spot.title!
+        if let title = spot.title {
+            cell.spotLabel.text = title
+        } else {
+            cell.spotLabel.text = ""
+        }
+        
         
         if(spot.photo != nil) {
             let imageData = spot.photo as NSData

@@ -969,13 +969,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             return
         }
         
-        tableView.reloadData {
-            if let visibleCells = self.tableView!.visibleCells as? [SpotCell] {
-                for parallaxCell in visibleCells {
-                    self.parallax(parallaxCell)
-                }
-            }
-        }
+        tableView.reloadData()
         
     }
         
