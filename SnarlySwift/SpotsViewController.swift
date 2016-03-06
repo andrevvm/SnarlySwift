@@ -79,8 +79,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     var refreshControl:UIRefreshControl!
     
-    var firstLaunch = false
-    
     let paragraphStyle = NSMutableParagraphStyle()
     
     var backgroundTaskIdentifier: UIBackgroundTaskIdentifier?
@@ -433,14 +431,12 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         initCamera()
         
-        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0")){
-            firstLaunch = true
-            //Put any code here and it will be executed only once.
-            //self.populateData()
-            
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch1.0")
-            NSUserDefaults.standardUserDefaults().synchronize();
-        }
+//        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch2.1")){
+//            PFUser.logOutInBackground()
+//            
+//            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstlaunch2.1")
+//            NSUserDefaults.standardUserDefaults().synchronize();
+//        }
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
@@ -509,8 +505,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         loadingView.hidden = true
         
-        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch1.0") == false){
-            firstLaunch = false
+        if(!NSUserDefaults.standardUserDefaults().boolForKey("firstlaunch2.1") == false){
             self.reloadData()
         }
         

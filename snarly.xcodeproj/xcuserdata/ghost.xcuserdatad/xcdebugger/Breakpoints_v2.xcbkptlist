@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "470880821.073143"
+            timestampString = "471983241.350526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1172"
-            endingLineNumber = "1172"
+            startingLineNumber = "1167"
+            endingLineNumber = "1167"
             landmarkName = "prepareForSegue(_:sender:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "469477055.683176"
+            timestampString = "471983241.350526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "239"
-            endingLineNumber = "239"
+            startingLineNumber = "237"
+            endingLineNumber = "237"
             landmarkName = "createSpotFromCamera(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -122,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "469477055.683176"
+            timestampString = "471983241.350526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
+            startingLineNumber = "276"
+            endingLineNumber = "276"
             landmarkName = "createSpotFromLibrary(_:imageData:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -170,11 +170,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SnarlySwift/SpotsViewController.swift"
-            timestampString = "470269288.760268"
+            timestampString = "471983241.350526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "748"
-            endingLineNumber = "748"
+            startingLineNumber = "743"
+            endingLineNumber = "743"
             landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>

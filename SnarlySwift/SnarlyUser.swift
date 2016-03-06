@@ -48,17 +48,22 @@ class SnarlyUser {
                             userLocation = ""
                         }
                         
+                        user["first_name"] = first_name
+                        user["last_name"] = last_name
+                        user["location"] = userLocation
+                        user["email"] = userData.valueForKey("email")
+                        user["facebookId"] = facebookID
+                        
+                        user.saveInBackgroundWithBlock { (succeeded:Bool, let error: NSError?) -> Void in
+                            print(succeeded, error)
+                        }
+                        
                         let pictureURL: NSURL = NSURL(string: "https://graph.facebook.com/\(facebookID)/picture?type=large")!
                         
                         let urlRequest: NSURLRequest = NSURLRequest(URL: pictureURL)
                         NSURLConnection.sendAsynchronousRequest(urlRequest, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, connectionError) -> Void in
                             
                             if(connectionError == nil && data != nil) {
-                                
-                                user["first_name"] = first_name
-                                user["last_name"] = last_name
-                                user["location"] = userLocation
-                                user["email"] = userData.valueForKey("email")
                                 
                                 let file = PFFile(name: "\(first_name)\(last_name).jpg", data: data!)
                                 
@@ -68,10 +73,9 @@ class SnarlyUser {
                                         
                                         user["photo"] = file
                                         NSNotificationCenter.defaultCenter().postNotificationName("loggedInWithFacebook", object: nil)
+                                        user.saveEventually()
         
                                     }
-                                    
-                                    user.saveEventually()
                                     
                                 }
 
