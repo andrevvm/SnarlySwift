@@ -103,8 +103,31 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         } else {
             navigationBar.topItem!.title = "New Spot"
         }
+        
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: "respondToSwipeGesture:")
+        swipeDown.direction = UISwipeGestureRecognizerDirection.Down
+        self.view.addGestureRecognizer(swipeDown)
 
         
+    }
+    
+    func respondToSwipeGesture(gesture: UIGestureRecognizer) {
+        
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            
+            
+            switch swipeGesture.direction {
+
+            case UISwipeGestureRecognizerDirection.Down:
+                if keyboard {
+                    view.endEditing(true)
+                    return
+                }
+
+            default:
+                break
+            }
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -257,7 +280,7 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         let screenHeight = UIScreen.mainScreen().bounds.size.height
         
-        let offset = screenHeight - editView.frame.size.height - 210
+        let offset = screenHeight - editView.frame.size.height - 260
         
         self.topConstraint.constant = frame + offset
         UIView.animateWithDuration(0.3) {
