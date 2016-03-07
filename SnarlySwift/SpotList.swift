@@ -173,17 +173,23 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                 cell.userPhotoBorder.layer.cornerRadius = 15
                 cell.userPhoto.clipsToBounds = true
                 
-                if let image = photo {
-                    do {
-                        let imageData = try image.getData()
-                        cell.userPhoto.image = UIImage(data: imageData )
+                if photo != nil {
+                    if let image = photo {
+                        do {
+                            let imageData = try image.getData()
+                            cell.userPhoto.image = UIImage(data: imageData )
+                            
+                        } catch {
+                            cell.userPhoto.image = UIImage(named:"icon-profile")
+                        }
                         
-                    } catch {
                         
                     }
-                    
-                    
+                } else {
+                    cell.userPhoto.image = UIImage(named:"icon-profile")
                 }
+                
+            
 
             
                 
@@ -323,7 +329,9 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                                     let user:PFObject = self.friendsList[userId!]!
                                     
                                     spot["display_name"] = user["display_name"]
-                                    spot["user_photo"] = user["photo"] as! PFFile
+                                    if let userPhoto = user["photo"] as? PFFile {
+                                        spot["user_photo"] = userPhoto
+                                    }
                                     
                                     self.friendsSpots?.append(spot)
                                 }

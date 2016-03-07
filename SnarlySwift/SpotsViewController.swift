@@ -325,6 +325,12 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         NewSpot.addTarget(self, action: "newSpotUp:", forControlEvents: [UIControlEvents.TouchUpInside, UIControlEvents.TouchUpOutside])
         navHome.addTarget(self, action: "mainMenuDown:", forControlEvents: UIControlEvents.TouchDown)
         navHome.addTarget(self, action: "mainMenuUp:", forControlEvents: [UIControlEvents.TouchUpInside, UIControlEvents.TouchUpOutside, UIControlEvents.TouchCancel])
+        navFriends.addTarget(self, action: "mainMenuDown:", forControlEvents: UIControlEvents.TouchDown)
+        navFriends.addTarget(self, action: "mainMenuUp:", forControlEvents: [UIControlEvents.TouchUpInside, UIControlEvents.TouchUpOutside, UIControlEvents.TouchCancel])
+        navNearby.addTarget(self, action: "mainMenuDown:", forControlEvents: UIControlEvents.TouchDown)
+        navNearby.addTarget(self, action: "mainMenuUp:", forControlEvents: [UIControlEvents.TouchUpInside, UIControlEvents.TouchUpOutside, UIControlEvents.TouchCancel])
+        navSettings.addTarget(self, action: "mainMenuDown:", forControlEvents: UIControlEvents.TouchDown)
+        navSettings.addTarget(self, action: "mainMenuUp:", forControlEvents: [UIControlEvents.TouchUpInside, UIControlEvents.TouchUpOutside, UIControlEvents.TouchCancel])
     }
     
     func mainMenuDown(sender:UIButton) {

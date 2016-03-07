@@ -75,9 +75,14 @@ class SpotObject: NSObject {
         }
         if let userDisplay = spot["display_name"] {
             self.display_name = userDisplay as? String
+        } else {
+            self.display_name = "Unknown"
         }
+        
         if let userPhoto = spot["user_photo"] {
             self.user_photo = userPhoto as? PFFile
+        } else {
+            self.user_photo = nil
         }
     
         return self
