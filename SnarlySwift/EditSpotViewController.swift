@@ -115,7 +115,6 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
         
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             
-            
             switch swipeGesture.direction {
 
             case UISwipeGestureRecognizerDirection.Down:

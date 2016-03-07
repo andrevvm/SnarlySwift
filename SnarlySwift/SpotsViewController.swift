@@ -191,6 +191,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     @IBAction func library(sender : UIGestureRecognizer) {
         
         if(sender.state == UIGestureRecognizerState.Began) {
+            newSpotUp(NewSpot)
             let chooser = imag
             imag.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
             self.presentViewController(chooser, animated: true, completion: nil)
@@ -319,6 +320,41 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         self.resetMainMenu()
     }
     
+    func initButtons() {
+        NewSpot.addTarget(self, action: "newSpotDown:", forControlEvents: UIControlEvents.TouchDown)
+        NewSpot.addTarget(self, action: "newSpotUp:", forControlEvents: [UIControlEvents.TouchUpInside, UIControlEvents.TouchUpOutside])
+        navHome.addTarget(self, action: "mainMenuDown:", forControlEvents: UIControlEvents.TouchDown)
+        navHome.addTarget(self, action: "mainMenuUp:", forControlEvents: [UIControlEvents.TouchUpInside, UIControlEvents.TouchUpOutside, UIControlEvents.TouchCancel])
+    }
+    
+    func mainMenuDown(sender:UIButton) {
+        UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+            sender.transform = CGAffineTransformMakeScale(1.1, 1.1)
+            }, completion: { finished in
+                //complete
+        })
+    }
+    
+    func mainMenuUp(sender:UIButton) {
+        sender.transform = CGAffineTransformMakeScale(1, 1)
+    }
+    
+    func newSpotDown(sender:UIButton) {
+        UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+            sender.transform = CGAffineTransformMakeScale(1.2, 1.2)
+            }, completion: { finished in
+                //complete
+        })
+    }
+    
+    func newSpotUp(sender:UIButton) {
+        UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+            sender.transform = CGAffineTransformMakeScale(1, 1)
+            }, completion: { finished in
+                //complete
+        })
+    }
+    
     func showMainMenu() {
         
         tableView.editing = false
@@ -333,35 +369,35 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 self.menu = true
         })
         
-        UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+        UIView.animateWithDuration(0.4, delay: 0.0, usingSpringWithDamping: 0.9, initialSpringVelocity: 4, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
             self.mainMenuLeft.constant = 0
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 self.menu = true
         })
         
-        UIView.animateWithDuration(0.2, delay: 0.2, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+        UIView.animateWithDuration(0.4, delay: 0.2, usingSpringWithDamping: 0.4, initialSpringVelocity: 6, options: UIViewAnimationOptions.CurveEaseOut, animations: {
             self.navHome.alpha = 1
             self.navHome.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 //return
         })
-        UIView.animateWithDuration(0.2, delay: 0.25, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+        UIView.animateWithDuration(0.4, delay: 0.25, usingSpringWithDamping: 0.4, initialSpringVelocity: 6, options: UIViewAnimationOptions.CurveEaseOut, animations: {
             self.navFriends.alpha = 1
             self.navFriends.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 //return
         })
-        UIView.animateWithDuration(0.2, delay: 0.3, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+        UIView.animateWithDuration(0.4, delay: 0.3, usingSpringWithDamping: 0.4, initialSpringVelocity: 6, options: UIViewAnimationOptions.CurveEaseOut, animations: {
             self.navNearby.alpha = 1
             self.navNearby.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 //return
         })
-        UIView.animateWithDuration(0.2, delay: 0.35, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+        UIView.animateWithDuration(0.4, delay: 0.35, usingSpringWithDamping: 0.4, initialSpringVelocity: 6, options: UIViewAnimationOptions.CurveEaseOut, animations: {
             self.navSettings.alpha = 1
             self.navSettings.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
             self.view.layoutIfNeeded()
@@ -376,7 +412,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         let menuImg = UIImage(named: "snarly-logo-sm")
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: menuImg, style: UIBarButtonItemStyle.Plain, target: self, action: "showMainMenu")
         
-        UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+        UIView.animateWithDuration(0.4, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 2, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
             self.mainMenuLeft.constant = -(self.tableView.frame.size.width);
             self.view.layoutIfNeeded()
             }, completion: { finished in
@@ -519,6 +555,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         location = locationManager.location
         
+        initButtons()
         setButton = navHome
         appDelegate.listType = "saved"
         
@@ -592,6 +629,22 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
 
         spotList.updateDistance(self)
         
+        let swipeMenu = UISwipeGestureRecognizer(target: self, action: "respondToSwipeMenu:")
+        swipeMenu.direction = UISwipeGestureRecognizerDirection.Left
+        mainMenu.addGestureRecognizer(swipeMenu)
+        
+    }
+    
+    func respondToSwipeMenu(gesture: UIGestureRecognizer) {
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            switch swipeGesture.direction {
+                
+            case UISwipeGestureRecognizerDirection.Left:
+                hideMainMenu()
+            default:
+                break
+            }
+        }
     }
     
     func navigationController(navigationController: UINavigationController, animationControllerForOperation operation: UINavigationControllerOperation, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
@@ -1166,7 +1219,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 self.comingSoonView.hidden = true
                 spotList.fetchSavedSpots()
             case "friends":
-                viewTitle = "Friends feed"
+                viewTitle = "Friend feed"
                 self.comingSoonView.hidden = true
                 
                 self.loadingView.hidden = false
