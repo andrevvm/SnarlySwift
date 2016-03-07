@@ -424,10 +424,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         
-        if let visibleCells = tableView!.visibleCells as? [SpotCell] {
-            for parallaxCell in visibleCells {
-                parallax(parallaxCell)
-            }
+        
+        for cell in tableView.visibleCells as! [SpotCell] {
+            parallax(cell)
         }
         
         let scrollViewHeight = scrollView.frame.size.height;
@@ -465,15 +464,16 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     func parallax(cell: SpotCell) {
         
         let cellY = cell.frame.origin.y
-        let tableOffsetY = tableView.contentOffset.y
+        let offsetY = tableView.contentOffset.y
+        cell.photoTop.constant = parallaxOffsetFor(offsetY, cell: cell)
         
-        let yOffset = ((tableOffsetY - cellY) / ImageHeight) * OffsetSpeed
-        cell.spotPhoto.frame.origin.y = yOffset - 65
+//        let yOffset = ((tableOffsetY - cellY) / ImageHeight) * OffsetSpeed
+//        cell.spotPhoto.frame.origin.y = yOffset - 65
         
-        if(cellY <= (tableOffsetY - self.tableView.rowHeight + cell.userOverlay.frame.size.height)) {
+        if(cellY <= (offsetY - self.tableView.rowHeight + cell.userOverlay.frame.size.height)) {
             cell.userOverlay.frame.origin.y = self.tableView.rowHeight - cell.userOverlay.frame.size.height
-        } else if(cellY <= tableOffsetY) {
-            cell.userOverlay.frame.origin.y = (tableOffsetY - cellY)
+        } else if(cellY <= offsetY) {
+            cell.userOverlay.frame.origin.y = (offsetY - cellY)
         } else {
             cell.userOverlay.frame.origin.y = 0
         }
@@ -485,7 +485,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         isLoading = true
         
         UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
-            self.tableLoadingViewBottom.constant = 0
+            self.tableLoadingViewBottom.constant = 10
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 //complete
@@ -547,7 +547,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 80, 0)
         
-        self.tableLoadingView.layer.cornerRadius = 30
+        self.tableLoadingView.layer.cornerRadius = 20
         
         //appDelegate.setLocationVars(locationManager.location)
         
@@ -591,12 +591,6 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
 //        }
 
         spotList.updateDistance(self)
-        
-        if let visibleCells = tableView!.visibleCells as? [SpotCell] {
-            for parallaxCell in visibleCells {
-                parallax(parallaxCell)
-            }
-        }
         
     }
     
@@ -664,11 +658,37 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
     }
     
+    var cellHeight: CGFloat {
+        return 285
+    }
+    
+    // Just an alias to make the code easier to read
+    var imageVisibleHeight: CGFloat {
+        return cellHeight
+    }
+    
+    // Change this value to whatever you like (it sets how "fast" the image moves when you scroll)
+    let parallaxOffsetSpeed: CGFloat = 50
+    
+    // This just makes sure that whatever the design is, there's enough image to be displayed, I let it up to you to figure out the details, but it's not a magic formula don't worry :)
+    var parallaxImageHeight: CGFloat {
+        //let maxOffset = (sqrt(pow(cellHeight, 3) + 4 * parallaxOffsetSpeed * tableView.frame.height) - cellHeight) / 2
+        return 200
+    }
+    
+    // Used when the table dequeues a cell, or when it scrolls
+    func parallaxOffsetFor(newOffsetY: CGFloat, cell: UITableViewCell) -> CGFloat {
+        return ((newOffsetY - cell.frame.origin.y - 350) / parallaxImageHeight) * parallaxOffsetSpeed
+    }
+    
     func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
         
         let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath: indexPath) as! SpotCell
         
         spotList.configureCell(cell, atIndexPath: indexPath, loadedList: loadedSpots, loadedPhotos: loadedPhotos)
+        
+        cell.photoHeight.constant = parallaxImageHeight
+        cell.photoTop.constant = parallaxOffsetFor(tableView.contentOffset.y, cell: cell)
         
         return cell
         
@@ -1075,7 +1095,11 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             return
         }
         
-        tableView.reloadData()
+        tableView.reloadData {
+            for cell in self.tableView.visibleCells as! [SpotCell] {
+                self.parallax(cell)
+            }
+        }
         
     }
         

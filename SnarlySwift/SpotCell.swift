@@ -25,6 +25,15 @@ class SpotCell: PFTableViewCell {
     @IBOutlet var userPhotoBorder: UIView!
     @IBOutlet var spotDate: UILabel!
     @IBOutlet var photoTop: NSLayoutConstraint!
+    @IBOutlet var photoHeight: NSLayoutConstraint!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        clipsToBounds = true
+        //spotPhoto.contentMode = .ScaleAspectFill
+        spotPhoto.clipsToBounds = false
+    }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
