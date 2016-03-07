@@ -58,6 +58,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     var location: CLLocation!
     var locationString: String!
     
+    var keyboard = false
+    
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return UIStatusBarStyle.LightContent
     }
@@ -247,6 +249,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     func keyboardWillShow(sender: NSNotification) {
         
+        keyboard = true
+        
         let info = sender.userInfo!
         
         let frame = -(info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue().height
@@ -265,6 +269,8 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     
     func keyboardWillHide(sender: NSNotification) {
         
+        keyboard = false
+        
         self.topConstraint.constant = 0
         UIView.animateWithDuration(0.3) {
             self.view.layoutIfNeeded()
@@ -282,6 +288,12 @@ class EditSpotViewController: UIViewController, UINavigationControllerDelegate, 
     }
     
     @IBAction func capture(sender : AnyObject) {
+        
+        if keyboard {
+            view.endEditing(true)
+            return
+        }
+        
         if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera){
             
             let imag = UIImagePickerController()

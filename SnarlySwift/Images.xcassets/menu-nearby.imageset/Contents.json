@@ -1,16 +1,13 @@
 {
   "images" : [
     {
-      "idiom" : "universal"
-    },
-    {
       "idiom" : "universal",
-      "filename" : "icon-new-spot.png",
+      "filename" : "menu-nearby.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "icon-new-spot@2x.png",
+      "filename" : "menu-nearby@2x.png",
       "scale" : "2x"
     },
     {

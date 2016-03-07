@@ -38,6 +38,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     var loadedNearbyPhotos = [NSData]()
     var friendsPage = 0
     var nearbyPage = 0
+    var menu = false
     
     var location: CLLocation?
     
@@ -51,6 +52,8 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     @IBOutlet var EmptyBg: UIImageView!
     @IBOutlet var tableView: UITableView!
+    @IBOutlet var mainMenu: UIView!
+    @IBOutlet var mainMenuLeft: NSLayoutConstraint!
     @IBOutlet var NewSpot: UIButton!
     @IBOutlet var NewSpotGradient: UIImageView!
     @IBOutlet var NavBar: UINavigationBar!
@@ -88,6 +91,20 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     }
     
+    @IBAction func showMainMenuBtn() {
+        self.showMainMenu()
+    }
+    
+    @IBAction func toggleMainMenu() {
+        
+        if !menu {
+            self.showMainMenu()
+        } else {
+            self.hideMainMenu()
+        }
+        
+    }
+    
     @IBAction func facebookBtnAction() {
         
         if snarlyUser.isFBLoggedIn() {
@@ -116,13 +133,16 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             return
         }
         
-        setButton = btn
+        //setButton = btn
         
-        updateNav()
+        //updateNav()
         
-        let btnName = btn.restorationIdentifier
+        //let btnName = btn.restorationIdentifier
         
-        btn.setImage(UIImage(named: "nav-\(btnName!)-active"), forState: .Normal)
+        //btn.setImage(UIImage(named: "nav-\(btnName!)-active"), forState: .Normal)
+        
+        self.hideMainMenu()
+        
         self.changeView(btn)
         
         
@@ -295,8 +315,89 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(Bool())
-        self.changeNav(setButton)
+        //self.changeNav(setButton)
+        self.resetMainMenu()
+    }
+    
+    func showMainMenu() {
         
+        tableView.editing = false
+        
+        let menuImg = UIImage(named: "btn-cancel")
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: menuImg, style: UIBarButtonItemStyle.Plain, target: self, action: "hideMainMenu")
+        
+        UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+            self.mainMenu.alpha = 1
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                self.menu = true
+        })
+        
+        UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+            self.mainMenuLeft.constant = 0
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                self.menu = true
+        })
+        
+        UIView.animateWithDuration(0.2, delay: 0.2, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.navHome.alpha = 1
+            self.navHome.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                //return
+        })
+        UIView.animateWithDuration(0.2, delay: 0.25, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.navFriends.alpha = 1
+            self.navFriends.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                //return
+        })
+        UIView.animateWithDuration(0.2, delay: 0.3, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.navNearby.alpha = 1
+            self.navNearby.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                //return
+        })
+        UIView.animateWithDuration(0.2, delay: 0.35, options: UIViewAnimationOptions.CurveEaseOut, animations: {
+            self.navSettings.alpha = 1
+            self.navSettings.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                //return
+        })
+    }
+    
+    
+    func hideMainMenu() {
+        
+        let menuImg = UIImage(named: "snarly-logo-sm")
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: menuImg, style: UIBarButtonItemStyle.Plain, target: self, action: "showMainMenu")
+        
+        UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+            self.mainMenuLeft.constant = -(self.tableView.frame.size.width);
+            self.view.layoutIfNeeded()
+            }, completion: { finished in
+                self.resetMainMenu()
+                self.menu = false
+        })
+    }
+    
+    func resetMainMenu() {
+        self.mainMenu.alpha = 0
+        navHome.alpha = 0
+        navHome.contentEdgeInsets = UIEdgeInsetsMake(0, -20, 0, 0)
+        navFriends.alpha = 0
+        navFriends.contentEdgeInsets = UIEdgeInsetsMake(0, -20, 0, 0)
+        navNearby.alpha = 0
+        navNearby.contentEdgeInsets = UIEdgeInsetsMake(0, -20, 0, 0)
+        navSettings.alpha = 0
+        navSettings.contentEdgeInsets = UIEdgeInsetsMake(0, -20, 0, 0)
+        let menuImg = UIImage(named: "snarly-logo-sm")
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: menuImg, style: UIBarButtonItemStyle.Plain, target: self, action: "showMainMenu")
+        self.mainMenuLeft.constant = -(self.tableView.frame.size.width);
     }
     
     func topInviteButton(sender:AnyObject) {
@@ -305,9 +406,13 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     override func viewWillAppear(animated: Bool) {
         
+        self.resetMainMenu()
+        
         if(PFUser.currentUser() != nil) {
             snarlyUser.setUserAdmin()
         }
+        
+        self.mainMenu.backgroundColor = UIColor(red: 0.945, green: 0.22, blue: 0.275, alpha: 1.0)
         
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         
@@ -380,7 +485,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         isLoading = true
         
         UIView.animateWithDuration(0.2, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
-            self.tableLoadingViewBottom.constant = -50
+            self.tableLoadingViewBottom.constant = 0
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 //complete
@@ -395,7 +500,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         isLoading = false
 
         UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
-            self.tableLoadingViewBottom.constant = 0
+            self.tableLoadingViewBottom.constant = 70
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 //complete
@@ -440,7 +545,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 55, 0)
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 80, 0)
+        
+        self.tableLoadingView.layer.cornerRadius = 30
         
         //appDelegate.setLocationVars(locationManager.location)
         
@@ -484,6 +591,12 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
 //        }
 
         spotList.updateDistance(self)
+        
+        if let visibleCells = tableView!.visibleCells as? [SpotCell] {
+            for parallaxCell in visibleCells {
+                parallax(parallaxCell)
+            }
+        }
         
     }
     
@@ -553,11 +666,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath:indexPath) as! SpotCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("SpotCell", forIndexPath: indexPath) as! SpotCell
         
         spotList.configureCell(cell, atIndexPath: indexPath, loadedList: loadedSpots, loadedPhotos: loadedPhotos)
-        
-        parallax(cell)
         
         return cell
         
@@ -1024,10 +1135,10 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
     func setView() {
         
         let viewTitle: String
-        
+    
         switch appDelegate.listType {
             case "saved":
-                viewTitle = "Your spots"
+                viewTitle = "My spots"
                 self.comingSoonView.hidden = true
                 spotList.fetchSavedSpots()
             case "friends":
@@ -1087,7 +1198,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
                 self.comingSoonLabel.attributedText = attrString
             
             default:
-                viewTitle = "Your spots"
+                viewTitle = "My spots"
         }
         
         if appDelegate.listType == "friends" && snarlyUser.isFBLoggedIn() {
@@ -1162,8 +1273,9 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
             
         }
         
-        if segue.identifier == "showMenu" {
+        if segue.identifier == "showSettings" {
             navigationController?.delegate = self
+            //self.hideMainMenu()
         } else {
             navigationController?.delegate = defaultNavigationController.delegate
         }
