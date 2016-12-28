@@ -542,7 +542,7 @@ class SpotsViewController: UIViewController, UIImagePickerControllerDelegate, UI
         isLoading = false
 
         UIView.animateWithDuration(0.1, delay: 0.0, options: UIViewAnimationOptions.CurveEaseOut, animations: {
-            self.tableLoadingViewBottom.constant = 70
+            self.tableLoadingViewBottom.constant = 90
             self.view.layoutIfNeeded()
             }, completion: { finished in
                 //complete

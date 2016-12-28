@@ -91,9 +91,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Enable Local Datastore
         Parse.enableLocalDatastore()
         
-        // Initialize Parse.
-        Parse.setApplicationId("iuAEYOprPqDnC45lCQSlJRw096uacXs1dTbYwpOc",
-            clientKey: "HVbfx7aNRg7YTTanldKKKuFojxngUzMKQPUHK0qZ")
+        let configuration = ParseClientConfiguration {
+            $0.applicationId = "iuAEYOprPqDnC45lCQSlJRw096uacXs1dTbYwpOc"
+            $0.clientKey = "HVbfx7aNRg7YTTanldKKKuFojxngUzMKQPUHK0qZ"
+            $0.server = "https://pg-app-nxoq07r75ee2095y0ee0fx9k1fwjzc.scalabl.cloud/1/"
+        }
+        Parse.initializeWithConfiguration(configuration)
         
         // [Optional] Track statistics around application opens.
         PFAnalytics.trackAppOpenedWithLaunchOptions(launchOptions)

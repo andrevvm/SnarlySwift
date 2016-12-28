@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
  Represents the ad size.
  */
-typedef struct FB_OBJC_BOXABLE FBAdSize {
+typedef struct FBAdSize {
   CGSize size;
 } FBAdSize;
 
@@ -53,19 +53,12 @@ FB_EXPORT FBAdSize const kFBAdSizeHeight90Banner;
 /*!
  @abstract Represents the interstitial ad size.
  */
-FB_EXPORT FBAdSize const kFBAdSizeInterstital;
+FB_EXPORT FBAdSize const kFBAdSizeInterstitial;
 
 /*!
  @abstract Represents the flexible rectangle ad size, where width depends on
  its container width, and height is fixed as 250pt.
  */
 FB_EXPORT FBAdSize const kFBAdSizeHeight250Rectangle;
-
-FB_CLASS_EXPORT
-@interface FBAdCustomSize : NSObject
-
-+ (FBAdSize)customSize:(CGSize)size;
-
-@end
 
 NS_ASSUME_NONNULL_END
