@@ -259,7 +259,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         }
         
         if friendsTimer == nil {
-            friendsTimer = NSTimer.scheduledTimerWithTimeInterval(600, target: self, selector: "refreshViewTimer:", userInfo: "friends", repeats: true)
+            friendsTimer = NSTimer.scheduledTimerWithTimeInterval(600, target: self, selector: #selector(SpotList.refreshViewTimer(_:)), userInfo: "friends", repeats: true)
         }
         
         friendsFresh = true
@@ -277,7 +277,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
                 
                 for user in users {
                     
-                    let id = user["id"] as! String
+                    let id = (user as! NSDictionary)["id"] as! String
                     facebookIds.append(id)
                     
                 }
@@ -364,7 +364,7 @@ class SpotList: NSObject, NSFetchedResultsControllerDelegate, CLLocationManagerD
         }
         
         if nearbyTimer == nil {
-            nearbyTimer = NSTimer.scheduledTimerWithTimeInterval(600, target: self, selector: "refreshViewTimer:", userInfo: "nearby", repeats: true)
+            nearbyTimer = NSTimer.scheduledTimerWithTimeInterval(600, target: self, selector: #selector(SpotList.refreshViewTimer(_:)), userInfo: "nearby", repeats: true)
         }
         
         nearbyFresh = true

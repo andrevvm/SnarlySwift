@@ -9,6 +9,7 @@
 import UIKit
 import MapKit
 import CoreData
+import Parse
 
 class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewDelegate {
     
@@ -95,12 +96,12 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
     func initMenuButtons() {
         
         if appDelegate.listType != "saved" {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon-share"), style: .Plain, target: self, action: "shareSpot:")
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon-share"), style: .Plain, target: self, action: #selector(SpotDetailController.shareSpot(_:)))
         } else {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btn-options"), style: .Plain, target: self, action: "menuToggleMenu:")
-            menuEditButton.addTarget(self, action: "menuEditSpot:", forControlEvents: UIControlEvents.TouchUpInside)
-            menuShareButton.addTarget(self, action: "shareSpot:", forControlEvents: UIControlEvents.TouchUpInside)
-            menuDeleteButton.addTarget(self, action: "menuDeleteSpot:", forControlEvents: UIControlEvents.TouchUpInside)
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btn-options"), style: .Plain, target: self, action: #selector(SpotDetailController.menuToggleMenu(_:)))
+            menuEditButton.addTarget(self, action: #selector(SpotDetailController.menuEditSpot(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+            menuShareButton.addTarget(self, action: #selector(SpotDetailController.shareSpot(_:)), forControlEvents: UIControlEvents.TouchUpInside)
+            menuDeleteButton.addTarget(self, action: #selector(SpotDetailController.menuDeleteSpot(_:)), forControlEvents: UIControlEvents.TouchUpInside)
         }
         
         
@@ -130,8 +131,10 @@ class SpotDetailController: UIViewController, UITableViewDelegate, UIScrollViewD
             if let photo = spot?.photo {
                 spotPhoto.image = UIImage(data: photo as NSData!)
             } else {
-                if spot!.object["photo"] != nil {
-                    spot!.object["photo"]!.getDataInBackgroundWithBlock({
+                
+                if let object = spot!.object {
+                    
+                    object["photo"]!.getDataInBackgroundWithBlock({
                         
                         (imageData: NSData?, error: NSError?) -> Void in
                         
